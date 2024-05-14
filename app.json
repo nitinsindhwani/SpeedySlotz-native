@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "speedySlotzfinalapp",
+    "slug": "speedySlotzfinalapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.speedyzslotznitinapp.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.speedyzslotznitinapp.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification.png",
+          "color": "#ffffff",
+          "sounds": ["./assets/sounds/tone1.wav", "./assets/sounds/tone2.wav"]
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8cdc32df-1dfe-4ba1-b002-d69366d596e4"
+      }
+    }
+  }
+}

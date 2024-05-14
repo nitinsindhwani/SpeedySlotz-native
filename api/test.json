@@ -1,0 +1,105 @@
+{
+    "businessFound": false,
+    "favorite": false,
+    "slots": [
+        {
+            "blocked": null,
+            "booked": true,
+            "business_id": "0DP6g2XhzcGA6t7llHcfyA",
+            "business_name": "It's a Paw Thing",
+            "business_phone": "+19404411109",
+            "cancelled": null,
+            "completed": null,
+            "confirmed": true,
+            "date": "2024-03-19",
+            "endTime": "09:00:00",
+            "job_description": null,
+            "key": [Object],
+            "noshow": null,
+            "open": null,
+            "period": "Hour",
+            "rescheduled": null,
+            "selectedServiceTypes": [Array
+            ],
+            "serviceTypes": [Array
+            ],
+            "startTime": "08:00:00",
+            "user_id": null,
+            "user_phone": null,
+            "username": "sarib"
+        }
+    ],
+    "yelpBusiness": {
+        "ads": false,
+        "alias": "its-a-paw-thing-northlake",
+        "badges": null,
+        "closed": false,
+        "companySize": 0,
+        "created_at": null,
+        "details": null,
+        "display_phone": "(940) 441-1109",
+        "distance": 0,
+        "id": "0DP6g2XhzcGA6t7llHcfyA",
+        "image_url": {
+            "image": "https://s3-media2.fl.yelpcdn.com/bphoto/tA6xpf6zaR2G1rg7flg29w/o.jpg"
+        },
+        "is_closed": false,
+        "is_registered": false,
+        "name": "It's a Paw Thing",
+        "paymentMethods": null,
+        "phone": "+19404411109",
+        "rating": 5,
+        "review_count": 6,
+        "serviceZipCodes": null,
+        "status": 0,
+        "videoUrl": null,
+        "websiteUrl": "https://www.yelp.com/biz/its-a-paw-thing-northlake?adjust_creative=BDVsnfZXXzfrab0Lf3QBjw&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_lookup&utm_source=BDVsnfZXXzfrab0Lf3QBjw",
+        "yearFound": null
+    },
+    "yelpBusinessCategory": null,
+    "yelpBusinessCoordinates": {
+        "business_id": "0DP6g2XhzcGA6t7llHcfyA",
+        "latitude": 33.100998,
+        "longitude": -97.231705
+    },
+    "yelpBusinessLocation": {
+        "address1": "1236 Fm 407 E",
+        "address2": "Ste 500",
+        "address3": null,
+        "business_id": "0DP6g2XhzcGA6t7llHcfyA",
+        "city": "Northlake",
+        "country": "US",
+        "displayAddress": [
+            "1236 Fm 407 E",
+            "Ste 500",
+            "Northlake, TX 76226"
+        ],
+        "state": "TX",
+        "zipCode": "76226"
+    },
+    "yelpBusinessSettings": {
+        "business_id": "0DP6g2XhzcGA6t7llHcfyA",
+        "cancellationWindow": 240,
+        "earliestStartTime": "08:00:00",
+        "fridayEndTime": "18:00:00",
+        "fridayStartTime": "08:00:00",
+        "latestEndTime": "18:00:00",
+        "mondayEndTime": "18:00:00",
+        "mondayStartTime": "08:00:00",
+        "recurringSchedule": false,
+        "rescheduleWindow": 1440,
+        "saturdayEndTime": "00:00:00",
+        "saturdayStartTime": "00:00:00",
+        "slotDuration": 90,
+        "sundayEndTime": "00:00:00",
+        "sundayStartTime": "00:00:00",
+        "thursdayEndTime": "18:00:00",
+        "thursdayStartTime": "08:00:00",
+        "timezone": "America/Chicago",
+        "tuesdayEndTime": "18:00:00",
+        "tuesdayStartTime": "08:00:00",
+        "wednesdayEndTime": "18:00:00",
+        "wednesdayStartTime": "08:00:00"
+    },
+    "yelpBusinessTransactions": null
+}
