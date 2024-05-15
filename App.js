@@ -68,7 +68,7 @@ function AppNavigator() {
     <Stack.Navigator>
       <Stack.Screen name="ApptHistoryScreen" component={ApptHistoryScreen} />
       <Stack.Screen name="FavoritesScreen" component={FavoritesScreen} />
-      <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen}  options={{ headerShown: false }}/>
       <Stack.Screen name="NewJobScreen" component={NewJobScreen} />
       <Stack.Screen
         name="ChatScreen"

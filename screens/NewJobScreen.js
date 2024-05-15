@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     height: WindowHeight,
     // padding: 20,
     backgroundColor: "#f4f4f4",
-    marginTop: Platform.OS === "android" ? 40 : 16,
+    // marginTop: Platform.OS === "android" ? 40 : 16,
     width: WindowWidth,
     flex: 1,
     backgroundColor: "#fff",

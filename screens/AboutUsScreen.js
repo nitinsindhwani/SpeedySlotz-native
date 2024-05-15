@@ -1,10 +1,14 @@
 // AboutUsScreen.js
 import React from "react";
 import { ScrollView, Text, StyleSheet, SafeAreaView } from "react-native";
+import Header from "./GlobalComponents/Header";
+import { theme3 } from "../assets/branding/themes";
 
 const AboutUsScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
+        <Header title={"About SpeedySlotz"}/>
+
       <ScrollView style={styles.container}>
         <Text style={styles.heading}>About Us</Text>
 
@@ -69,7 +73,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#333",
+    color: theme3.fontColor,
     marginBottom: 24,
   },
   subHeading: {
@@ -77,13 +81,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 20,
     marginBottom: 10,
-    color: "#444",
+    color: theme3.fontColor,
   },
   text: {
     fontSize: 16,
     marginBottom: 16,
     lineHeight: 24,
-    color: "#666",
+    color: theme3.fontColor,
   },
 });
 

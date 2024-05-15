@@ -55,7 +55,7 @@ const AboutSpeedySlotzScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    // backgroundColor: "#f5f5f5",
   },
   container: {
     paddingHorizontal: 20,
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
     fontWeight: "600",
-    color: "#333",
+    color:  theme3.fontColor,
     marginBottom: 20,
   },
   text: {

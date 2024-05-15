@@ -7,6 +7,8 @@ import {
   StyleSheet,
   SafeAreaView,
 } from "react-native";
+import Header from "./GlobalComponents/Header";
+import { theme3 } from "../assets/branding/themes";
 
 const questionsAnswers = [
   {
@@ -35,8 +37,10 @@ const questionsAnswers = [
 const HelpCenterScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Header
+      title={"Help Center"}/>
       <ScrollView style={styles.container}>
-        <Text style={styles.heading}>Help Center</Text>
+        {/* <Text style={styles.heading}>Help Center</Text> */}
         {questionsAnswers.map((qa, index) => (
           <TouchableOpacity
             key={index}
@@ -54,7 +58,7 @@ const HelpCenterScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    // backgroundColor: "#f5f5f5",
   },
   container: {
     paddingHorizontal: 20,
@@ -67,15 +71,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   questionContainer: {
-    paddingVertical: 15,
-    borderBottomWidth: 1,
+    padding: 15,
+    borderRadius:10,
+
+    // borderBottomWidth: 1,
+    backgroundColor:theme3.light,
     borderBottomColor: "#e0e0e0",
-    marginBottom: 5,
+    marginBottom: 10,
   },
   questionText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "500",
-    color: "#444",
+    color: theme3.fontColor,
   },
 });
 

@@ -11,6 +11,7 @@ import {
 import Header from "./GlobalComponents/Header";
 import { FontAwesome5 } from "@expo/vector-icons";
 import Styles from "../assets/branding/GlobalStyles";
+import { theme3 } from "../assets/branding/themes";
 
 const ReferScreen = () => {
   const referralCode = "ABC123"; // This would be dynamically retrieved in a real app
@@ -100,13 +101,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#084887", // Dark blue color for headings for better contrast
+    color: theme3.fontColor, // Dark blue color for headings for better contrast
     textAlign: "center", // Center align the heading
   },
   text: {
     fontSize: 16,
     lineHeight: 24, // Increased line height for better readability
-    color: "#333", // Dark grey color for text for better contrast
+    color: theme3.fontColor, // Dark grey color for text for better contrast
     textAlign: "center", // Center align the text
   },
   referSection: {
@@ -128,13 +129,13 @@ const styles = StyleSheet.create({
   subHeading: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#084887",
+    color: theme3.fontColor,
     marginVertical: 8,
   },
   referralCode: {
     fontWeight: "bold",
     fontSize: 24,
-    color: "#084887",
+    color: theme3.fontColor,
     marginBottom: 20,
   },
   shareButton: {

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet, SafeAreaView } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -23,7 +23,7 @@ const Header = ({ user }) => {
   };
   const profileUri = user?.profile_picture_url;
   return (
-    <View style={styles.header}>
+    <SafeAreaView style={styles.header}>
       {profileUri ? (
         <Image source={{ uri: profileUri }} style={styles.userImage} />
       ) : (
@@ -56,7 +56,7 @@ const Header = ({ user }) => {
           <MaterialIcons name="more-vert" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -66,6 +66,7 @@ const getStyles = (currentTheme) =>
       width: "100%",
       height: 100,
       flexDirection: "row",
+      marginTop:30,
       alignItems: "center",
       backgroundColor: currentTheme.primaryColor,
       paddingTop: 30,

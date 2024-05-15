@@ -73,7 +73,7 @@ const Section = ({ title, children }) => (
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#f5f5f5", // A light grey background
+    // backgroundColor: "#F5FCFF", // A light grey background
   },
   container: {
     paddingHorizontal: 20,
