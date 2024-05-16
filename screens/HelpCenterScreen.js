@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
 
     // borderBottomWidth: 1,
     backgroundColor:theme3.light,
-    borderBottomColor: "#e0e0e0",
+    borderBottomColor: "#e0ee0e0",
     marginBottom: 10,
   },
   questionText: {
