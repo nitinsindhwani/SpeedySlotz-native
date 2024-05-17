@@ -221,7 +221,7 @@ const ChatScreen = ({ route }) => {
         (chat.chatMessages ? Object.values(chat.chatMessages).length : 0)
       );
     }, 0);
-    console.log(`Total message count across all chats: ${messageCount}`);
+   
   }, [chats]);
 
   const renderMessageItem = ({ item }) => {

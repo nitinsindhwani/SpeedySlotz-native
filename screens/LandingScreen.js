@@ -101,7 +101,6 @@ const LandingScreen = ({ route }) => {
     return uniqueBadges;
   };
 
- 
   const handleLoader = (value) => {
     setLoader(value);
   };
@@ -152,7 +151,6 @@ const LandingScreen = ({ route }) => {
           } else {
             // If the first attempt fails, fallback to fetching a general set of categories
             const categoriesData = await fetchCategories(); // Ensure this method is defined and fetches a general set of categories
-            console.log("Fallback to general categoriesData", categoriesData);
 
             // Update state with the fallback data if it's an array and not empty
             if (
@@ -377,36 +375,24 @@ nestedScrollEnabled={true}
             )}
           </View>
 
-
-{
-  loader === true ? (
-<InLineLoader />
-  ):
-  (
-    
-      fetchedBusinesses.length > 0 ? (
-
-        <FlatList
-        nestedScrollEnabled={true}
-        data={fetchedBusinesses}
-        keyExtractor={(item) => item.yelpBusiness.id.toString()}
-        ListHeaderComponent={() => <></>}
-        ListFooterComponent={() => (
-          <PopularBusinessList
-            fetchedBusinesses={fetchedBusinesses}
-            navigation={navigation}
-          />
-        )}
-      />
-
-      ):(
-        <NoDataFound />
-      )
-  
-    
- 
-  )
-}
+          {loader === true ? (
+            <InLineLoader />
+          ) : fetchedBusinesses.length > 0 ? (
+            <FlatList
+              nestedScrollEnabled={true}
+              data={fetchedBusinesses}
+              keyExtractor={(item) => item.yelpBusiness.id.toString()}
+              ListHeaderComponent={() => <></>}
+              ListFooterComponent={() => (
+                <PopularBusinessList
+                  fetchedBusinesses={fetchedBusinesses}
+                  navigation={navigation}
+                />
+              )}
+            />
+          ) : (
+            <NoDataFound />
+          )}
 
           {/* {fetchedBusinesses.length < 1 ? (
             loader === true ? (

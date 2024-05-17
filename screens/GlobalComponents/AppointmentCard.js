@@ -43,7 +43,7 @@ function AppointmentCard({
 }) {
   const [ExpandCat, setExpandCat] = useState(false);
   const desc = "Description will be written here";
-  console.log("dsda", businesss?.slots);
+
   const [showMore, setShowMore] = useState(false);
 
   function SpecialityList({ item }) {

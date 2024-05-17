@@ -58,7 +58,7 @@ const addToCalendar = async (date, time) => {
       timeZone: "UTC",
     });
 
-    console.log(`Event created with ID: ${eventId}`);
+    
   }
 };
 
@@ -113,7 +113,7 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
   };
 
   const getStatusText = (slot) => {
-    console.log("Slottt", slot);
+
     if (slot.booked) {
       if (slot.confirmed) {
         return "Confirmed";
@@ -135,7 +135,7 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
   }
 
   function formatTime(timeString) {
-    console.log(timeString)
+   
     if (!timeString) {
       console.error("Received invalid timeString:", timeString);
       return "-";

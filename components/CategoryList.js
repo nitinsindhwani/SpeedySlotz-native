@@ -14,88 +14,89 @@ import { theme3 } from "../assets/branding/themes";
 // Adjust the icon names as per your requirements and available icons in Ionicons.
 const getIconName = (subcategoryName) => {
   switch (subcategoryName) {
-    // Valid `Ionicons` icon names
     case "Handyman":
-      return "ios-construct"; // Corrected
+      return "construct";
     case "Appliance":
-      return "ios-flash"; // Conceptual match for electrical appliances
+      return "flash";
     case "WindowCleaning":
-      return "ios-water"; // Appropriate match
+      return "water";
     case "PoolCleaning":
-      return "ios-water"; // Same as window cleaning for lack of a better match
+      return "water";
     case "InteriorDesign":
-      return "ios-color-palette-outline"; // Corrected
+      return "color-palette-outline";
     case "ArtTeaching":
-      return "ios-color-palette-outline"; // Same as interior design
+      return "color-palette-outline";
     case "AutoDetailing":
-      return "car-sport-outline"; // Corrected
+      return "car-sport-outline";
     case "Boarding":
-      return "bed-outline"; // Corrected
+      return "bed-outline";
     case "Boxing":
-      return "ios-fitness-outline"; // Conceptual match
+      return "fitness-outline";
     case "Business Legal Services":
-      return "briefcase-outline"; // Represents business-related legal services
+      return "briefcase-outline";
     case "Criminal Law":
-      return "lock-closed-outline"; // Suggests law enforcement and legal restrictions
+      return "lock-closed-outline";
     case "Employment Law":
-      return "people-outline"; // Employment law often deals with worker rights and relationships
+      return "people-outline";
     case "Estate Planning":
-      return "document-text-outline"; // Estate planning involves documents like wills
+      return "document-text-outline";
     case "Family Law":
-      return "heart-outline"; // Family law deals with matters of the heart and home
+      return "heart-outline";
     case "Immigration":
-      return "airplane-outline"; // Suggests travel and moving between countries
+      return "airplane-outline";
     case "Intellectual Property":
-      return "bulb-outline"; // Represents ideas and invention
+      return "bulb-outline";
     case "Personal Injury":
       return "medkit-outline";
     case "CrossFit":
+      return "medkit-outline";
     case "Personal Training":
+      return "medkit-outline";
     case "Martial Arts":
-      return "ios-fitness-outline"; // Fitness-related activities
+      return "fitness-outline";
     case "Dance":
-      return "ios-musical-notes-outline"; // Corrected
+      return "musical-notes-outline";
     case "DogWalking":
-      return "paw-outline"; // Corrected
+      return "paw-outline";
     case "EventPlanning":
-      return "calendar-outline"; // Corrected
+      return "calendar-outline";
     case "Grooming":
-      return "cut-outline"; // Conceptual match for grooming
+      return "cut-outline";
     case "Group Classes":
-      return "people-outline"; // Corrected
+      return "people-outline";
     case "LifeCoaching":
-      return "heart-half-outline"; // Conceptual match
+      return "heart-half-outline";
     case "Makeup":
-      return "brush-outline"; // Corrected
+      return "brush-outline";
     case "Massage":
-      return "hand-left-outline"; // Conceptual match
+      return "hand-left-outline";
     case "MusicTeaching":
-      return "musical-note-outline"; // Corrected
+      return "musical-note-outline";
     case "Nutrition":
-      return "restaurant-outline"; // Corrected
+      return "restaurant-outline";
     case "Performance":
-      return "mic-outline"; // Corrected for microphone
+      return "mic-outline";
     case "PetSitting":
-      return "home-outline"; // Conceptual match for pet sitting at home
+      return "home-outline";
     case "Photography":
-      return "camera-outline"; // Corrected
-    case "PoolCleaning":
-      return "water-outline"; // Repeated with corrected name
+      return "camera-outline";
     case "RealEstate":
-      return "home-outline"; // Corrected
+      return "home-outline";
     case "Seasonal":
-      return "leaf-outline"; // Corrected
+      return "leaf-outline";
     case "Training":
     case "Tutor":
-      return "school-outline"; // Education-related activities
+      return "school-outline";
     case "Wellness":
-      return "leaf-outline"; // Conceptual match for wellness
-    case "WindowCleaning":
-      return "sunny-outline"; // Corrected
+      return "leaf-outline";
     case "Winter Sports":
-      return "snow-outline"; // Assuming existence for conceptual match
+      return "snow-outline";
     case "Yoga":
-      return "body-outline"; // Conceptual match for physical activity
+      return "body-outline";
+    case "Financial Services":
+      return "cash-outline"; // Assuming existence for financial-related services
+    case "Tax Services":
+      return "document-outline"; // Assuming existence for tax-related services
     default:
       return "help-outline"; // A fallback icon
   }
@@ -157,11 +158,7 @@ const CategoryList = ({
               <Ionicons
                 name={category.iconName}
                 size={35}
-                color={
-                  selectedCategory === category.name
-                    ? theme3.primaryColor
-                    : theme3.fontColor
-                }
+                color={theme3.primaryColor}
               />
             </View>
             <Text
@@ -200,11 +197,11 @@ const getStyles = (currentTheme) =>
       fontSize: 13,
       marginTop: 2, // Reduced gap by decreasing the top margin
       fontWeight: "500",
-      color: "#333",
+      color: "#084887", // Fixed color for text
       textAlign: "center",
     },
     selectedText: {
-      color: theme3.primaryColor,
+      color: "#084887", // Fixed color for selected text
       fontWeight: "700",
     },
   });

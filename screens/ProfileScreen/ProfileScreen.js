@@ -90,7 +90,7 @@ const ProfileScreen = ({ route }) => {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log("Upload successful", responseData);
+      
         // Handle successful upload here, like updating user's profile picture URL
       } else {
         // Handle server errors or invalid responses

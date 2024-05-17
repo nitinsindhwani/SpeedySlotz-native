@@ -185,7 +185,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         [itemId]: true,
       }));
       changeTepFav(true)
-      console.log("function fav")
+      
 
     } catch (error) {
       changeTepFav(false)
@@ -258,7 +258,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     const [showMore, setShowMore] = useState(false);
     const [isFav,setIsFav]=useState(item.favorite)
     function changeTepFav(val){
-      console.log("function child",val)
+     
       setIsFav(val)
     }
 
@@ -539,7 +539,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
               <TouchableOpacity
                 style={styles.dealIconContainer}
                 onPress={() => {
-                  console.log("Deal data at press:", item.yelpBusinessDeal);
+                
                   openDealModal(item.yelpBusinessDeal);
                 }}
               >

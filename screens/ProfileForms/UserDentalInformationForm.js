@@ -41,17 +41,7 @@ const UserDentalInformationForm = ({ profilesData }) => {
   );
 
   const handleSaveDentalInformation = () => {
-    console.log("Dental Information saved:", {
-      lastDentalVisit,
-      dentalAllergies,
-      dentalComplaints,
-      dentalMedications,
-      gumDiseaseHistory,
-      lastDentalXray,
-      orthodonticHistory,
-      otherDentalInfo,
-      toothExtractionHistory,
-    });
+
 
     let profileData = {
       userDentalInformation: {

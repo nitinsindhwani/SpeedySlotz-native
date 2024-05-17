@@ -101,7 +101,7 @@ const handleReschedule = async (
     );
 
     if (response.data) {
-      console.log(response.data);
+   
       setBusinesses((prevBusinesses) =>
         prevBusinesses.map((business) =>
           business.slot.id === slot.id
@@ -161,7 +161,7 @@ const handleCancel = async (
     );
 
     if (response.data) {
-      console.log(response.data);
+  
       setBusinesses((prevBusinesses) =>
         prevBusinesses.map((business) =>
           business.slot.id === slot.id

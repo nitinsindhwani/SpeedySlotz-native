@@ -97,7 +97,7 @@ const ChatMessage = ({ route }) => {
 
       // Append the new message to the array
       const updatedChatMessages = [...messages, newMessage];
-      console.log("Sending to Web:", chatMessage);
+    
       client.publish({
         destination: `/user/${currentChat.business_id}/queue/private`,
         body: JSON.stringify(chatMessage), // Sending the whole chatMessage object

@@ -31,11 +31,10 @@ const ReferScreen = () => {
           console.log("Shared with activity type: ", result.activityType);
         } else {
           // Shared
-          console.log("Shared");
+       
         }
       } else if (result.action === Share.dismissedAction) {
-        // Dismissed
-        console.log("Dismissed");
+  
       }
     } catch (error) {
       // It's generally better to show a user-friendly error and not the raw message

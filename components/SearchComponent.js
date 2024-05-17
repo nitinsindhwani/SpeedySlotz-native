@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import { getLocationAndCityState } from "../api/ApiCall";
-import { Ionicons } from "@expo/vector-icons"; // Assuming you're using Expo for icons
+import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
 // import { set } from "date-fns";
 // import { faL } from "@fortawesome/free-solid-svg-icons";
@@ -84,7 +84,7 @@ const SearchComponent = ({
           style={styles.iconContainer}
           onPress={handleSearchSubmit}
         >
-          <Ionicons name="md-search" size={27} color={theme3.fontColor} />
+          <Ionicons name="search" size={27} color={theme3.fontColor} />
         </TouchableOpacity>
       </View>
       <FlatList

@@ -57,7 +57,7 @@ function MainCardDesign({ business }) {
     setIsDealModalVisible(true);
   };
   const desc = "Description will be written here";
-  console.log("Inside MainCard:", business);
+
 
   function SpecialityList({ item }) {
     return (
@@ -95,7 +95,7 @@ function MainCardDesign({ business }) {
       </View>
     );
   }
-  console.log("ds", business);
+
   function AvailableSlotsList({ item }) {
     return (
       <View style={styles.CatList}>
@@ -106,7 +106,7 @@ function MainCardDesign({ business }) {
 
 
   function changeTepFav(val){
-    console.log("function child",val)
+   
     setIsFav(val)
   }
   function handleFav(itemId){
@@ -383,7 +383,7 @@ function MainCardDesign({ business }) {
           <TouchableOpacity style={styles.dealIconContainer}
           
           onPress={() => {
-            console.log("Deal data at press:", business.yelpBusinessDeal);
+         
             openDealModal(business.yelpBusinessDeal);
           }}
           >

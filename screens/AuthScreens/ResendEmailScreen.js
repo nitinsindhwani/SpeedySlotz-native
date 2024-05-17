@@ -40,7 +40,7 @@ const WindowHeight = Dimensions.get("window").height;
 
 const ResendEmailScreen = ({ route }) => {
   const { user } = route?.params;
-  console.log("User data received:", route.params);
+
 
   const navigation = useNavigation();
   const [message, setMessage] = useState("");

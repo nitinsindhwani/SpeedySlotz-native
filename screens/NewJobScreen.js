@@ -42,8 +42,8 @@ import Header from "../components/Header";
 import Title from "./GlobalComponents/Header";
 import * as ImagePicker from "expo-image-picker";
 const Platform = {
-  OS:"ios"
-}
+  OS: "ios",
+};
 
 // Existing pickMedia function seems fine, just ensure you request permissions.
 
@@ -322,7 +322,6 @@ function NewJobScreen({ route }) {
 
       // Handle response...
       if (response.status === 201) {
-        console.log("Booking successful");
         setShowSuccess(false);
         navigation.navigate("ApptConfirmationScreen", {
           businessDetails: null,

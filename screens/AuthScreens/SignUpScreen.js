@@ -175,7 +175,7 @@ const SignUpScreen = () => {
     // }
 
     const token = await SecureStore.getItemAsync("push_notification");
-    console.log("In Signup Successful:");
+  
     const userData = {
       username,
       password: password,
@@ -191,7 +191,7 @@ const SignUpScreen = () => {
     try {
       // Call the signup API to register the user
       const response = await signupUser(userData);
-      console.log("Signup Successful:", response);
+     
 
       // Clear form fields after successful signup
 

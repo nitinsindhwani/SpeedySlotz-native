@@ -76,15 +76,16 @@ const LoginScreen = () => {
       try {
         setLoading(true);
         const response = await loginUser(username, password);
-        // if (response && response.push_notification === null) {
-        //   // The user is logged in but doesn't have a push token saved.
-        //   const pushToken = await PushNotification();
-        //   if (pushToken) {
-        //     // Call an API endpoint to update the user's push token in your backend.
-        //     console.log("Push Token:", pushToken);
-        //   }
-        console.log(response)
+        // // if (response && response.push_notification === null) {
+        // //   // The user is logged in but doesn't have a push token saved.
+        // //   const pushToken = await PushNotification();
+        // //   if (pushToken) {
+        // //     // Call an API endpoint to update the user's push token in your backend.
+        // //     console.log("Push Token:", pushToken);
+        // //   }
+        // console.log(response)
         // }
+        console.log(response);
         if (response.email_verified === true) {
           navigation.navigate("BottomNavigation", { user: response });
         } else {

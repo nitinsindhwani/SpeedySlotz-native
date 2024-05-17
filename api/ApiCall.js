@@ -414,7 +414,7 @@ export const fetchBookings = async (bookingType) => {
 };
 
 export const saveProfiles = async (profileData) => {
-  console.log("profileData", profileData);
+
   const saveProfileInfoUrl = baseApiUrl + "/api/user-profile/save";
   try {
     const secureToken = await getStoredToken();

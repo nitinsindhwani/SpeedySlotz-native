@@ -22,11 +22,7 @@ const UserPreferredPharmacyForm = ({ profilesData }) => {
   );
 
   const handleSavePreferredPharmacy = () => {
-    console.log("Preferred Pharmacy Information saved:", {
-      pharmacyName,
-      pharmacyAddress,
-      pharmacyPhone,
-    });
+   
     let profileData = {
       userPreferredPharmacy: {
         pharmacyName,

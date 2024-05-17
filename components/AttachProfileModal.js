@@ -30,7 +30,7 @@ const AttachProfileModal = ({ isVisible, onClose, onAttach, user }) => {
     const loadProfiles = async () => {
       try {
         const profilesData = await fetchProfiles();
-        console.log("profilesData", profilesData);
+
         setUserProfiles(profilesData);
       } catch (error) {
         console.error("Failed to fetch profiles:", error);

@@ -25,7 +25,7 @@ const ResetPasswordScreen = () => {
 
     try {
       // Here you would typically call your API to reset the password
-      console.log("Password reset successfully");
+  
       navigation.navigate("Login"); // Navigate to login upon success
       setMessage("Your password has been successfully reset.");
     } catch (error) {

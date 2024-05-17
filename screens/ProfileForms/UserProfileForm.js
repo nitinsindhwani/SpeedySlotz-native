@@ -46,7 +46,7 @@ const UserProfileForm = ({ profilesData }) => {
         const response = await saveProfiles({
           userProfile: { ...profilesData, ...updatedFields },
         });
-        console.log("Update successful:", response);
+   
         // Additional code to handle the response
       } catch (error) {
         console.error("Update failed:", error);

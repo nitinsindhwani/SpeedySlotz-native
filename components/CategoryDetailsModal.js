@@ -11,7 +11,7 @@ import {
 const CategoryDetailsModal = ({ visible, onClose, category }) => {
   // Function to render category details
   const renderCategoryDetails = () => {
-    console.log("Category:", category);
+
     if (!category) return null;
 
     return Object.keys(category).map((key) => {
