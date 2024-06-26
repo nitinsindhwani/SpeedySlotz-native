@@ -2,6 +2,7 @@ import {
   StyleSheet,
 
   Dimensions,
+  Platform,
   
 } from 'react-native';
 
@@ -21,7 +22,7 @@ const Styles = StyleSheet.create({
 width:WindowWidth,
 height:WindowHeight/10,
 backgroundColor:theme3.primaryColor,
-marginTop:30,
+marginTop:Platform.OS === "ios"?0: 30,
 flexDirection:'row',
 justifyContent:"space-between",
 alignItems:'center'

@@ -1,11 +1,11 @@
 // TermsAndConditionsScreen.js
 import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView } from "react-native";
+import { ScrollView, Text, StyleSheet, SafeAreaView,View } from "react-native";
 import Header from "./GlobalComponents/Header";
 
 const TermsAndConditionsScreen = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <Header title={"Terms and Conditions"} />
       <ScrollView style={styles.container}>
         <Text style={styles.heading}>Terms and Conditions</Text>
@@ -64,7 +64,7 @@ const TermsAndConditionsScreen = () => {
           your concerns and provide clarity where needed.
         </Section>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

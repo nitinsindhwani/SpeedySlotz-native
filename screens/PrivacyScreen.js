@@ -1,11 +1,11 @@
 import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView } from "react-native";
+import { ScrollView, Text, StyleSheet, SafeAreaView ,View} from "react-native";
 import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
 
 const PrivacyScreen = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <Header title={"Privacy Policy"} />
       <ScrollView style={styles.container}>
         <Text style={styles.heading}>Privacy Policy</Text>
@@ -59,7 +59,7 @@ const PrivacyScreen = () => {
           your concerns and provide clarity where needed.
         </Section>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

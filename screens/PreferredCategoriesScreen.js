@@ -5,7 +5,7 @@ import {
   Switch,
   StyleSheet,
   ScrollView,
-  SafeAreaView,
+  SafeAreaView
 } from "react-native";
 import { theme3 } from "../assets/branding/themes";
 import Header from "./GlobalComponents/Header";
@@ -224,7 +224,7 @@ const PreferredCategoriesScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <View style={styles.container}>
         <Header title="Categories" />
         <ScrollView>
@@ -305,7 +305,7 @@ const PreferredCategoriesScreen = () => {
           ))}
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

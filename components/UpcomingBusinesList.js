@@ -101,7 +101,6 @@ const handleReschedule = async (
     );
 
     if (response.data) {
-   
       setBusinesses((prevBusinesses) =>
         prevBusinesses.map((business) =>
           business.slot.id === slot.id
@@ -161,7 +160,6 @@ const handleCancel = async (
     );
 
     if (response.data) {
-  
       setBusinesses((prevBusinesses) =>
         prevBusinesses.map((business) =>
           business.slot.id === slot.id
@@ -313,6 +311,7 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
           fetchedBusinesses &&
           fetchedBusinesses.map((item, index) => (
             <AppointmentCard
+              key={item.id}
               businesss={item}
               getStatusText={getStatusText}
               formatDate={formatDate}

@@ -1,5 +1,13 @@
 import React, { useContext } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  SafeAreaView,
+  Platform,
+} from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -66,7 +74,8 @@ const getStyles = (currentTheme) =>
       width: "100%",
       height: 100,
       flexDirection: "row",
-      marginTop:30,
+      marginTop: Platform.OS === "ios" ? 0 : 30,
+
       alignItems: "center",
       backgroundColor: currentTheme.primaryColor,
       paddingTop: 30,
@@ -86,8 +95,8 @@ const getStyles = (currentTheme) =>
       paddingHorizontal: 20,
     },
     userImage: {
-      height: 50,
-      width: 50,
+      height: 40,
+      width: 40,
       borderRadius: 25,
     },
     iconContainer: {

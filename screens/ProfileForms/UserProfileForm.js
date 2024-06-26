@@ -46,7 +46,7 @@ const UserProfileForm = ({ profilesData }) => {
         const response = await saveProfiles({
           userProfile: { ...profilesData, ...updatedFields },
         });
-   
+
         // Additional code to handle the response
       } catch (error) {
         console.error("Update failed:", error);
@@ -97,7 +97,7 @@ const UserProfileForm = ({ profilesData }) => {
       </View>
 
       <View style={styles.iconInputContainer}>
-        <Icon name="md-transgender" size={20} color={theme3.primaryColor} />
+        <Icon name="transgender" size={20} color={theme3.primaryColor} />
         <TextInput
           value={profile.gender}
           onChangeText={(value) => handleInputChange("gender", value)}
@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "white",
-    borderRadius:10,
-    elevation:4,
+    borderRadius: 10,
+    elevation: 4,
   },
   iconInputContainer: {
     flexDirection: "row",

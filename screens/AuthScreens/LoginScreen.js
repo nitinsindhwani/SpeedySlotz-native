@@ -86,10 +86,17 @@ const LoginScreen = () => {
         // console.log(response)
         // }
         console.log(response);
-        if (response.email_verified === true) {
-          navigation.navigate("BottomNavigation", { user: response });
+        if (response.success) {
+          if (response.payload.email_verified) {
+            navigation.navigate("BottomNavigation", { user: response.payload });
+          } else {
+            navigation.navigate("ResendEmailScreen", {
+              user: response.payload,
+            });
+          }
         } else {
-          navigation.navigate("ResendEmailScreen", { user: response });
+          setErrorModal(true);
+          setErrorMessage("An error occurred. Please try again.");
         }
         ////// UN COMMENT THE FUNCTION ABOVE AFTER MAKING THOSE CHANGES IN BACKEND/////
         // if (response.status === "200") {

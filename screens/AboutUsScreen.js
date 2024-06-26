@@ -1,13 +1,13 @@
 // AboutUsScreen.js
 import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView } from "react-native";
+import { ScrollView, Text, StyleSheet, SafeAreaView, View } from "react-native";
 import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
 
 const AboutUsScreen = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
-        <Header title={"About SpeedySlotz"}/>
+    <View style={styles.safeArea}>
+      <Header title={"About SpeedySlotz"} />
 
       <ScrollView style={styles.container}>
         <Text style={styles.heading}>About Us</Text>
@@ -50,7 +50,7 @@ const AboutUsScreen = () => {
           info@speedyslotz.com. We'd love to hear from you!
         </Section>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

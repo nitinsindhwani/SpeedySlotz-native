@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  View
 } from "react-native";
 import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
@@ -36,7 +37,7 @@ const questionsAnswers = [
 
 const HelpCenterScreen = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <Header
       title={"Help Center"}/>
       <ScrollView style={styles.container}>
@@ -51,7 +52,7 @@ const HelpCenterScreen = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

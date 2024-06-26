@@ -44,7 +44,7 @@ const ReferScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <Header title={"Refer & Earn"} />
       <ScrollView
         style={styles.container}
@@ -77,7 +77,7 @@ const ReferScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

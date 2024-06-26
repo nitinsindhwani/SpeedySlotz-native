@@ -321,12 +321,17 @@ function NewJobScreen({ route }) {
       );
 
       // Handle response...
+
       if (response.status === 201) {
+        console.log("Booking successful");
         setShowSuccess(false);
+        const selectedServiceTypes =
+          response.data.payload.selectedServiceTypes || [];
         navigation.navigate("ApptConfirmationScreen", {
+          userData: userData,
           businessDetails: null,
           slot: slotData, // Use slotToBook instead of selectedSlot
-          service_type: response.data.selectedServiceTypes.join(", "),
+          service_type: selectedServiceTypes.join(", "),
         });
       }
     } catch (error) {

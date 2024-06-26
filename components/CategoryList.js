@@ -18,15 +18,15 @@ const getIconName = (subcategoryName) => {
       return "construct";
     case "Appliance":
       return "flash";
-    case "WindowCleaning":
+    case "Window Cleaning":
       return "water";
-    case "PoolCleaning":
+    case "Pool Cleaning":
       return "water";
-    case "InteriorDesign":
+    case "Interior Design":
       return "color-palette-outline";
-    case "ArtTeaching":
+    case "Art Teaching":
       return "color-palette-outline";
-    case "AutoDetailing":
+    case "Auto Detailing":
       return "car-sport-outline";
     case "Boarding":
       return "bed-outline";
@@ -56,31 +56,31 @@ const getIconName = (subcategoryName) => {
       return "fitness-outline";
     case "Dance":
       return "musical-notes-outline";
-    case "DogWalking":
+    case "Dog Walking":
       return "paw-outline";
-    case "EventPlanning":
+    case "Event Planning":
       return "calendar-outline";
     case "Grooming":
       return "cut-outline";
     case "Group Classes":
       return "people-outline";
-    case "LifeCoaching":
+    case "Life Coaching":
       return "heart-half-outline";
     case "Makeup":
       return "brush-outline";
     case "Massage":
       return "hand-left-outline";
-    case "MusicTeaching":
+    case "Music Teaching":
       return "musical-note-outline";
     case "Nutrition":
       return "restaurant-outline";
     case "Performance":
       return "mic-outline";
-    case "PetSitting":
+    case "Pet Sitting":
       return "home-outline";
     case "Photography":
       return "camera-outline";
-    case "RealEstate":
+    case "Real Estate":
       return "home-outline";
     case "Seasonal":
       return "leaf-outline";

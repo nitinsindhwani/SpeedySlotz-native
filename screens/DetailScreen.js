@@ -31,6 +31,7 @@ import {
   Ionicons,
 } from "@expo/vector-icons";
 import { baseApiUrl } from "../api/Config";
+import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import getImageSource from "./CallFuncGlobal/getImageSource";
 import { theme3 } from "../assets/branding/themes";
@@ -359,15 +360,18 @@ function DetailScreen({ route }) {
           },
         }
       );
-
+      console.log("Booking confirmation response", response);
       // Handle response...
       if (response.status === 201) {
         console.log("Booking successful");
         setShowSuccess(false);
+        const selectedServiceTypes =
+          response.data.payload.selectedServiceTypes || [];
         navigation.navigate("ApptConfirmationScreen", {
+          userData: userData,
           businessDetails: business,
           slot: slotData, // Use slotToBook instead of selectedSlot
-          service_type: response.data.selectedServiceTypes.join(", "),
+          service_type: selectedServiceTypes.join(", "),
         });
       }
     } catch (error) {
@@ -375,6 +379,7 @@ function DetailScreen({ route }) {
       // Handle submission error...
     }
   };
+
   useEffect(() => {
     navigation.setOptions({
       headerTitle: "Business Details",
@@ -470,9 +475,7 @@ function DetailScreen({ route }) {
   }
 
   function SpecialityListII({ item, onPress, isSelected }) {
-    const backgroundColor = isSelected
-      ? theme3.primaryColor
-      : theme3.inActive;
+    const backgroundColor = isSelected ? theme3.primaryColor : theme3.inActive;
 
     return (
       <TouchableOpacity
@@ -486,7 +489,7 @@ function DetailScreen({ route }) {
   const imageUrls = prepareImageUrls();
   return (
     <View style={styles.container}>
-      <Header title={"Business Details"}/>
+      <Header title={"Business Details"} />
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{ alignItems: "center" }}
@@ -629,116 +632,114 @@ function DetailScreen({ route }) {
             )}
           </View> */}
 
-
-
-
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View style={styles.extraInfoContainer}>
-            <View style={styles.dealIconContainer}>
-              <MaterialIcons
-                name="location-city"
-                size={18}
-                color={theme3.primaryColor}
-              />
-              <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                {business.yelpBusinessLocation.city}
-              </Text>
-            </View>
-
-            {business.yelpBusiness.is_registered && (
-              <TouchableOpacity
-                onPress={() =>
-                  Linking.openURL(`tel:${business.yelpBusiness.phone}`)
-                }
-              >
-                <View style={styles.dealIconContainer}>
-                  <FontAwesome
-                    name="phone"
-                    size={20}
-                    color={theme3.secondaryColor}
-                  />
-                  <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                    {business.yelpBusiness.phone}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          </View>
-          <View style={styles.extraInfoContainer}>
-            <View style={styles.dealIconContainer}>
-              <MapIcon
-                name="map-marker-alt"
-                size={16}
-                color={theme3.primaryColor}
-              />
-              <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                {metersToMiles(business.yelpBusiness.distance)} miles
-              </Text>
-            </View>
-
-            {business.yelpBusiness.is_registered && (
-              <View style={Styles.OneRow}>
-                {/* <Octicons name="dot-fill" size={20} color={theme3.send} /> */}
-                <View
-            style={{marginLeft:-6}}
-            >
-
-            <ChatAnim/>
-            </View>
-                <TouchableOpacity
-                  // onPress={() => handleChatButtonPress(business.yelpBusiness)}
-                >
-                  <Text style={[styles.DescText, { marginLeft: 0 }]}>
-                    Chat Now
-                  </Text>
-                </TouchableOpacity>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <View style={styles.extraInfoContainer}>
+              <View style={styles.dealIconContainer}>
+                <MaterialIcons
+                  name="location-city"
+                  size={18}
+                  color={theme3.primaryColor}
+                />
+                <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
+                  {business.yelpBusinessLocation.city}
+                </Text>
               </View>
-            )}
-          </View>
-          <View style={styles.extraInfoContainer}>
-            <TouchableOpacity
-              style={styles.mapIconContainer}
-              onPress={() => {
-                const address1 = business.yelpBusinessLocation?.address1
-                  ? business.yelpBusinessLocation.address1 + ","
-                  : "";
-                const city = business.yelpBusinessLocation?.city || "";
-                const mapQuery = encodeURIComponent(`${address1}${city}`);
-                if (mapQuery) {
-                  Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
-                } else {
-                  // Optionally, handle the case where there is no address to navigate to
-                  // e.g., alert the user or log an error
-                  console.warn("No address available for directions");
-                }
-              }}
-            >
-              <MaterialIcons
-                name="directions"
-                size={18}
-                color={theme3.primaryColor}
-              />
-              <Text style={[styles.mostPopularCity, { marginTop: 0 }]}>
-                Directions
-              </Text>
-            </TouchableOpacity>
-            {business.yelpBusinessDeal && (
+
+              {business.yelpBusiness.is_registered && (
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL(`tel:${business.yelpBusiness.phone}`)
+                  }
+                >
+                  <View style={styles.dealIconContainer}>
+                    <FontAwesome
+                      name="phone"
+                      size={20}
+                      color={theme3.secondaryColor}
+                    />
+                    <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
+                      {business.yelpBusiness.phone}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            </View>
+            <View style={styles.extraInfoContainer}>
+              <View style={styles.dealIconContainer}>
+                <MapIcon
+                  name="map-marker-alt"
+                  size={16}
+                  color={theme3.primaryColor}
+                />
+                <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
+                  {metersToMiles(business.yelpBusiness.distance)} miles
+                </Text>
+              </View>
+
+              {business.yelpBusiness.is_registered && (
+                <View style={Styles.OneRow}>
+                  {/* <Octicons name="dot-fill" size={20} color={theme3.send} /> */}
+                  <View style={{ marginLeft: -6 }}>
+                    <ChatAnim />
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => handleChatButtonPress(business.yelpBusiness)}
+                  >
+                    <Text style={[styles.DescText, { marginLeft: 0 }]}>
+                      Chat Now
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+            <View style={styles.extraInfoContainer}>
               <TouchableOpacity
-                style={styles.dealIconContainer}
+                style={styles.mapIconContainer}
                 onPress={() => {
-                  console.log("Deal data at press:", business.yelpBusinessDeal);
-                  // openDealModal(business.yelpBusinessDeal);
+                  const address1 = business.yelpBusinessLocation?.address1
+                    ? business.yelpBusinessLocation.address1 + ","
+                    : "";
+                  const city = business.yelpBusinessLocation?.city || "";
+                  const mapQuery = encodeURIComponent(`${address1}${city}`);
+                  if (mapQuery) {
+                    Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
+                  } else {
+                    // Optionally, handle the case where there is no address to navigate to
+                    // e.g., alert the user or log an error
+                    console.warn("No address available for directions");
+                  }
                 }}
               >
-                <DealIcons />
-                <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                  Deals
+                <MaterialIcons
+                  name="directions"
+                  size={18}
+                  color={theme3.primaryColor}
+                />
+                <Text style={[styles.mostPopularCity, { marginTop: 0 }]}>
+                  Directions
                 </Text>
               </TouchableOpacity>
-            )}
+              {business.yelpBusinessDeal && (
+                <TouchableOpacity
+                  style={styles.dealIconContainer}
+                  onPress={() => {
+                    console.log(
+                      "Deal data at press:",
+                      business.yelpBusinessDeal
+                    );
+                    // openDealModal(business.yelpBusinessDeal);
+                  }}
+                >
+                  <DealIcons />
+                  <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
+                    Deals
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-        </View>
-
         </View>
 
         <CalenderCustom
@@ -765,7 +766,7 @@ function DetailScreen({ route }) {
               horizontal={true}
               showsHorizontalScrollIndicator={false}
               keyExtractor={(item, index) => `speciality-${index}`}
-              style={{marginLeft:-5}}
+              style={{ marginLeft: -5 }}
               renderItem={({ item }) => (
                 <SpecialityListII
                   item={item}
@@ -779,16 +780,16 @@ function DetailScreen({ route }) {
 
         <View style={styles.inputContainer}>
           <View style={styles.input}>
-          <Text style={styles.label}>Job Description:</Text>
-          <TextInput
-            style={{flex:1,textAlignVertical:'top'}}
-            onChangeText={setJobDescription}
-            value={jobDescription}
-            placeholder="Enter job description"
-            multiline
-          />
+            <Text style={styles.label}>Job Description:</Text>
+            <TextInput
+              style={{ flex: 1, textAlignVertical: "top" }}
+              onChangeText={setJobDescription}
+              value={jobDescription}
+              numberOfLines={4}
+              placeholder="Enter job description"
+              multiline
+            />
           </View>
-         
         </View>
         <View style={styles.mostPopularItem}>
           <Text style={styles.label}>Priority Status:</Text>
@@ -806,30 +807,53 @@ function DetailScreen({ route }) {
             )}
           </View>
           {/* <Text style={[styles.label,{marginTop:10}]}>Attached Profiles:</Text> */}
-
-          <FlatList
-          data={attachedProfiles}
-          horizontal
-          renderItem={renderAttachedProfile}
-          keyExtractor={(item, index) => index.toString()}
-          style={styles.attachedProfilesList}
-          showsHorizontalScrollIndicator={false}
-        />
-        <TouchableOpacity
-          style={styles.attachProfileButton}
-          onPress={() => setAttachProfileModalVisible(true)}
-        >
-          <Text style={styles.attachProfileButtonText}>Attach Profile</Text>
-        </TouchableOpacity>
         </View>
-     
-        {
-          selectedImages.length >0 &&
-     <View style={styles.mostPopularItem}>
-     <Text style={styles.label}>Images:</Text>
+        <View style={styles.mostPopularItem}>
+          <Text style={styles.label}>Attach Profiles:</Text>
 
- <View style={styles.mediaListContainer}>
-            {selectedImages.map((uri, index) => (
+          {/* <Text style={[styles.label,{marginTop:10}]}>Attached Profiles:</Text> */}
+
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity
+              // style={styles.attachProfileButton}
+              onPress={() => setAttachProfileModalVisible(true)}
+            >
+              <MaterialIcons
+                name="add-circle"
+                size={35}
+                color={theme3.primaryColor}
+              />
+
+              {/* <Text style={styles.attachProfileButtonText}>Attach Profile</Text> */}
+            </TouchableOpacity>
+            <FlatList
+              data={attachedProfiles}
+              horizontal
+              renderItem={renderAttachedProfile}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.attachedProfilesList}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+        </View>
+
+        {/* {
+          selectedImages.length >0 && */}
+        <View style={styles.mostPopularItem}>
+          <Text style={styles.label}>Add Images:</Text>
+
+          <View style={styles.mediaListContainer}>
+            <TouchableOpacity
+              onPress={() => pickMedia("image")}
+              // style={styles.mediaButton}
+            >
+              <MaterialIcons
+                name="add-photo-alternate"
+                size={40}
+                color="#333"
+              />
+            </TouchableOpacity>
+            {selectedImages?.map((uri, index) => (
               <View key={uri} style={styles.mediaItem}>
                 <Image source={{ uri }} style={styles.mediaThumbnail} />
                 <TouchableOpacity
@@ -841,16 +865,26 @@ function DetailScreen({ route }) {
               </View>
             ))}
           </View>
-     </View>
-        }
+        </View>
+        {/* } */}
 
-{
-  selectedVideos.length > 0 &&
-     <View style={styles.mostPopularItem}>
-     <Text style={styles.label}>Videos:</Text>
+        {/* {
+  selectedVideos.length > 0 && */}
+        <View style={styles.mostPopularItem}>
+          <Text style={styles.label}>Add Videos:</Text>
 
-     <View style={styles.mediaListContainer}>
-            {selectedVideos.map((uri, index) => (
+          <View style={styles.mediaListContainer}>
+            <TouchableOpacity
+              onPress={() => pickMedia("video")}
+              // style={styles.mediaButton}
+            >
+              <MaterialIcons
+                name="add-photo-alternate"
+                size={40}
+                color="#333"
+              />
+            </TouchableOpacity>
+            {selectedVideos?.map((uri, index) => (
               <View key={uri} style={styles.mediaItem}>
                 {/* Replace this with your video thumbnail or player */}
                 <FontAwesome name="file-video-o" size={48} color="#333" />
@@ -863,29 +897,6 @@ function DetailScreen({ route }) {
               </View>
             ))}
           </View>
-     </View>
-    }
-
-        <View style={styles.mediaUploadSection}>
-          <TouchableOpacity
-            onPress={() => pickMedia("image")}
-            style={styles.mediaButton}
-          >
-            <MaterialIcons name="add-photo-alternate" size={24} color="#333" />
-          </TouchableOpacity>
-
-          {/* Render selected images */}
-          
-
-          <TouchableOpacity
-            onPress={() => pickMedia("video")}
-            style={styles.mediaButton}
-          >
-            <FontAwesome name="video-camera" size={24} color="#333" />
-          </TouchableOpacity>
-
-          {/* Render selected videos */}
-        
         </View>
 
         {selectedSlotId &&
@@ -897,25 +908,29 @@ function DetailScreen({ route }) {
           //   <Text style={Styles.LoginTxt}>Submit</Text>
           // </TouchableOpacity>
           <SwipeButton
-          Icon={
-            <MaterialIcons name="keyboard-arrow-right" size={50} color="white" />
-          }
-          width={320}
-          height={55}
-          onComplete={() => handleBookNow()}
-          title="Swipe to complete"
-          borderRadius={1000}
-          circleBackgroundColor={theme3.secondaryColor}
-          underlayContainerGradientProps={{
-            colors: [theme3.primaryColor,theme3.secondaryColor],
-            start: [0, 0.5],
-            end: [1.3, 0.5],
-          }}
-          titleStyle={{color:"white"}}
-                containerStyle={{ backgroundColor: 'gray' }}
-          underlayTitle="Release to complete"
-          underlayTitleStyle={{ color: theme3.light }}
-        />
+            Icon={
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={50}
+                color="white"
+              />
+            }
+            width={320}
+            height={55}
+            onComplete={() => handleBookNow()}
+            title="Swipe to complete"
+            borderRadius={1000}
+            circleBackgroundColor={theme3.secondaryColor}
+            underlayContainerGradientProps={{
+              colors: [theme3.primaryColor, theme3.secondaryColor],
+              start: [0, 0.5],
+              end: [1.3, 0.5],
+            }}
+            titleStyle={{ color: "white" }}
+            containerStyle={{ backgroundColor: "gray" }}
+            underlayTitle="Release to complete"
+            underlayTitleStyle={{ color: theme3.light }}
+          />
         ) : (
           <TouchableOpacity
             style={[Styles.LoginBtn, { backgroundColor: theme3.inActive }]}
@@ -931,7 +946,6 @@ function DetailScreen({ route }) {
             </Text>
           </TouchableOpacity>
         )}
-    
 
         <View style={{ height: 200, width: 100 }}></View>
       </ScrollView>
@@ -957,7 +971,6 @@ function DetailScreen({ route }) {
         onClose={() => setCategoryModalVisible(false)}
         category={modalCategory}
       />
-      
     </View>
   );
 }
@@ -965,7 +978,7 @@ function DetailScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     // height: WindowHeight,
-    flex:1,
+    flex: 1,
     alignItems: "center",
     // padding: 20,
     backgroundColor: "#f4f4f4",
@@ -1022,10 +1035,10 @@ const styles = StyleSheet.create({
   },
   extraInfoContainer: {
     // flexDirection: "row",
-      // marginRight:20,
-      alignItems: "flex-start",
-      justifyContent: "space-between",
-      marginTop: 10,
+    // marginRight:20,
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginTop: 10,
   },
   dealIconContainer: {
     flexDirection: "row",
@@ -1053,7 +1066,7 @@ const styles = StyleSheet.create({
     width: "100%", // Make it full width to match category section
     paddingHorizontal: 5, // Match the horizontal padding with the category section
     marginTop: 5,
-     // Adjust top margin as necessary
+    // Adjust top margin as necessary
   },
   label: {
     fontSize: 16, // Match the font size with the category section
@@ -1071,17 +1084,17 @@ const styles = StyleSheet.create({
     // backgroundColor: "#fff", // Background color
     // textAlignVertical: "top", // Start text at the top-left corner
     // height: 100,
-    
+
     marginBottom: 16,
     width: WindowWidth / 1.03,
-    height:WindowHeight/8,
+    height: WindowHeight / 5,
     padding: 10,
     shadowColor: "rgba(0,0,0,0.1)",
     elevation: 2,
     shadowOpacity: 4,
     borderRadius: 10,
     backgroundColor: theme3.GlobalBg,
-    
+
     // Set a fixed height for text area
     // Add the rest of the input styles here
   },
@@ -1152,7 +1165,7 @@ const styles = StyleSheet.create({
   attachedProfileText: {
     fontSize: 14,
     marginRight: 6,
-    color:theme3.light
+    color: theme3.light,
   },
   removeProfileButton: {
     backgroundColor: "red",
@@ -1165,9 +1178,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme3.secondaryColor, // Example: A green color for the attach button
     paddingVertical: 10,
     paddingHorizontal: 10,
-    width:150,
-    alignItems:"center",
-    alignSelf:'center',
+    width: 150,
+    alignItems: "center",
+    alignSelf: "center",
     borderRadius: 5,
     marginVertical: 10,
   },
@@ -1220,8 +1233,8 @@ const styles = StyleSheet.create({
   },
 
   mediaThumbnail: {
-    width: 100, // Adjust the size as needed
-    height: 100,
+    width: 65, // Adjust the size as needed
+    height: 65,
     // Add any additional styling for the media thumbnails
   },
 

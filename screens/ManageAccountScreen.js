@@ -8,7 +8,7 @@ import {
   ScrollView,
   Alert,
   Button,
-  SafeAreaView,
+  SafeAreaView
 } from "react-native";
 import Collapsible from "react-native-collapsible";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -533,7 +533,7 @@ const ManageAccountScreen = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <ScrollView style={styles.scrollContainer}>
         <Header title={"Manage Profiles"} />
         <View style={styles.container}>
@@ -1728,7 +1728,7 @@ const ManageAccountScreen = ({ route }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

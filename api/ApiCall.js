@@ -101,7 +101,7 @@ export const fetchBusinessesByCategory = async (
 
   const fullURL = `${baseURL}?${queryString}`;
   // Fetch token from SecureStore
-  console.log("SearchURL:", fullURL);
+
   const userToken = await SecureStore.getItemAsync("userToken");
   if (!userToken) {
     throw new Error("Token not found in SecureStore!");
@@ -115,8 +115,11 @@ export const fetchBusinessesByCategory = async (
     params,
     headers,
   });
-
-  return response.data.businesses;
+  if (response.data && response.data.businesses) {
+    return response.data.businesses;
+  } else {
+    throw new Error("Businesses not found in response data");
+  }
 };
 
 export const fetchBusinessDetails = async (businessId) => {
@@ -194,11 +197,8 @@ export const loginUser = async (username, password) => {
           },
         }
       );
-
-      const userData =
-        typeof apiResponse.data === "object"
-          ? JSON.stringify(apiResponse.data)
-          : apiResponse.data;
+      console.log("response login", apiResponse.data.payload);
+      const userData = JSON.stringify(apiResponse.data.payload);
       await SecureStore.setItemAsync("userData", userData);
 
       return apiResponse.data;
@@ -414,7 +414,6 @@ export const fetchBookings = async (bookingType) => {
 };
 
 export const saveProfiles = async (profileData) => {
-
   const saveProfileInfoUrl = baseApiUrl + "/api/user-profile/save";
   try {
     const secureToken = await getStoredToken();
@@ -458,15 +457,25 @@ export const fetchProfiles = async () => {
       }
     );
 
+    // Check for HTTP errors
     if (!response.ok) {
       // Extract error message from response body if possible
       const errorText = await response.text();
-      console.error("API Response Error:", errorText);
+      console.error("HTTP Error:", errorText);
       throw new Error("Failed to fetch user profiles");
     }
 
-    // Assuming the API directly returns the profile data in the desired structure
-    const profileData = await response.json();
+    // Parse the JSON body
+    const responseData = await response.json();
+
+    // Check the `success` property in the response JSON
+    if (!responseData.success) {
+      console.error("API Response Error:", responseData);
+      throw new Error("Failed to fetch user profiles");
+    }
+
+    // Assuming the API returns the profile data in `responseData.payload`
+    const profileData = responseData.payload;
 
     return profileData; // Return the fetched profile data
   } catch (error) {
@@ -500,7 +509,7 @@ export const fetchCategories = async () => {
       },
     }
   );
-
+  console.log("categories response", response);
   if (!response.ok) {
     console.error("API Response:", await response.text());
     throw new Error("Failed to fetch favorites");
@@ -542,7 +551,7 @@ export const fetchUserCategories = async () => {
         },
       }
     );
-
+    console.log("Getting Categores", response);
     if (!response.ok) {
       // Extract error message from response body if possible
       const errorText = await response.text();

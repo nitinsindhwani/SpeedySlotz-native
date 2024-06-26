@@ -1,12 +1,12 @@
 // AboutSpeedySlotzScreen.js
 import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView } from "react-native";
+import { ScrollView, Text, StyleSheet, SafeAreaView,View } from "react-native";
 import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
 
 const AboutSpeedySlotzScreen = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
         <Header title={"About SpeedySlotz"}/>
       <ScrollView style={styles.container}>
         {/* <Text style={styles.heading}>About SpeedySlotz</Text> */}
@@ -48,7 +48,7 @@ const AboutSpeedySlotzScreen = () => {
           journey and look forward to serving you.
         </Text>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

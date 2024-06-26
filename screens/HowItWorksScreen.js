@@ -1,12 +1,12 @@
 // HowItWorksScreen.js
 import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView } from "react-native";
+import { ScrollView, Text, StyleSheet, SafeAreaView ,View} from "react-native";
 import { theme3 } from "../assets/branding/themes";
 import Header from "./GlobalComponents/Header";
 
 const HowItWorksScreen = () => {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <Header title={'How it works'}/>
       <ScrollView style={styles.container}>
         <Text style={styles.heading}>How It Works</Text>
@@ -41,7 +41,7 @@ const HowItWorksScreen = () => {
           bookings. Welcome to the future of service scheduling.
         </Text>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
