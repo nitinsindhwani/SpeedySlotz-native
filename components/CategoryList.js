@@ -6,33 +6,32 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { ThemeContext } from "../components/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
 
-// A mapping function to get the appropriate icon name based on the category name.
-// Adjust the icon names as per your requirements and available icons in Ionicons.
-const getIconName = (subcategoryName) => {
-  switch (subcategoryName) {
+const getIconName = (name) => {
+  switch (name) {
     case "Handyman":
+    case "Home":
       return "construct";
     case "Appliance":
+    case "Electrical Repair":
       return "flash";
     case "Window Cleaning":
-      return "water";
     case "Pool Cleaning":
       return "water";
     case "Interior Design":
-      return "color-palette-outline";
     case "Art Teaching":
       return "color-palette-outline";
     case "Auto Detailing":
+    case "Automotive":
       return "car-sport-outline";
     case "Boarding":
       return "bed-outline";
     case "Boxing":
       return "fitness-outline";
     case "Business Legal Services":
+    case "Legal Finance":
       return "briefcase-outline";
     case "Criminal Law":
       return "lock-closed-outline";
@@ -49,14 +48,15 @@ const getIconName = (subcategoryName) => {
     case "Personal Injury":
       return "medkit-outline";
     case "CrossFit":
-      return "medkit-outline";
     case "Personal Training":
+    case "Fitness":
       return "medkit-outline";
     case "Martial Arts":
       return "fitness-outline";
     case "Dance":
       return "musical-notes-outline";
     case "Dog Walking":
+    case "Pets":
       return "paw-outline";
     case "Event Planning":
       return "calendar-outline";
@@ -67,12 +67,14 @@ const getIconName = (subcategoryName) => {
     case "Life Coaching":
       return "heart-half-outline";
     case "Makeup":
+    case "Beauty":
       return "brush-outline";
     case "Massage":
       return "hand-left-outline";
     case "Music Teaching":
       return "musical-note-outline";
     case "Nutrition":
+    case "Diet":
       return "restaurant-outline";
     case "Performance":
       return "mic-outline";
@@ -86,19 +88,20 @@ const getIconName = (subcategoryName) => {
       return "leaf-outline";
     case "Training":
     case "Tutor":
+    case "Education":
       return "school-outline";
     case "Wellness":
-      return "leaf-outline";
     case "Winter Sports":
+    case "Sports":
       return "snow-outline";
     case "Yoga":
       return "body-outline";
     case "Financial Services":
-      return "cash-outline"; // Assuming existence for financial-related services
+      return "cash-outline";
     case "Tax Services":
-      return "document-outline"; // Assuming existence for tax-related services
+      return "document-outline";
     default:
-      return "help-outline"; // A fallback icon
+      return "help-outline";
   }
 };
 
@@ -106,29 +109,69 @@ const CategoryList = ({
   userCategoriesData,
   selectedCategory,
   setSelectedCategory,
+  selectedSubcategory,
+  setSelectedSubcategory,
+  selectedServiceTypeName,
+  setSelectedServiceTypeName,
 }) => {
-  const { currentTheme } = useContext(ThemeContext);
-  const styles = getStyles(currentTheme);
   const scrollViewRef = useRef();
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
 
-  const uniqueSubcategories = Array.from(
-    new Set(userCategoriesData?.map((item) => item.subcategoryName))
-  ).map((subcategoryName) => {
-    const item = userCategoriesData.find(
-      (item) => item.subcategoryName === subcategoryName
-    );
-    return {
-      id: item.key.subcategoryId,
-      name: item.subcategoryName,
-      iconName: getIconName(item.subcategoryName), // Dynamically set the icon name
-    };
-  });
+  const uniqueCategories = Array.from(
+    new Set(userCategoriesData?.map((item) => item.categoryName))
+  )
+    .map((categoryName) => {
+      const item = userCategoriesData.find(
+        (item) => item.categoryName === categoryName
+      );
+      return {
+        id: item.key.categoryId,
+        name: item.categoryName,
+        iconName: getIconName(item.categoryName),
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  const adjustScrollViewPosition = (subcategoryName) => {
-    const selectedIndex = uniqueSubcategories.findIndex(
-      (category) => category.name === subcategoryName
-    );
+  const uniqueSubcategories = Array.from(
+    new Set(
+      userCategoriesData
+        ?.filter((item) => item.categoryName === selectedCategory)
+        .map((item) => item.subcategoryName)
+    )
+  )
+    .map((subcategoryName) => {
+      const item = userCategoriesData.find(
+        (item) => item.subcategoryName === subcategoryName
+      );
+      return {
+        id: item.key.subcategoryId,
+        name: item.subcategoryName,
+        iconName: getIconName(item.subcategoryName),
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const uniqueServiceNames = Array.from(
+    new Set(
+      userCategoriesData
+        ?.filter((item) => item.subcategoryName === selectedSubcategory)
+        .map((item) => item.serviceTypeName)
+    )
+  )
+    .map((serviceTypeName) => {
+      const item = userCategoriesData.find(
+        (item) => item.serviceTypeName === serviceTypeName
+      );
+      return {
+        id: item.key.serviceTypeId,
+        name: item.serviceTypeName,
+        iconName: getIconName(item.serviceTypeName),
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const adjustScrollViewPosition = (name, list) => {
+    const selectedIndex = list.findIndex((item) => item.name === name);
     const itemWidth = 160;
     const halfOfScrollView = scrollViewWidth / 2;
     const halfOfItem = itemWidth / 2;
@@ -137,73 +180,235 @@ const CategoryList = ({
   };
 
   useEffect(() => {
-    adjustScrollViewPosition(selectedCategory);
-  }, [selectedCategory, scrollViewWidth]);
+    adjustScrollViewPosition(selectedSubcategory, uniqueSubcategories);
+  }, [selectedSubcategory, scrollViewWidth]);
+
+  useEffect(() => {
+    adjustScrollViewPosition(selectedServiceTypeName, uniqueServiceNames);
+  }, [selectedServiceTypeName, scrollViewWidth]);
+
+  const handleCategoryPress = (categoryName) => {
+    setSelectedCategory(categoryName);
+    setSelectedSubcategory("");
+    setSelectedServiceTypeName("");
+  };
+
+  const handleSubcategoryPress = (subcategoryName) => {
+    setSelectedSubcategory(subcategoryName);
+    setSelectedServiceTypeName("");
+  };
 
   return (
-    <View style={styles.categories}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        ref={scrollViewRef}
-        onLayout={(event) => setScrollViewWidth(event.nativeEvent.layout.width)}
-      >
-        {uniqueSubcategories.map((category) => (
-          <TouchableOpacity
-            key={category.id}
-            style={styles.categoryItem}
-            onPress={() => setSelectedCategory(category.name)}
-          >
-            <View style={[styles.categoryImageContainer]}>
-              <Ionicons
-                name={category.iconName}
-                size={35}
-                color={theme3.primaryColor}
-              />
-            </View>
-            <Text
-              style={[
-                styles.categoryName,
-                selectedCategory === category.name ? styles.selectedText : null,
-              ]}
+    <View>
+      <View style={styles.categories}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          ref={scrollViewRef}
+          onLayout={(event) =>
+            setScrollViewWidth(event.nativeEvent.layout.width)
+          }
+        >
+          {uniqueCategories.map((category) => (
+            <TouchableOpacity
+              key={category.id}
+              style={styles.categoryItem}
+              onPress={() => handleCategoryPress(category.name)}
             >
-              {category.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <View style={styles.categoryImageContainer}>
+                <Ionicons
+                  name={category.iconName}
+                  size={30}
+                  color={
+                    selectedCategory === category.name
+                      ? theme3.secondaryColor
+                      : theme3.primaryColor
+                  }
+                />
+              </View>
+              <Text
+                style={[
+                  styles.categoryName,
+                  selectedCategory === category.name
+                    ? styles.selectedCategoryText
+                    : null,
+                ]}
+              >
+                {category.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+      {selectedCategory && (
+        <View style={styles.subcategories}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            ref={scrollViewRef}
+            onLayout={(event) =>
+              setScrollViewWidth(event.nativeEvent.layout.width)
+            }
+          >
+            {uniqueSubcategories.map((subcategory) => (
+              <TouchableOpacity
+                key={subcategory.id}
+                style={styles.subcategoryItem}
+                onPress={() => handleSubcategoryPress(subcategory.name)}
+              >
+                <View style={styles.subcategoryImageContainer}>
+                  <Ionicons
+                    name={subcategory.iconName}
+                    size={30}
+                    color={
+                      selectedSubcategory === subcategory.name
+                        ? theme3.secondaryColor
+                        : theme3.primaryColor
+                    }
+                  />
+                </View>
+                <Text
+                  style={[
+                    styles.subcategoryName,
+                    selectedSubcategory === subcategory.name
+                      ? styles.selectedSubcategoryText
+                      : null,
+                  ]}
+                >
+                  {subcategory.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+      {selectedSubcategory && (
+        <View style={styles.services}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            ref={scrollViewRef}
+            onLayout={(event) =>
+              setScrollViewWidth(event.nativeEvent.layout.width)
+            }
+          >
+            {uniqueServiceNames.map((serviceTypeName) => (
+              <TouchableOpacity
+                key={serviceTypeName.id}
+                style={styles.serviceItem}
+                onPress={() => setSelectedServiceTypeName(serviceTypeName.name)}
+              >
+                <View style={styles.serviceImageContainer}>
+                  <Ionicons
+                    name={serviceTypeName.iconName}
+                    size={30}
+                    color={
+                      selectedServiceTypeName === serviceTypeName.name
+                        ? theme3.secondaryColor
+                        : theme3.primaryColor
+                    }
+                  />
+                </View>
+                <Text
+                  style={[
+                    styles.serviceName,
+                    selectedServiceTypeName === serviceTypeName.name
+                      ? styles.selectedServiceNameText
+                      : null,
+                  ]}
+                >
+                  {serviceTypeName.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
     </View>
   );
 };
 
-const getStyles = (currentTheme) =>
-  StyleSheet.create({
-    categories: {
-      padding: 10,
-    },
-    categoryItem: {
-      alignItems: "center",
-      marginRight: 15,
-    },
-    categoryImageContainer: {
-      padding: 0,
-      borderRadius: 70,
-      justifyContent: "center",
-      alignItems: "center",
-      overflow: "hidden",
-      opacity: 0.8,
-    },
-    categoryName: {
-      fontSize: 13,
-      marginTop: 2, // Reduced gap by decreasing the top margin
-      fontWeight: "500",
-      color: "#084887", // Fixed color for text
-      textAlign: "center",
-    },
-    selectedText: {
-      color: "#084887", // Fixed color for selected text
-      fontWeight: "700",
-    },
-  });
+const styles = StyleSheet.create({
+  categories: {
+    padding: 10,
+  },
+  categoryItem: {
+    alignItems: "center",
+    marginRight: 15,
+  },
+  categoryImageContainer: {
+    padding: 0,
+    borderRadius: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    opacity: 0.8,
+  },
+  categoryName: {
+    fontSize: 11,
+    marginTop: 2,
+    fontWeight: "500",
+    color: "#084887",
+    textAlign: "center",
+  },
+  selectedCategoryText: {
+    color: theme3.secondaryColor,
+    fontWeight: "700",
+  },
+  subcategories: {
+    padding: 10,
+    paddingTop: 0,
+  },
+  subcategoryItem: {
+    alignItems: "center",
+    marginRight: 15,
+  },
+  subcategoryImageContainer: {
+    padding: 0,
+    borderRadius: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    opacity: 0.8,
+  },
+  subcategoryName: {
+    fontSize: 11,
+    marginTop: 2,
+    fontWeight: "500",
+    color: "#084887",
+    textAlign: "center",
+  },
+  selectedSubcategoryText: {
+    color: theme3.secondaryColor,
+    fontWeight: "700",
+  },
+  services: {
+    padding: 10,
+    paddingTop: 0,
+  },
+  serviceItem: {
+    alignItems: "center",
+    marginRight: 15,
+  },
+  serviceImageContainer: {
+    padding: 0,
+    borderRadius: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+    opacity: 0.8,
+  },
+  serviceName: {
+    fontSize: 11,
+    marginTop: 2,
+    fontWeight: "500",
+    color: "#084887",
+    textAlign: "center",
+  },
+  selectedServiceNameText: {
+    color: theme3.secondaryColor,
+    fontWeight: "700",
+  },
+});
 
 export default CategoryList;

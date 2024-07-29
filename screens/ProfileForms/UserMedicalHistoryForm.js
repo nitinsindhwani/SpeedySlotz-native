@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -9,43 +9,42 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-const UserMedicalHistoryForm = ({ profilesData }) => {
-  const [allergies, setAllergies] = useState(profilesData?.allergies || "");
-  const [currentMedications, setCurrentMedications] = useState(
-    profilesData?.currentMedications || ""
-  );
-  const [pastMedications, setPastMedications] = useState(
-    profilesData?.pastMedications || ""
-  );
-  const [surgicalHistory, setSurgicalHistory] = useState(
-    profilesData?.surgicalHistory || ""
-  );
-  const [smokeAlcoholHistory, setSmokeAlcoholHistory] = useState(
-    profilesData?.smokeAlcoholHistory || ""
-  );
-  const [chronicIllnesses, setChronicIllnesses] = useState(
-    profilesData?.chronicIllnesses || ""
-  );
-  const [familyMedicalHistory, setFamilyMedicalHistory] = useState(
-    profilesData?.familyMedicalHistory || ""
-  );
-  const [recentHospitalVisits, setRecentHospitalVisits] = useState(
-    profilesData?.recentHospitalVisits || ""
-  );
-  const [immunizationHistory, setImmunizationHistory] = useState(
-    profilesData?.immunizationHistory || ""
-  );
-  const [pregnancyChildbirthHistory, setPregnancyChildbirthHistory] = useState(
-    profilesData?.pregnancyChildbirthHistory || ""
-  );
-  const [otherMedicalInfo, setOtherMedicalInfo] = useState(
-    profilesData?.otherMedicalInfo || ""
-  );
 
-  const handleSaveMedicalHistory = () => {
-    let profileData = {
+const UserMedicalHistoryForm = ({ profilesData }) => {
+  const [allergies, setAllergies] = useState("");
+  const [currentMedications, setCurrentMedications] = useState("");
+  const [pastMedications, setPastMedications] = useState("");
+  const [surgicalHistory, setSurgicalHistory] = useState("");
+  const [smokeAlcoholHistory, setSmokeAlcoholHistory] = useState("");
+  const [chronicIllnesses, setChronicIllnesses] = useState("");
+  const [familyMedicalHistory, setFamilyMedicalHistory] = useState("");
+  const [recentHospitalVisits, setRecentHospitalVisits] = useState("");
+  const [immunizationHistory, setImmunizationHistory] = useState("");
+  const [pregnancyChildbirthHistory, setPregnancyChildbirthHistory] =
+    useState("");
+  const [otherMedicalInfo, setOtherMedicalInfo] = useState("");
+
+  useEffect(() => {
+    if (profilesData) {
+      setAllergies(profilesData.allergies || "");
+      setCurrentMedications(profilesData.currentMedications || "");
+      setPastMedications(profilesData.pastMedications || "");
+      setSurgicalHistory(profilesData.surgicalHistory || "");
+      setSmokeAlcoholHistory(profilesData.smokeAlcoholHistory || "");
+      setChronicIllnesses(profilesData.chronicIllnesses || "");
+      setFamilyMedicalHistory(profilesData.familyMedicalHistory || "");
+      setRecentHospitalVisits(profilesData.recentHospitalVisits || "");
+      setImmunizationHistory(profilesData.immunizationHistory || "");
+      setPregnancyChildbirthHistory(
+        profilesData.pregnancyChildbirthHistory || ""
+      );
+      setOtherMedicalInfo(profilesData.otherMedicalInfo || "");
+    }
+  }, [profilesData]);
+
+  const handleSaveMedicalHistory = async () => {
+    const profileData = {
       userMedicalHistory: {
         allergies,
         currentMedications,
@@ -60,14 +59,19 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
         otherMedicalInfo,
       },
     };
-    const response = saveProfiles(profileData);
-    // Add logic to pass data to the backend or parent component
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Medical history saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save medical history:", error);
+    }
   };
 
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        {/* Known Allergies */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="allergies"
@@ -82,7 +86,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Current Medications */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="pills" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -93,7 +96,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Past Medications */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="history" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -104,7 +106,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Previous Surgeries and Dates */}
         <View style={styles.iconInputContainer}>
           <FontAwesome name="scissors" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -115,7 +116,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Smoke or Alcohol Consumption */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="wine-bottle"
@@ -130,7 +130,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Chronic Illnesses */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="heartbeat"
@@ -145,7 +144,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Family History of Illnesses */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="users" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -156,7 +154,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Recent Hospital Visits */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="hospital" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -167,7 +164,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Immunization History */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="syringe" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -178,7 +174,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pregnancy and Childbirth History */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="baby" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -189,7 +184,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Other Relevant Medical Information */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="info-circle"
@@ -206,7 +200,6 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Save Button */}
         <TouchableOpacity
           onPress={handleSaveMedicalHistory}
           style={styles.button}

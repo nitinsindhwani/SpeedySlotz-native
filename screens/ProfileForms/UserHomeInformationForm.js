@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -9,42 +9,41 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-const UserHomeInformationForm = ({ profilesData }) => {
-  const [ceilingType, setCeilingType] = useState(
-    profilesData?.ceilingType || ""
-  );
-  const [homeElevation, setHomeElevation] = useState(
-    profilesData?.homeElevation || ""
-  );
-  const [homeExterior, setHomeExterior] = useState(
-    profilesData?.homeExterior || ""
-  );
-  const [homeSize, setHomeSize] = useState(profilesData?.homeSize || "");
-  const [homeType, setHomeType] = useState(profilesData?.homeType || "");
-  const [lastHvacServiceDate, setLastHvacServiceDate] = useState(
-    profilesData?.lastHvacServiceDate || ""
-  );
-  const [lastWindowCleaningDate, setLastWindowCleaningDate] = useState(
-    profilesData?.lastWindowCleaningDate || ""
-  );
-  const [lightingPreferences, setLightingPreferences] = useState(
-    profilesData?.lightingPreferences || ""
-  );
-  const [mowingFrequency, setMowingFrequency] = useState(
-    profilesData?.mowingFrequency || ""
-  );
-  const [numberOfFloors, setNumberOfFloors] = useState(
-    profilesData?.numberOfFloors || ""
-  );
-  const [numberOfRooms, setNumberOfRooms] = useState(
-    profilesData?.numberOfRooms || ""
-  );
-  const [treeCount, setTreeCount] = useState(profilesData?.treeCount || "");
+import { FontAwesome5 } from "@expo/vector-icons";
 
-  const handleSave = () => {
-    let profileData = {
+const UserHomeInformationForm = ({ profilesData }) => {
+  const [ceilingType, setCeilingType] = useState("");
+  const [homeElevation, setHomeElevation] = useState("");
+  const [homeExterior, setHomeExterior] = useState("");
+  const [homeSize, setHomeSize] = useState("");
+  const [homeType, setHomeType] = useState("");
+  const [lastHvacServiceDate, setLastHvacServiceDate] = useState("");
+  const [lastWindowCleaningDate, setLastWindowCleaningDate] = useState("");
+  const [lightingPreferences, setLightingPreferences] = useState("");
+  const [mowingFrequency, setMowingFrequency] = useState("");
+  const [numberOfFloors, setNumberOfFloors] = useState("");
+  const [numberOfRooms, setNumberOfRooms] = useState("");
+  const [treeCount, setTreeCount] = useState("");
+
+  useEffect(() => {
+    if (profilesData) {
+      setCeilingType(profilesData.ceilingType || "");
+      setHomeElevation(profilesData.homeElevation || "");
+      setHomeExterior(profilesData.homeExterior || "");
+      setHomeSize(profilesData.homeSize || "");
+      setHomeType(profilesData.homeType || "");
+      setLastHvacServiceDate(profilesData.lastHvacServiceDate || "");
+      setLastWindowCleaningDate(profilesData.lastWindowCleaningDate || "");
+      setLightingPreferences(profilesData.lightingPreferences || "");
+      setMowingFrequency(profilesData.mowingFrequency || "");
+      setNumberOfFloors(profilesData.numberOfFloors || "");
+      setNumberOfRooms(profilesData.numberOfRooms || "");
+      setTreeCount(profilesData.treeCount || "");
+    }
+  }, [profilesData]);
+
+  const handleSave = async () => {
+    const profileData = {
       userHomeInformation: {
         ceilingType,
         homeElevation,
@@ -60,14 +59,19 @@ const UserHomeInformationForm = ({ profilesData }) => {
         treeCount,
       },
     };
-    const response = saveProfiles(profileData);
-    // Add logic to save this information
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Home information saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save home information:", error);
+    }
   };
 
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        {/* Home Type */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="home" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -78,9 +82,12 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Home Exterior */}
         <View style={styles.iconInputContainer}>
-          <FontAwesome5 name="layer-group" size={20} color={theme3.primaryColor} />
+          <FontAwesome5
+            name="layer-group"
+            size={20}
+            color={theme3.primaryColor}
+          />
           <TextInput
             style={styles.input}
             placeholder="Home Exterior"
@@ -89,7 +96,6 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Home Elevation */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="building" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -100,7 +106,6 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Ceiling Type */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="arrow-up" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -111,7 +116,6 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Home Size */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="ruler" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -122,9 +126,12 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Number of Rooms */}
         <View style={styles.iconInputContainer}>
-          <FontAwesome5 name="door-open" size={20} color={theme3.primaryColor} />
+          <FontAwesome5
+            name="door-open"
+            size={20}
+            color={theme3.primaryColor}
+          />
           <TextInput
             style={styles.input}
             placeholder="Number of Rooms"
@@ -133,9 +140,12 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Number of Floors */}
         <View style={styles.iconInputContainer}>
-          <FontAwesome5 name="layer-group" size={20} color={theme3.primaryColor} />
+          <FontAwesome5
+            name="layer-group"
+            size={20}
+            color={theme3.primaryColor}
+          />
           <TextInput
             style={styles.input}
             placeholder="Number of Floors"
@@ -144,7 +154,6 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Last HVAC Service Date */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="fan" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -155,7 +164,6 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Frequency of Mowing Needed */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="leaf" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -166,7 +174,6 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Last Window Cleaning Date */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="window-maximize"
@@ -181,7 +188,6 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Tree Count */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="tree" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -192,9 +198,12 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Lighting Preferences */}
         <View style={styles.iconInputContainer}>
-          <FontAwesome5 name="lightbulb" size={20} color={theme3.primaryColor} />
+          <FontAwesome5
+            name="lightbulb"
+            size={20}
+            color={theme3.primaryColor}
+          />
           <TextInput
             style={styles.input}
             placeholder="Lighting Preferences"

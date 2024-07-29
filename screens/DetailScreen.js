@@ -13,7 +13,7 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native"; // Newly added
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { getStoredToken, getStoredUser } from "../api/ApiCall";
 import * as FileSystem from "expo-file-system";
@@ -54,11 +54,10 @@ import ChatAnim from "./GlobalComponents/ChatAnim";
 import { SwipeButton } from "react-native-expo-swipe-button";
 import Header from "./GlobalComponents/Header";
 
-// Existing pickMedia function seems fine, just ensure you request permissions.
-
 const defaultImageUrl = require("../assets/images/defaultImage.png");
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
+
 function DetailScreen({ route }) {
   const navigation = useNavigation();
   const [slots, setSlots] = useState([]);
@@ -75,15 +74,16 @@ function DetailScreen({ route }) {
   const [jobDescription, setJobDescription] = useState("");
   const [profileAttached, setProfileAttached] = useState(false);
   const [isDealModalVisible, setIsDealModalVisible] = useState(false);
-  const [dealsData, setDealsData] = useState([]); // Holds the deals to be displayed in the modal
+  const [dealsData, setDealsData] = useState([]);
   const [attachProfileModalVisible, setAttachProfileModalVisible] =
     useState(false);
-  const [selectedImages, setSelectedImages] = useState([]); // Should be an empty array
-  const [selectedVideos, setSelectedVideos] = useState([]); // Should be an empty array
-  const [attachedProfiles, setAttachedProfiles] = useState([]); // Tracks attached profiles
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedVideos, setSelectedVideos] = useState([]);
+  const [attachedProfiles, setAttachedProfiles] = useState([]);
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [modalCategory, setModalCategory] = useState(null);
   const [priorityStatus, setPriorityStatus] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null); // New state for selected category ID
 
   const MAX_NUMBER_OF_IMAGES = 5;
   const MAX_NUMBER_OF_VIDEOS = 3;
@@ -91,49 +91,54 @@ function DetailScreen({ route }) {
   const IMAGE_TYPES = ["image/jpeg", "image/png"];
   const VIDEO_TYPES = ["video/mp4"];
 
-  // Your existing useEffect and other functions
   useEffect(() => {
     const fetchUserData = async () => {
-      const storedUserData = await getStoredUser(); // Await the async call
-      setUserData(storedUserData); // Set userData state
+      const storedUserData = await getStoredUser();
+      setUserData(storedUserData);
     };
 
     fetchUserData();
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, []);
 
   const openDealsModal = (deals) => {
-    // Example deals data fetch or assignment
-
-    console.log("Deals:", deals);
-    setDealsData(deals); // Set the fetched or predefined deals data
-    setIsDealModalVisible(true); // Open the modal
+    setDealsData(deals);
+    setIsDealModalVisible(true);
   };
+
   const formatTime = (time) => {
     const [hour, minute] = time.split(":");
     return `${hour}:${minute}`;
   };
 
-  let lastPress = 0; // Add this outside your component
+  let lastPress = 0;
 
-  // Inside your DetailScreen component
-  const handlePress = (item) => {
+  const handlePress = async (item) => {
     const time = new Date().getTime();
     const delta = time - lastPress;
 
-    const doublePressDelay = 300; // You can adjust this value
+    const doublePressDelay = 300;
+    const matchedCategory = business.yelpBusinessCategory.find((category) =>
+      category.serviceTypes.includes(item)
+    );
     if (delta < doublePressDelay) {
-      // This is a double tap
-      setModalCategory(item);
-      setCategoryModalVisible(true);
+      if (matchedCategory) {
+        setModalCategory(matchedCategory);
+        setCategoryModalVisible(true);
+        await updateSelectedCategoryId(matchedCategory.category_id); // Update the selected category ID
+      }
     } else {
-      // This is a single tap
       setSelectedServiceType(item);
+      await updateSelectedCategoryId(matchedCategory.category_id); // Update the selected category ID
     }
     lastPress = time;
   };
 
+  const updateSelectedCategoryId = async (categoryId) => {
+    console.log("categoryId", categoryId);
+    setSelectedCategoryId(categoryId);
+  };
+
   const renderCarouselItem = ({ item }) => {
-    // Directly use the item as the source since prepareImageUrls ensures the correct format
     return (
       <View style={styles.carouselItem}>
         <Image source={item} style={styles.carouselImage} />
@@ -168,7 +173,7 @@ function DetailScreen({ route }) {
           : ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: false,
       quality: 1,
-      allowsMultipleSelection: true, // Ensure your ImagePicker supports multiple selection
+      allowsMultipleSelection: true,
     });
 
     if (result.canceled) {
@@ -181,7 +186,6 @@ function DetailScreen({ route }) {
         (asset) => asset.fileSize > MAX_FILE_SIZE
       );
       if (overSizedAssets.length > 0) {
-        // Log oversized files and show an error message
         console.log("Some files are too large:", overSizedAssets);
         alert("Some files are too large and will not be added.");
       }
@@ -204,16 +208,14 @@ function DetailScreen({ route }) {
     }
   };
 
-  // Render Media Item Function
-
   const handleAttachProfile = (profileLabel) => {
     if (!profileLabel) {
       console.error("No profile selected");
-      return; // Exit if no profile is selected
+      return;
     }
     setAttachedProfiles((prevProfiles) => [...prevProfiles, profileLabel]);
   };
-  // Function to handle removing an attached profile
+
   const handleRemoveProfile = (indexToRemove) => {
     setAttachedProfiles((prevProfiles) =>
       prevProfiles.filter((_, index) => index !== indexToRemove)
@@ -233,6 +235,7 @@ function DetailScreen({ route }) {
       </View>
     );
   };
+
   const removeMedia = (mediaType, uri) => {
     if (mediaType === "image") {
       setSelectedImages(selectedImages.filter((imageUri) => imageUri !== uri));
@@ -242,7 +245,7 @@ function DetailScreen({ route }) {
   };
 
   const renderBadge = ({ item }) => {
-    const badge = getBadgeDetails(item); // Correctly call the function
+    const badge = getBadgeDetails(item);
     if (!badge) return null;
 
     return (
@@ -252,9 +255,8 @@ function DetailScreen({ route }) {
       </View>
     );
   };
-  const handleChatButtonPress = () => {
-    // Create the chat_info object
 
+  const handleChatButtonPress = () => {
     const initialMessages = [
       {
         messageId: uuidv4(),
@@ -262,7 +264,6 @@ function DetailScreen({ route }) {
         timestamp: moment().toISOString(),
         messageType: "user",
       },
-      // Add more initial messages here if needed
     ];
 
     const selectedChat = {
@@ -272,7 +273,7 @@ function DetailScreen({ route }) {
       username: userData.username,
       business_id: business.yelpBusiness.id,
       business_name: business.yelpBusiness.name,
-      chatMessages: [], // Use the array of initial messages
+      chatMessages: [],
     };
 
     navigation.navigate("App", {
@@ -286,25 +287,18 @@ function DetailScreen({ route }) {
   const prepareImageUrls = () => {
     const { image_url } = business.yelpBusiness;
 
-    // If image_url is an object with URLs
     if (typeof image_url === "object" && Object.keys(image_url).length > 0) {
-      // Extract URLs and return them as an array
       return Object.values(image_url).map((url) => ({ uri: url }));
-    }
-    // If image_url is a single string URL
-    else if (typeof image_url === "string" && image_url.trim() !== "") {
-      // Return it as an array with a single object containing the URI
+    } else if (typeof image_url === "string" && image_url.trim() !== "") {
       return [{ uri: image_url }];
     }
-    // If there's no valid image URL, use a default image
-    return [defaultImageUrl]; // Assuming defaultImageUrl is correctly imported and refers to a local image
+    return [defaultImageUrl];
   };
 
   const handleBookNow = async () => {
     setShowSuccess(false);
     const formData = new FormData();
-
-    // Find the selected slot and prepare it as a JSON string
+    console.log("selectedCategoryId", selectedCategoryId);
     const selectedSlot = slots.find(
       (slot) => slot.key.slotId === selectedSlotId
     );
@@ -313,7 +307,6 @@ function DetailScreen({ route }) {
       return;
     }
 
-    // Prepare the slot information
     let slotData = {
       ...selectedSlot,
       selectedServiceTypes: [selectedServiceType],
@@ -321,23 +314,22 @@ function DetailScreen({ route }) {
       booked: true,
       priorityStatus: priorityStatus,
       profilesAttached: attachedProfiles,
+      categoryId: selectedCategoryId,
     };
     formData.append("slot", JSON.stringify(slotData));
 
-    // Append images as 'images' array
     selectedImages.forEach((imageUri, index) => {
       formData.append("images", {
         uri: imageUri,
-        type: "image/jpeg", // Assuming JPEG, adjust based on actual image type
+        type: "image/jpeg",
         name: `image-${index}.jpg`,
       });
     });
 
-    // Append videos as 'videos' array
     selectedVideos.forEach((videoUri, index) => {
       formData.append("videos", {
         uri: videoUri,
-        type: "video/mp4", // Assuming MP4, adjust based on actual video type
+        type: "video/mp4",
         name: `video-${index}.mp4`,
       });
     });
@@ -349,7 +341,6 @@ function DetailScreen({ route }) {
         return;
       }
 
-      // Submit the FormData to your backend
       const response = await axios.post(
         baseApiUrl + "/api/v1/userBookings",
         formData,
@@ -361,7 +352,6 @@ function DetailScreen({ route }) {
         }
       );
       console.log("Booking confirmation response", response);
-      // Handle response...
       if (response.status === 201) {
         console.log("Booking successful");
         setShowSuccess(false);
@@ -370,13 +360,12 @@ function DetailScreen({ route }) {
         navigation.navigate("ApptConfirmationScreen", {
           userData: userData,
           businessDetails: business,
-          slot: slotData, // Use slotToBook instead of selectedSlot
+          slot: slotData,
           service_type: selectedServiceTypes.join(", "),
         });
       }
     } catch (error) {
       console.error("Error during booking submission:", error);
-      // Handle submission error...
     }
   };
 
@@ -404,15 +393,10 @@ function DetailScreen({ route }) {
   }, [navigation]);
 
   const onDayPress = (day) => {
-    // console.log("Selected day: ", day.dateString);
-    // setCurrentDate(new Date(day.timestamp));
-    // // Fetch slots for selected day
-    // fetchSlots(day.dateString);
     fetchSlots(day);
   };
 
   const handleSlotPress = (slot) => {
-    console.log(`Selected slot: ${slot.startTime} to ${slot.endTime}`);
     if (selectedSlotId !== slot.key.slotId) {
       setSelectedServiceType(null);
     }
@@ -421,15 +405,15 @@ function DetailScreen({ route }) {
     if (slot.serviceTypes && Array.isArray(slot.serviceTypes)) {
       setServiceTypes(slot.serviceTypes);
     } else {
-      setServiceTypes([]); // or any default value you want
+      setServiceTypes([]);
     }
     setModalVisible(true);
   };
 
-  // Additional function to close the modal
   const handleCloseModal = () => {
     setModalVisible(false);
   };
+
   const fetchSlots = async (selectedDate) => {
     const data = qs.stringify({
       providerId: providerId,
@@ -459,20 +443,8 @@ function DetailScreen({ route }) {
   };
 
   useEffect(() => {
-    console.log("running");
-
     fetchSlots(currentDate.toISOString().split("T")[0]);
   }, []);
-
-  function SpecialityList({ item }) {
-    return (
-      <View style={styles.CatList}>
-        <Ionicons name={item.icon} size={18} color={theme3.secondaryColor} />
-
-        <Text style={{ color: theme3.light, marginLeft: 5 }}>{item.name}</Text>
-      </View>
-    );
-  }
 
   function SpecialityListII({ item, onPress, isSelected }) {
     const backgroundColor = isSelected ? theme3.primaryColor : theme3.inActive;
@@ -486,6 +458,7 @@ function DetailScreen({ route }) {
       </TouchableOpacity>
     );
   }
+
   const imageUrls = prepareImageUrls();
   return (
     <View style={styles.container}>
@@ -528,7 +501,7 @@ function DetailScreen({ route }) {
           <Text
             style={[styles.mostPopularName, { fontSize: 14, marginLeft: 0 }]}
           >
-            Achivements
+            Achievements
           </Text>
           {business.yelpBusiness.badges &&
           business.yelpBusiness.badges.length > 0 ? (
@@ -536,102 +509,12 @@ function DetailScreen({ route }) {
               data={business.yelpBusiness.badges}
               horizontal={true}
               renderItem={renderBadge}
-              keyExtractor={(item, index) => `badge-${index}`} // Ensure unique keys
+              keyExtractor={(item, index) => `badge-${index}`}
               showsHorizontalScrollIndicator={false}
             />
           ) : (
             <Text style={styles.noSlotsText}>No badges available.</Text>
           )}
-          {/* <View style={styles.extraInfoContainer}>
-            <View style={styles.dealIconContainer}>
-              <MaterialIcons
-                name="location-city"
-                size={18}
-                color={theme3.primaryColor}
-              />
-              <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                {business.yelpBusinessLocation.city}
-              </Text>
-            </View>
-
-            <View style={styles.dealIconContainer}>
-              <MapIcon
-                name="map-marker-alt"
-                size={16}
-                color={theme3.primaryColor}
-              />
-              <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                {metersToMiles(business.yelpBusiness.distance)} miles
-              </Text>
-            </View>
-
-            <TouchableOpacity
-              style={styles.mapIconContainer}
-              onPress={() => {
-                const address1 = business.yelpBusinessLocation?.address1
-                  ? business.yelpBusinessLocation.address1 + ","
-                  : "";
-                const city = business.yelpBusinessLocation?.city || "";
-                const mapQuery = encodeURIComponent(`${address1}${city}`);
-                if (mapQuery) {
-                  Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
-                } else {
-                  // Optionally, handle the case where there is no address to navigate to
-                  // e.g., alert the user or log an error
-                  console.warn("No address available for directions");
-                }
-              }}
-            >
-              <MaterialIcons
-                name="directions"
-                size={18}
-                color={theme3.primaryColor}
-              />
-              <Text style={[styles.mostPopularCity, { marginTop: 5 }]}>
-                Directions
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.extraInfoContainer}>
-            <TouchableOpacity
-              onPress={() =>
-                Linking.openURL(`tel:${business.yelpBusiness.phone}`)
-              }
-            >
-              <View style={styles.dealIconContainer}>
-                <FontAwesome
-                  name="phone"
-                  size={20}
-                  color={theme3.secondaryColor}
-                />
-                <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                  {business.yelpBusiness.phone}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <View style={Styles.OneRow}>
-              <Octicons name="dot-fill" size={20} color={theme3.send} />
-              <TouchableOpacity onPress={handleChatButtonPress}>
-                <Text style={[styles.DescText, { marginLeft: 5 }]}>
-                  Chat Now
-                </Text>
-              </TouchableOpacity>
-            </View>
-            {business.yelpBusinessDeal && (
-              <TouchableOpacity
-                style={styles.dealIconContainer}
-                onPress={() => {
-                  openDealsModal(business.yelpBusinessDeal);
-                }}
-              >
-                <DealIcons />
-                <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                  Deals
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View> */}
-
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -680,7 +563,6 @@ function DetailScreen({ route }) {
 
               {business.yelpBusiness.is_registered && (
                 <View style={Styles.OneRow}>
-                  {/* <Octicons name="dot-fill" size={20} color={theme3.send} /> */}
                   <View style={{ marginLeft: -6 }}>
                     <ChatAnim />
                   </View>
@@ -706,8 +588,6 @@ function DetailScreen({ route }) {
                   if (mapQuery) {
                     Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
                   } else {
-                    // Optionally, handle the case where there is no address to navigate to
-                    // e.g., alert the user or log an error
                     console.warn("No address available for directions");
                   }
                 }}
@@ -725,11 +605,7 @@ function DetailScreen({ route }) {
                 <TouchableOpacity
                   style={styles.dealIconContainer}
                   onPress={() => {
-                    console.log(
-                      "Deal data at press:",
-                      business.yelpBusinessDeal
-                    );
-                    // openDealModal(business.yelpBusinessDeal);
+                    openDealsModal(business.yelpBusinessDeal);
                   }}
                 >
                   <DealIcons />
@@ -806,16 +682,11 @@ function DetailScreen({ route }) {
               )
             )}
           </View>
-          {/* <Text style={[styles.label,{marginTop:10}]}>Attached Profiles:</Text> */}
         </View>
         <View style={styles.mostPopularItem}>
           <Text style={styles.label}>Attach Profiles:</Text>
-
-          {/* <Text style={[styles.label,{marginTop:10}]}>Attached Profiles:</Text> */}
-
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
-              // style={styles.attachProfileButton}
               onPress={() => setAttachProfileModalVisible(true)}
             >
               <MaterialIcons
@@ -823,8 +694,6 @@ function DetailScreen({ route }) {
                 size={35}
                 color={theme3.primaryColor}
               />
-
-              {/* <Text style={styles.attachProfileButtonText}>Attach Profile</Text> */}
             </TouchableOpacity>
             <FlatList
               data={attachedProfiles}
@@ -836,17 +705,10 @@ function DetailScreen({ route }) {
             />
           </View>
         </View>
-
-        {/* {
-          selectedImages.length >0 && */}
         <View style={styles.mostPopularItem}>
           <Text style={styles.label}>Add Images:</Text>
-
           <View style={styles.mediaListContainer}>
-            <TouchableOpacity
-              onPress={() => pickMedia("image")}
-              // style={styles.mediaButton}
-            >
+            <TouchableOpacity onPress={() => pickMedia("image")}>
               <MaterialIcons
                 name="add-photo-alternate"
                 size={40}
@@ -866,18 +728,10 @@ function DetailScreen({ route }) {
             ))}
           </View>
         </View>
-        {/* } */}
-
-        {/* {
-  selectedVideos.length > 0 && */}
         <View style={styles.mostPopularItem}>
           <Text style={styles.label}>Add Videos:</Text>
-
           <View style={styles.mediaListContainer}>
-            <TouchableOpacity
-              onPress={() => pickMedia("video")}
-              // style={styles.mediaButton}
-            >
+            <TouchableOpacity onPress={() => pickMedia("video")}>
               <MaterialIcons
                 name="add-photo-alternate"
                 size={40}
@@ -886,7 +740,6 @@ function DetailScreen({ route }) {
             </TouchableOpacity>
             {selectedVideos?.map((uri, index) => (
               <View key={uri} style={styles.mediaItem}>
-                {/* Replace this with your video thumbnail or player */}
                 <FontAwesome name="file-video-o" size={48} color="#333" />
                 <TouchableOpacity
                   onPress={() => removeMedia("video", uri)}
@@ -902,11 +755,8 @@ function DetailScreen({ route }) {
         {selectedSlotId &&
         selectedServiceType &&
         jobDescription &&
-        priorityStatus !== null && // Explicitly check for null
-        priorityStatus !== undefined ? ( // Explicitly check for undefined if needed
-          // <TouchableOpacity onPress={handleBookNow} style={Styles.LoginBtn}>
-          //   <Text style={Styles.LoginTxt}>Submit</Text>
-          // </TouchableOpacity>
+        priorityStatus !== null &&
+        priorityStatus !== undefined ? (
           <SwipeButton
             Icon={
               <MaterialIcons
@@ -952,7 +802,7 @@ function DetailScreen({ route }) {
       <AttachProfileModal
         isVisible={attachProfileModalVisible}
         onClose={() => setAttachProfileModalVisible(false)}
-        onAttach={handleAttachProfile} // Pass the handleAttachProfile function
+        onAttach={handleAttachProfile}
         user={userData}
       />
       <DealModal
@@ -960,7 +810,6 @@ function DetailScreen({ route }) {
         deals={dealsData}
         onClose={() => setIsDealModalVisible(false)}
       />
-      {/* </View> */}
       <SuccessModal
         show={showSuccess}
         onBack={setShowSuccess}
@@ -977,12 +826,9 @@ function DetailScreen({ route }) {
 
 const styles = StyleSheet.create({
   container: {
-    // height: WindowHeight,
     flex: 1,
     alignItems: "center",
-    // padding: 20,
     backgroundColor: "#f4f4f4",
-    // marginTop: Platform.OS === "android" ? 40 : 16,
     width: WindowWidth,
   },
   mostPopularImage: {
@@ -1011,16 +857,16 @@ const styles = StyleSheet.create({
     elevation: 4,
     shadowOpacity: 4,
     borderRadius: 10,
-    backgroundColor: theme3.GlobalBg, // White background color
+    backgroundColor: theme3.GlobalBg,
   },
   DescText: {
     fontSize: 14,
-    color: theme3.fontColorI, // Gray text color
+    color: theme3.fontColorI,
   },
   mostPopularName: {
     fontSize: 16,
     fontWeight: "bold",
-    color: theme3.fontColor, // Blue text color
+    color: theme3.fontColor,
     marginTop: 8,
   },
   CatList: {
@@ -1034,8 +880,6 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   extraInfoContainer: {
-    // flexDirection: "row",
-    // marginRight:20,
     alignItems: "flex-start",
     justifyContent: "space-between",
     marginTop: 10,
@@ -1046,45 +890,30 @@ const styles = StyleSheet.create({
   },
   mostPopularCity: {
     fontSize: 14,
-    color: theme3.fontColorI, // Gray text color
+    color: theme3.fontColorI,
   },
   mapIconContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  mostPopularCity: {
-    fontSize: 14,
-    color: theme3.fontColorI, // Gray text color
-  },
   noSlotsText: {
     fontSize: 14,
-    color: "#666", // Example color, adjust as needed
+    color: "#666",
     marginTop: 10,
     textAlign: "center",
   },
   inputContainer: {
-    width: "100%", // Make it full width to match category section
-    paddingHorizontal: 5, // Match the horizontal padding with the category section
+    width: "100%",
+    paddingHorizontal: 5,
     marginTop: 5,
-    // Adjust top margin as necessary
   },
   label: {
-    fontSize: 16, // Match the font size with the category section
-    fontWeight: "bold", // Match the font weight
-    color: theme3.fontColor, // Use the theme's font color
-    marginBottom: 5, // Space between label and text input
+    fontSize: 16,
+    fontWeight: "bold",
+    color: theme3.fontColor,
+    marginBottom: 5,
   },
   input: {
-    // borderColor: "#ccc", // Border color to match the theme
-    // borderWidth: 1, // Border width
-    // borderRadius: 5, // Border radius for rounded corners
-    // padding: 10, // Padding inside the text input
-    // marginBottom: 20, // Margin at the bottom
-    // fontSize: 16, // Font size
-    // backgroundColor: "#fff", // Background color
-    // textAlignVertical: "top", // Start text at the top-left corner
-    // height: 100,
-
     marginBottom: 16,
     width: WindowWidth / 1.03,
     height: WindowHeight / 5,
@@ -1094,9 +923,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 4,
     borderRadius: 10,
     backgroundColor: theme3.GlobalBg,
-
-    // Set a fixed height for text area
-    // Add the rest of the input styles here
   },
   button: {
     backgroundColor: theme3.primaryColor,
@@ -1113,23 +939,20 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     flexDirection: "row",
-    paddingVertical: 10, // Adjust as needed
+    paddingVertical: 10,
   },
   carouselItem: {
-    marginRight: 10, // Space between items
+    marginRight: 10,
   },
   carouselImage: {
-    width: 200, // Adjust width as needed
-    height: 200, // Adjust height as needed
-    borderRadius: 8, // Optional: for rounded corners
+    width: 200,
+    height: 200,
+    borderRadius: 8,
   },
   mediaContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-  },
-  button: {
-    // Button styles
   },
   mediaPreview: {
     alignItems: "center",
@@ -1172,10 +995,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 1,
   },
-
-  // Styles for Attach Profile button
   attachProfileButton: {
-    backgroundColor: theme3.secondaryColor, // Example: A green color for the attach button
+    backgroundColor: theme3.secondaryColor,
     paddingVertical: 10,
     paddingHorizontal: 10,
     width: 150,
@@ -1189,8 +1010,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
-  // Styles for media upload section
   mediaUploadSection: {
     flexDirection: "row",
     alignItems: "center",
@@ -1223,67 +1042,59 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "flex-start",
     alignItems: "center",
-    // marginVertical: 10,
   },
-  // Add these to your styles object
   mediaItem: {
     position: "relative",
     margin: 5,
-    // Add any additional styling for the container of each media item
   },
-
   mediaThumbnail: {
-    width: 65, // Adjust the size as needed
+    width: 65,
     height: 65,
-    // Add any additional styling for the media thumbnails
   },
-
   removeMediaIcon: {
     position: "absolute",
-    top: -10, // Adjust position as needed
+    top: -10,
     right: -10,
-    backgroundColor: "#fff", // Optional: for better visibility of the icon
-    borderRadius: 15, // Optional: if you want a rounded background for the icon
-    padding: 5, // Optional: if you want spacing around the icon
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 5,
   },
   outerContainer: {
     width: "100%",
     paddingHorizontal: 10,
   },
   radioButtonContainer: {
-    flexDirection: "row", // Align label and button in a row
-    alignItems: "center", // Center-align items vertically in the container
-    // You may want to adjust the margin here depending on your layout needs
+    flexDirection: "row",
+    alignItems: "center",
   },
   outerCircle: {
     height: 18,
     width: 18,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#000", // Or use your theme color
+    borderColor: "#000",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 1, // Space between the radio button and label
+    marginRight: 1,
   },
   innerCircle: {
     height: 12,
     width: 12,
     borderRadius: 6,
-    backgroundColor: theme3.secondaryColor, // Use your theme color here
+    backgroundColor: theme3.secondaryColor,
   },
   selectedOuterCircle: {
-    borderColor: theme3.secondaryColor, // Use the theme color for selection
+    borderColor: theme3.secondaryColor,
   },
-
   radioButtonText: {
-    fontSize: 14, // Adjust the size as needed
-    marginLeft: 2, // Adjust the spacing as needed
+    fontSize: 14,
+    marginLeft: 2,
   },
   radioButtonRow: {
     flexDirection: "row",
-    justifyContent: "space-around", // Distribute buttons evenly across the available space
-    alignItems: "center", // Center-align vertically
-    paddingVertical: 5, // Add some vertical padding for spacing
+    justifyContent: "space-around",
+    alignItems: "center",
+    paddingVertical: 5,
   },
 });
 

@@ -176,6 +176,11 @@ const badgesInfo = {
     description: "Ensures services are accessible to people with disabilities.",
     icon: "universal-access",
   },
+  emergencyService: {
+    name: "Emergency Service",
+    description: "Available for emergency services.",
+    icon: "warning-outline",
+  },
 };
 
 // Function to get badge details by code

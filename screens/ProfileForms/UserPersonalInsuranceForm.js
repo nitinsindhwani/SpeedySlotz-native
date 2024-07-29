@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -9,42 +9,51 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-const UserPersonalInsuranceForm = ({ profilesData }) => {
-  const [provider, setProvider] = useState(profilesData?.provider || "");
-  const [policyNumber, setPolicyNumber] = useState(
-    profilesData?.policyNumber || ""
-  );
-  const [coverageDetails, setCoverageDetails] = useState(
-    profilesData?.coverageDetails || ""
-  );
-  const [contact, setContact] = useState(profilesData?.contact || "");
-  const [claimDetails, setClaimDetails] = useState(
-    profilesData?.claimDetails || ""
-  );
-  const [exclusions, setExclusions] = useState(profilesData?.exclusions || "");
+import { FontAwesome5 } from "@expo/vector-icons";
 
-  const handleSave = () => {
-    let profileData = {
+const UserPersonalInsuranceForm = ({ profilesData }) => {
+  const [provider, setProvider] = useState("");
+  const [policyNumber, setPolicyNumber] = useState("");
+  const [coverageDetails, setCoverageDetails] = useState("");
+  const [contact, setContact] = useState("");
+  const [claimDetails, setClaimDetails] = useState("");
+  const [exclusions, setExclusions] = useState("");
+
+  useEffect(() => {
+    if (profilesData) {
+      setProvider(profilesData.provider || "");
+      setPolicyNumber(profilesData.policyNumber || "");
+      setCoverageDetails(profilesData.coverageDetails || "");
+      setContact(profilesData.contact || "");
+      setClaimDetails(profilesData.claimDetails || "");
+      setExclusions(profilesData.exclusions || "");
+    }
+  }, [profilesData]);
+
+  const handleSave = async () => {
+    const profileData = {
       userPersonalInsurance: {
         provider,
         policyNumber,
         coverageDetails,
         contact,
-        claimDetails, // Include claimDetails in save function
-        exclusions, // Include exclusions in save function
+        claimDetails,
+        exclusions,
       },
     };
-    const response = saveProfiles(profileData);
-    // Optionally, add logic to save this information
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Personal insurance information saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save personal insurance information:", error);
+    }
   };
 
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        {/* Insurance Provider */}
-        {/* Insurance Provider */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="building" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -55,7 +64,6 @@ const UserPersonalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Policy Number */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="file-alt" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -66,7 +74,6 @@ const UserPersonalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Coverage Details */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="shield-alt"
@@ -83,7 +90,6 @@ const UserPersonalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Insurance Contact Number */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="phone" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -94,7 +100,6 @@ const UserPersonalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Claim Process Details */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="clipboard-list"
@@ -111,7 +116,6 @@ const UserPersonalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Exclusions or Limitations */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="times-circle"
@@ -128,7 +132,6 @@ const UserPersonalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Save Button */}
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>

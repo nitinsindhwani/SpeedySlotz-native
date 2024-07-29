@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -8,30 +8,37 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-const UserPreferredPharmacyForm = ({ profilesData }) => {
-  const [pharmacyName, setPharmacyName] = useState(
-    profilesData?.pharmacyName || ""
-  );
-  const [pharmacyAddress, setPharmacyAddress] = useState(
-    profilesData?.pharmacyAddress || ""
-  );
-  const [pharmacyPhone, setPharmacyPhone] = useState(
-    profilesData?.pharmacyPhone || ""
-  );
+import { FontAwesome5 } from "@expo/vector-icons";
 
-  const handleSavePreferredPharmacy = () => {
-   
-    let profileData = {
+const UserPreferredPharmacyForm = ({ profilesData }) => {
+  const [pharmacyName, setPharmacyName] = useState("");
+  const [pharmacyAddress, setPharmacyAddress] = useState("");
+  const [pharmacyPhone, setPharmacyPhone] = useState("");
+
+  useEffect(() => {
+    if (profilesData) {
+      setPharmacyName(profilesData.pharmacyName || "");
+      setPharmacyAddress(profilesData.pharmacyAddress || "");
+      setPharmacyPhone(profilesData.pharmacyPhone || "");
+    }
+  }, [profilesData]);
+
+  const handleSavePreferredPharmacy = async () => {
+    const profileData = {
       userPreferredPharmacy: {
         pharmacyName,
         pharmacyAddress,
         pharmacyPhone,
       },
     };
-    const response = saveProfiles(profileData);
-    // Add logic to pass data to the backend or parent component
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Preferred pharmacy information saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save preferred pharmacy information:", error);
+    }
   };
 
   return (
@@ -59,7 +66,7 @@ const UserPreferredPharmacyForm = ({ profilesData }) => {
         />
       </View>
       <View style={styles.iconInputContainer}>
-        <FontAwesome5 name="home" size={20} color={theme3.primaryColor} />
+        <FontAwesome5 name="phone" size={20} color={theme3.primaryColor} />
         <TextInput
           style={styles.input}
           placeholder="Pharmacy Contact Number"

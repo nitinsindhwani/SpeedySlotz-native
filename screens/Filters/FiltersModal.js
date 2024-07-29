@@ -17,16 +17,14 @@ const WindowHeight = Dimensions.get("window").height;
 
 function FilterModal({
   show,
-  onHideModal, // Renamed for clarity
+  onHideModal,
   badgeCodes,
   selectedFilters,
   setSelectedFilters,
 }) {
-  // Temporary local state to manage selections within the modal
   const [tempSelectedFilters, setTempSelectedFilters] =
     useState(selectedFilters);
 
-  // Effect to reset local state when modal is shown/hidden or selectedFilters change
   useEffect(() => {
     setTempSelectedFilters(selectedFilters);
   }, [selectedFilters, show]);
@@ -42,8 +40,8 @@ function FilterModal({
   };
 
   const handleSave = () => {
-    setSelectedFilters(tempSelectedFilters); // Update the global state with temporary selections
-    onHideModal(); // Close the modal
+    setSelectedFilters(tempSelectedFilters);
+    onHideModal();
   };
 
   return (
@@ -111,7 +109,7 @@ function FilterModal({
           <ScrollView>
             {badgeCodes.map((code, index) => {
               const badgeDetails = getBadgeDetails(code);
-              if (!badgeDetails) return null; // Skip rendering if badgeDetails is null
+              if (!badgeDetails) return null;
               return (
                 <TouchableOpacity
                   key={index}

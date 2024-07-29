@@ -4,11 +4,8 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView,
-  ActivityIndicator, // <-- Import ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -22,7 +19,7 @@ import { Entypo } from "@expo/vector-icons";
 
 import {
   getLocationAndCityState,
-  fetchBusinessesByCategory,
+  fetchBusinessesByServiceName,
   fetchUserCategories,
   fetchCategories,
 } from "../api/ApiCall";
@@ -34,9 +31,8 @@ import FilterModal from "./Filters/FiltersModal";
 import DateFilterModal from "./Filters/DateFilterModal";
 import PopularBusinessList from "../components/PopularBusinesList";
 import NoDataFound from "./GlobalComponents/NoDataFound";
-import AnimatedLottieView from "lottie-react-native";
-import loaderAnimation from "../assets/Animated/Loader.json";
 import InLineLoader from "./GlobalComponents/InLineLoader";
+
 const LandingScreen = ({ route }) => {
   const animation = useRef(null);
   const navigation = useNavigation();
@@ -44,10 +40,12 @@ const LandingScreen = ({ route }) => {
   const [selectedCoordinates, setSelectedCoordinates] = useState("");
   const [selectedZipcode, setSelectedZipcode] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Pets");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
+  const [selectedServiceTypeName, setSelectedServiceTypeName] = useState("");
   const [fetchedBusinesses, setFetchedBusinesses] = useState([]);
   const [radius, setRadius] = useState(5);
   const [radiusInMeters, setRadiusInMeters] = useState(radius * 1609.34);
-  const [isLoading, setIsLoading] = useState(false); // <-- New state for loading
+  const [isLoading, setIsLoading] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [allBusinesses, setAllBusinesses] = useState([]);
@@ -70,32 +68,42 @@ const LandingScreen = ({ route }) => {
   };
 
   const prepareBadgeFilters = () => {
-    // Check if fetchedBusinesses is not null and contains data
     if (!fetchedBusinesses || fetchedBusinesses.length === 0) {
       console.log("No businesses fetched yet, or they have no badges.");
       return [];
     }
+    console.log("fetchedBusinesses", fetchedBusinesses);
 
-    // Check if any of the fetched businesses have badges
     if (
       !fetchedBusinesses.some(
         (business) =>
-          business.yelpBusiness.badges &&
-          business.yelpBusiness.badges.length > 0
+          (business.yelpBusiness.badges &&
+            business.yelpBusiness.badges.length > 0) ||
+          (business.yelpBusinessSettings &&
+            business.yelpBusinessSettings.allowEmergencyRequest)
       )
     ) {
-      console.log("No badges found in the fetched businesses.");
+      console.log(
+        "No badges or emergency services found in the fetched businesses."
+      );
       return [];
     }
 
-    // Flatten the array of badge arrays from all businesses into a single array of badges
-    const allBadges = fetchedBusinesses.flatMap((business) =>
-      business.yelpBusiness.badges ? business.yelpBusiness.badges : []
-    );
+    const allBadges = fetchedBusinesses.flatMap((business) => {
+      const badges = business.yelpBusiness.badges
+        ? business.yelpBusiness.badges
+        : [];
+      if (
+        business.yelpBusinessSettings &&
+        business.yelpBusinessSettings.allowEmergencyRequest
+      ) {
+        badges.push("emergencyService");
+      }
+      return badges;
+    });
 
     console.log("All badges:", allBadges);
 
-    // Use Set to filter out duplicates
     const uniqueBadges = Array.from(new Set(allBadges));
 
     return uniqueBadges;
@@ -110,21 +118,25 @@ const LandingScreen = ({ route }) => {
   }, [radius]);
 
   const updateLocation = async () => {
-    const locationDetails = await getLocationAndCityState();
+    try {
+      const locationDetails = await getLocationAndCityState();
 
-    if (locationDetails.errorMsg) {
-      console.log(`Error getting location: ${locationDetails.errorMsg}`);
-      return;
+      if (locationDetails.errorMsg) {
+        console.log(`Error getting location: ${locationDetails.errorMsg}`);
+        return;
+      }
+
+      setSelectedLocation(locationDetails.cityState);
+      setLocationData({
+        coordinates: {
+          latitude: locationDetails?.location?.coords.latitude,
+          longitude: locationDetails?.location?.coords.longitude,
+        },
+        zipcode: locationDetails?.zipcode,
+      });
+    } catch (error) {
+      console.error("Error updating location:", error.message);
     }
-
-    setSelectedLocation(locationDetails.cityState);
-    setLocationData({
-      coordinates: {
-        latitude: locationDetails?.location?.coords.latitude,
-        longitude: locationDetails?.location?.coords.longitude,
-      },
-      zipcode: locationDetails?.zipcode,
-    });
   };
 
   useEffect(() => {
@@ -138,7 +150,6 @@ const LandingScreen = ({ route }) => {
       const fetchCategoriesData = async () => {
         setIsLoading(true);
         try {
-          // Attempt to fetch user-specific categories first
           const userCategoriesData = await fetchUserCategories();
 
           if (
@@ -146,13 +157,10 @@ const LandingScreen = ({ route }) => {
             Array.isArray(userCategoriesData) &&
             userCategoriesData.length > 0
           ) {
-            // If the response is a non-empty array, update the state
             setUserCategories(userCategoriesData);
           } else {
-            // If the first attempt fails, fallback to fetching a general set of categories
-            const categoriesData = await fetchCategories(); // Ensure this method is defined and fetches a general set of categories
+            const categoriesData = await fetchCategories();
 
-            // Update state with the fallback data if it's an array and not empty
             if (
               isActive &&
               Array.isArray(categoriesData) &&
@@ -160,13 +168,12 @@ const LandingScreen = ({ route }) => {
             ) {
               setUserCategories(categoriesData);
             } else {
-              // Handle case where neither endpoint returns valid, non-empty data
               console.error("No valid category data fetched");
-              setUserCategories([]); // Optionally reset to empty array or handle as needed
+              setUserCategories([]);
             }
           }
         } catch (error) {
-          console.error("Failed to fetch categories", error);
+          console.error("Failed to fetch categories", error.message);
         } finally {
           if (isActive) setIsLoading(false);
         }
@@ -175,12 +182,12 @@ const LandingScreen = ({ route }) => {
       fetchCategoriesData();
 
       return () => {
-        isActive = false; // Cleanup function to set isActive to false when the component unmounts or loses focus
+        isActive = false;
       };
     }, [])
   );
 
-  const fetchData = async () => {
+  const fetchData = async (serviceName) => {
     if (
       selectedLocation !== "" &&
       locationData.coordinates.latitude !== undefined &&
@@ -189,8 +196,8 @@ const LandingScreen = ({ route }) => {
     ) {
       setLoader(true);
       try {
-        const businesses = await fetchBusinessesByCategory(
-          selectedCategory,
+        const businesses = await fetchBusinessesByServiceName(
+          serviceName, // Updated to use serviceName directly
           selectedLocation,
           locationData.coordinates.latitude,
           locationData.coordinates.longitude,
@@ -198,8 +205,9 @@ const LandingScreen = ({ route }) => {
           selectedDate,
           radiusInMeters
         );
-        setAllBusinesses(businesses); // Store all fetched businesses
-        setFetchedBusinesses(businesses); // Also set them as the currently displayed businesses
+
+        setAllBusinesses(businesses);
+        setFetchedBusinesses(businesses);
       } catch (error) {
         console.log("Error fetching businesses:", error.message);
       } finally {
@@ -211,10 +219,12 @@ const LandingScreen = ({ route }) => {
   };
 
   useEffect(() => {
-    console.log("Fetching data for date:", selectedDate); // Debugging
-    fetchData();
+    if (selectedServiceTypeName) {
+      console.log("Fetching data for service:", selectedServiceTypeName);
+      fetchData(selectedServiceTypeName);
+    }
   }, [
-    selectedCategory,
+    selectedServiceTypeName,
     selectedLocation,
     locationData,
     selectedDate,
@@ -223,34 +233,38 @@ const LandingScreen = ({ route }) => {
 
   const applyFilters = () => {
     if (selectedFilters.length > 0) {
-      const filteredBusinesses = allBusinesses.filter(
-        (business) =>
-          business.yelpBusiness.badges &&
-          business.yelpBusiness.badges.some((badge) =>
-            selectedFilters.includes(badge)
-          )
-      );
+      const filteredBusinesses = allBusinesses.filter((business) => {
+        const badges = business.yelpBusiness.badges || [];
+        if (
+          business.yelpBusinessSettings &&
+          business.yelpBusinessSettings.allowEmergencyRequest
+        ) {
+          badges.push("emergencyService");
+        }
+        return selectedFilters.every((filter) => badges.includes(filter));
+      });
       setFetchedBusinesses(filteredBusinesses);
     } else {
-      setFetchedBusinesses(allBusinesses); // Step 3: Reset to show all businesses when no filters are selected
+      setFetchedBusinesses(allBusinesses);
     }
   };
+
   useEffect(() => {
-    // Call applyFilters whenever selectedFilters changes
     applyFilters();
-  }, [selectedFilters]); // Dependency array ensures this runs only when selectedFilters changes
+  }, [selectedFilters]);
 
   const handleDateSelect = (date) => {
     const newDate = date.toISOString().split("T")[0];
-    console.log("New date selected:", newDate); // Debugging
+    console.log("New date selected:", newDate);
     setSelectedDate(newDate);
   };
 
   const handleOpenFilterModal = () => {
-    const uniqueBadges = prepareBadgeFilters(); // Call the function to get unique badges
-    setUniqueBadgeFilters(uniqueBadges); // Set the unique badges to state
-    setShowFilterModal(true); // Open the modal
+    const uniqueBadges = prepareBadgeFilters();
+    setUniqueBadgeFilters(uniqueBadges);
+    setShowFilterModal(true);
   };
+
   function onHideDateModal() {
     setShowDateModal((p) => !p);
   }
@@ -258,13 +272,10 @@ const LandingScreen = ({ route }) => {
   return (
     <View style={{ flex: 1, flexDirection: "column" }}>
       {loader === 3 ? (
-        // Display the spinner when loading
         <View style={styles.container}>
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
       ) : (
-        // Display the main content when not loading
-        // MY INTERNET IS NO
         <>
           <Header user={user} />
           <SearchComponent
@@ -273,9 +284,6 @@ const LandingScreen = ({ route }) => {
             setLocationData={setLocationData}
             handleLoader={handleLoader}
           />
-          {/* <ScrollView contentContainerStyle={{alignItems:'center'}}
-nestedScrollEnabled={true}
-> */}
           <View
             style={{ backgroundColor: "white", width: "100%", marginTop: 0 }}
           >
@@ -284,6 +292,11 @@ nestedScrollEnabled={true}
                 userCategoriesData={userCategories}
                 selectedCategory={selectedCategory}
                 setSelectedCategory={setSelectedCategory}
+                selectedSubcategory={selectedSubcategory}
+                setSelectedSubcategory={setSelectedSubcategory}
+                selectedServiceTypeName={selectedServiceTypeName}
+                setSelectedServiceTypeName={setSelectedServiceTypeName}
+                rows={3} // Ensure CategoryList is updated to handle 3 rows
               />
             )}
             {ExpandCat === true && (
@@ -393,43 +406,19 @@ nestedScrollEnabled={true}
           ) : (
             <NoDataFound />
           )}
-
-          {/* {fetchedBusinesses.length < 1 ? (
-            loader === true ? (
-              
-            ) : (
-              <NoDataFound />
-            )
-          ) : (
-            <FlatList
-              nestedScrollEnabled={true}
-              data={fetchedBusinesses}
-              keyExtractor={(item) => item.yelpBusiness.id.toString()}
-              ListHeaderComponent={() => <></>}
-              ListFooterComponent={() => (
-                <PopularBusinessList
-                  fetchedBusinesses={fetchedBusinesses}
-                  navigation={navigation}
-                />
-              )}
-            />
-          )} */}
-          {/* </ScrollView> */}
-
-          {/* <BottomMenu user={user} /> */}
         </>
       )}
       <FilterModal
         show={showFilterModal}
         onHideModal={hideModal}
         badgeCodes={uniqueBadgeFilters}
-        selectedFilters={selectedFilters} // Ensure this is always an array
+        selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
       />
       <DateFilterModal
         show={showDateModal}
         HideModal={onHideDateModal}
-        onDateSelected={handleDateSelect} // Pass the handler as a prop
+        onDateSelected={handleDateSelect}
       />
     </View>
   );

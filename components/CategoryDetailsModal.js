@@ -6,12 +6,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Dimensions,
 } from "react-native";
 
 const CategoryDetailsModal = ({ visible, onClose, category }) => {
   // Function to render category details
   const renderCategoryDetails = () => {
-
     if (!category) return null;
 
     return Object.keys(category).map((key) => {
@@ -43,9 +43,10 @@ const CategoryDetailsModal = ({ visible, onClose, category }) => {
       }
       // Render string/number/boolean values
       return (
-        <Text key={key} style={styles.detailText}>
-          {`${key}: ${value}`}
-        </Text>
+        <View key={key} style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>{key}</Text>
+          <Text style={styles.detailText}>{value}</Text>
+        </View>
       );
     });
   };
@@ -59,8 +60,8 @@ const CategoryDetailsModal = ({ visible, onClose, category }) => {
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <ScrollView style={styles.scrollView}>
-            <Text style={styles.modalText}>Category Details</Text>
+          <Text style={styles.modalTitle}>Category Details</Text>
+          <ScrollView contentContainerStyle={styles.scrollViewContent}>
             {renderCategoryDetails()}
           </ScrollView>
           <TouchableOpacity
@@ -75,18 +76,19 @@ const CategoryDetailsModal = ({ visible, onClose, category }) => {
   );
 };
 
+const { height } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 22,
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalView: {
-    margin: 20,
     backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
+    borderRadius: 10,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -96,48 +98,54 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    width: "90%",
+    maxHeight: height * 0.8, // Ensure modal does not exceed 80% of screen height
   },
   button: {
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 10,
     elevation: 2,
   },
   buttonClose: {
     backgroundColor: "#2196F3",
     marginTop: 15,
+    width: "100%",
   },
   textStyle: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
   },
-  modalText: {
+  modalTitle: {
     marginBottom: 15,
     textAlign: "center",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
+    color: "#333",
   },
   detailText: {
     fontSize: 16,
-    color: "black",
+    color: "#333",
     marginBottom: 5,
   },
   sectionContainer: {
-    marginBottom: 10,
+    marginBottom: 15,
+    width: "100%",
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    color: "navy",
+    color: "#555",
     marginBottom: 5,
   },
   itemText: {
-    fontSize: 16,
-    color: "darkblue",
+    fontSize: 14,
+    color: "#666",
     marginBottom: 3,
+    paddingLeft: 10,
   },
-  scrollView: {
-    maxHeight: 400, // Adjust this value as needed
+  scrollViewContent: {
+    paddingBottom: 20, // Extra padding to ensure content is not hidden behind the button
   },
 });
 

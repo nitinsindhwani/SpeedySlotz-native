@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -11,22 +11,28 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import Icon from "react-native-vector-icons/Ionicons";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-const UserDentalInsuranceForm = ({ profilesData }) => {
-  const [claimDetails, setClaimDetails] = useState(
-    profilesData?.claimDetails || ""
-  );
-  const [contact, setContact] = useState(profilesData?.contact || "");
-  const [coverageDetails, setCoverageDetails] = useState(
-    profilesData?.coverageDetails || ""
-  );
-  const [exclusions, setExclusions] = useState(profilesData?.exclusions || "");
-  const [policyNumber, setPolicyNumber] = useState(
-    profilesData?.policyNumber || ""
-  );
-  const [provider, setProvider] = useState(profilesData?.provider || "");
 
-  const handleSave = () => {
-    let profileData = {
+const UserDentalInsuranceForm = ({ profilesData }) => {
+  const [claimDetails, setClaimDetails] = useState("");
+  const [contact, setContact] = useState("");
+  const [coverageDetails, setCoverageDetails] = useState("");
+  const [exclusions, setExclusions] = useState("");
+  const [policyNumber, setPolicyNumber] = useState("");
+  const [provider, setProvider] = useState("");
+
+  useEffect(() => {
+    if (profilesData) {
+      setClaimDetails(profilesData.claimDetails || "");
+      setContact(profilesData.contact || "");
+      setCoverageDetails(profilesData.coverageDetails || "");
+      setExclusions(profilesData.exclusions || "");
+      setPolicyNumber(profilesData.policyNumber || "");
+      setProvider(profilesData.provider || "");
+    }
+  }, [profilesData]);
+
+  const handleSave = async () => {
+    const profileData = {
       userDentalInsurance: {
         claimDetails,
         contact,
@@ -36,14 +42,19 @@ const UserDentalInsuranceForm = ({ profilesData }) => {
         provider,
       },
     };
-    const response = saveProfiles(profileData);
-    // Add logic to save this information
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Dental insurance information saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save dental insurance information:", error);
+    }
   };
 
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        {/* Insurance Provider Name */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="building" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -54,7 +65,6 @@ const UserDentalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Policy Number */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="file-alt" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -65,7 +75,6 @@ const UserDentalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Coverage Details */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="tooth" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -78,7 +87,6 @@ const UserDentalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Insurance Contact Number */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="phone" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -89,7 +97,6 @@ const UserDentalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Claim Process Details */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="clipboard-list"
@@ -106,7 +113,6 @@ const UserDentalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Exclusions or Limitations */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="times-circle"

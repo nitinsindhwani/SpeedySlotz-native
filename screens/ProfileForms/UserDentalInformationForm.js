@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -11,39 +11,34 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import Icon from "react-native-vector-icons/Ionicons";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+
 const UserDentalInformationForm = ({ profilesData }) => {
-  const [lastDentalVisit, setLastDentalVisit] = useState(
-    profilesData?.lastDentalVisit || ""
-  );
-  const [dentalAllergies, setDentalAllergies] = useState(
-    profilesData?.dentalAllergies || ""
-  );
-  const [dentalComplaints, setDentalComplaints] = useState(
-    profilesData?.dentalComplaints || ""
-  );
-  const [dentalMedications, setDentalMedications] = useState(
-    profilesData?.dentalMedications || ""
-  );
-  const [gumDiseaseHistory, setGumDiseaseHistory] = useState(
-    profilesData?.gumDiseaseHistory || ""
-  );
-  const [lastDentalXray, setLastDentalXray] = useState(
-    profilesData?.lastDentalXray || ""
-  );
-  const [orthodonticHistory, setOrthodonticHistory] = useState(
-    profilesData?.orthodonticHistory || ""
-  );
-  const [otherDentalInfo, setOtherDentalInfo] = useState(
-    profilesData?.otherDentalInfo || ""
-  );
-  const [toothExtractionHistory, setToothExtractionHistory] = useState(
-    profilesData?.toothExtractionHistory || ""
-  );
+  const [lastDentalVisit, setLastDentalVisit] = useState("");
+  const [dentalAllergies, setDentalAllergies] = useState("");
+  const [dentalComplaints, setDentalComplaints] = useState("");
+  const [dentalMedications, setDentalMedications] = useState("");
+  const [gumDiseaseHistory, setGumDiseaseHistory] = useState("");
+  const [lastDentalXray, setLastDentalXray] = useState("");
+  const [orthodonticHistory, setOrthodonticHistory] = useState("");
+  const [otherDentalInfo, setOtherDentalInfo] = useState("");
+  const [toothExtractionHistory, setToothExtractionHistory] = useState("");
 
-  const handleSaveDentalInformation = () => {
+  useEffect(() => {
+    if (profilesData) {
+      setLastDentalVisit(profilesData.lastDentalVisit || "");
+      setDentalAllergies(profilesData.dentalAllergies || "");
+      setDentalComplaints(profilesData.dentalComplaints || "");
+      setDentalMedications(profilesData.dentalMedications || "");
+      setGumDiseaseHistory(profilesData.gumDiseaseHistory || "");
+      setLastDentalXray(profilesData.lastDentalXray || "");
+      setOrthodonticHistory(profilesData.orthodonticHistory || "");
+      setOtherDentalInfo(profilesData.otherDentalInfo || "");
+      setToothExtractionHistory(profilesData.toothExtractionHistory || "");
+    }
+  }, [profilesData]);
 
-
-    let profileData = {
+  const handleSaveDentalInformation = async () => {
+    const profileData = {
       userDentalInformation: {
         lastDentalVisit,
         dentalAllergies,
@@ -56,14 +51,19 @@ const UserDentalInformationForm = ({ profilesData }) => {
         toothExtractionHistory,
       },
     };
-    const response = saveProfiles(profileData);
-    // Implement the logic to save this information (e.g., API call)
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Dental information saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save dental information:", error);
+    }
   };
 
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        {/* Last Dental Visit */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="calendar-check"
@@ -78,7 +78,6 @@ const UserDentalInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Last Dental X-ray */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="x-ray" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -89,9 +88,12 @@ const UserDentalInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Dental Allergies */}
         <View style={styles.iconInputContainer}>
-          <FontAwesome5 name="allergies" size={20} color={theme3.primaryColor} />
+          <FontAwesome5
+            name="allergies"
+            size={20}
+            color={theme3.primaryColor}
+          />
           <TextInput
             style={styles.input}
             placeholder="Dental Allergies"
@@ -100,7 +102,6 @@ const UserDentalInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Dental Complaints */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="tooth" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -111,9 +112,12 @@ const UserDentalInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Orthodontic History */}
         <View style={styles.iconInputContainer}>
-          <FontAwesome5 name="smile-beam" size={20} color={theme3.primaryColor} />
+          <FontAwesome5
+            name="smile-beam"
+            size={20}
+            color={theme3.primaryColor}
+          />
           <TextInput
             style={styles.input}
             placeholder="Orthodontic History"
@@ -122,7 +126,6 @@ const UserDentalInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Gum Disease History */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="sad-tear" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -133,7 +136,6 @@ const UserDentalInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Tooth Extraction History */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="tooth" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -144,7 +146,6 @@ const UserDentalInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Dental Medications */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="pills" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -155,9 +156,12 @@ const UserDentalInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Other Dental Information */}
         <View style={styles.iconInputContainer}>
-          <FontAwesome5 name="info-circle" size={20} color={theme3.primaryColor} />
+          <FontAwesome5
+            name="info-circle"
+            size={20}
+            color={theme3.primaryColor}
+          />
           <TextInput
             style={styles.input}
             placeholder="Other Dental Information"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -9,33 +9,39 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-const UserPetInformationForm = ({ profilesData }) => {
-  const [petName, setPetName] = useState(profilesData?.petName || "");
-  const [petType, setPetType] = useState(profilesData?.petType || "");
-  const [petBreed, setPetBreed] = useState(profilesData?.petBreed || "");
-  const [petAge, setPetAge] = useState(profilesData?.petAge || "");
-  const [petWeight, setPetWeight] = useState(profilesData?.petWeight || "");
-  const [petAllergies, setPetAllergies] = useState(
-    profilesData?.petAllergies || ""
-  );
-  const [petBehavior, setPetBehavior] = useState(
-    profilesData?.petBehavior || ""
-  );
-  const [petFavorites, setPetFavorites] = useState(
-    profilesData?.petFavorites || ""
-  );
-  const [petMicrochipped, setPetMicrochipped] = useState(
-    profilesData?.petMicrochipped || ""
-  );
-  const [petSpecialNeeds, setPetSpecialNeeds] = useState(
-    profilesData?.petSpecialNeeds || ""
-  );
-  const [vetDetails, setVetDetails] = useState(profilesData?.vetDetails || "");
+import { FontAwesome5 } from "@expo/vector-icons";
 
-  const handleSave = () => {
-    let profileData = {
+const UserPetInformationForm = ({ profilesData }) => {
+  const [petName, setPetName] = useState("");
+  const [petType, setPetType] = useState("");
+  const [petBreed, setPetBreed] = useState("");
+  const [petAge, setPetAge] = useState("");
+  const [petWeight, setPetWeight] = useState("");
+  const [petAllergies, setPetAllergies] = useState("");
+  const [petBehavior, setPetBehavior] = useState("");
+  const [petFavorites, setPetFavorites] = useState("");
+  const [petMicrochipped, setPetMicrochipped] = useState("");
+  const [petSpecialNeeds, setPetSpecialNeeds] = useState("");
+  const [vetDetails, setVetDetails] = useState("");
+
+  useEffect(() => {
+    if (profilesData) {
+      setPetName(profilesData.petName || "");
+      setPetType(profilesData.petType || "");
+      setPetBreed(profilesData.petBreed || "");
+      setPetAge(profilesData.petAge || "");
+      setPetWeight(profilesData.petWeight || "");
+      setPetAllergies(profilesData.petAllergies || "");
+      setPetBehavior(profilesData.petBehavior || "");
+      setPetFavorites(profilesData.petFavorites || "");
+      setPetMicrochipped(profilesData.petMicrochipped || "");
+      setPetSpecialNeeds(profilesData.petSpecialNeeds || "");
+      setVetDetails(profilesData.vetDetails || "");
+    }
+  }, [profilesData]);
+
+  const handleSave = async () => {
+    const profileData = {
       userPetInformation: {
         petName,
         petType,
@@ -50,14 +56,19 @@ const UserPetInformationForm = ({ profilesData }) => {
         petMicrochipped,
       },
     };
-    const response = saveProfiles(profileData);
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Pet information saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save pet information:", error);
+    }
   };
 
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        {/* Pet Name */}
-        {/* Pet Name */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="dog" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -68,7 +79,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pet Type */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="paw" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -79,7 +89,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pet Breed */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="dna" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -90,7 +99,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pet Age */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="birthday-cake"
@@ -105,7 +113,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pet Weight */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="weight" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -116,7 +123,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Special Needs */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="first-aid"
@@ -132,7 +138,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Veterinarian Details */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="stethoscope"
@@ -148,7 +153,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pet Allergies */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="allergies"
@@ -163,7 +167,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pet Behavior */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="user-alt" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -174,7 +177,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pet Favorites */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="bone" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -185,7 +187,6 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Pet Microchipped */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="microchip"
@@ -195,12 +196,11 @@ const UserPetInformationForm = ({ profilesData }) => {
           <TextInput
             style={styles.input}
             placeholder="Pet Microchipped (Yes/No)"
-            value={petMicrochipped.toString()}
+            value={petMicrochipped}
             onChangeText={setPetMicrochipped}
           />
         </View>
 
-        {/* Save Button */}
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>

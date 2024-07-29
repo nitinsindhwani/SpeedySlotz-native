@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -11,14 +11,24 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import Icon from "react-native-vector-icons/Ionicons";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-const UserAddressForm = ({ profilesData }) => {
-  const [street, setStreet] = useState(profilesData?.street || "");
-  const [city, setCity] = useState(profilesData?.city || "");
-  const [state, setState] = useState(profilesData?.state || "");
-  const [zip, setZip] = useState(profilesData?.zip || "");
 
-  const handleSaveAddress = () => {
-    let profileData = {
+const UserAddressForm = ({ profilesData }) => {
+  const [street, setStreet] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
+
+  useEffect(() => {
+    if (profilesData) {
+      setStreet(profilesData.street || "");
+      setCity(profilesData.city || "");
+      setState(profilesData.state || "");
+      setZip(profilesData.zip || "");
+    }
+  }, [profilesData]);
+
+  const handleSaveAddress = async () => {
+    const profileData = {
       userAddress: {
         street,
         city,
@@ -26,7 +36,14 @@ const UserAddressForm = ({ profilesData }) => {
         zip,
       },
     };
-    const response = saveProfiles(profileData);
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Address saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save address:", error);
+    }
   };
 
   return (
@@ -42,7 +59,6 @@ const UserAddressForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* City */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="building" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -53,7 +69,6 @@ const UserAddressForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* State */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="flag" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -64,7 +79,6 @@ const UserAddressForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Zipcode */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="map-pin" size={20} color={theme3.primaryColor} />
           <TextInput

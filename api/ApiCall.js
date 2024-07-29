@@ -72,8 +72,8 @@ export const fetchHints = async (text) => {
   return [];
 };
 
-export const fetchBusinessesByCategory = async (
-  category,
+export const fetchBusinessesBySubcategory = async (
+  subcategory,
   location,
   latitude,
   longitude,
@@ -84,7 +84,7 @@ export const fetchBusinessesByCategory = async (
   const intRadius = parseInt(radius, 10);
 
   const params = {
-    term: category,
+    term: subcategory,
     location: location,
     latitude: latitude,
     longitude: longitude,
@@ -100,7 +100,56 @@ export const fetchBusinessesByCategory = async (
     .join("&");
 
   const fullURL = `${baseURL}?${queryString}`;
-  // Fetch token from SecureStore
+  console.log("Query String", fullURL);
+
+  const userToken = await SecureStore.getItemAsync("userToken");
+  if (!userToken) {
+    throw new Error("Token not found in SecureStore!");
+  }
+
+  const headers = {
+    Authorization: `Bearer ${userToken}`,
+  };
+
+  const response = await axios.get(baseURL, {
+    params,
+    headers,
+  });
+  if (response.data && response.data.businesses) {
+    return response.data.businesses;
+  } else {
+    throw new Error("Businesses not found in response data");
+  }
+};
+
+export const fetchBusinessesByServiceName = async (
+  term,
+  location,
+  latitude,
+  longitude,
+  zipcode,
+  date,
+  radius
+) => {
+  const intRadius = parseInt(radius, 10);
+
+  const params = {
+    term: term, // Updated to use term instead of subcategory
+    location: location,
+    latitude: latitude,
+    longitude: longitude,
+    zipcode: zipcode,
+    date: date,
+    radius: intRadius,
+  };
+
+  const baseURL = baseApiUrl + "/api/v1/businesses";
+  const queryString = Object.keys(params)
+    .map((key) => key + "=" + params[key])
+    .join("&");
+
+  const fullURL = `${baseURL}?${queryString}`;
+  console.log("Query String", fullURL);
 
   const userToken = await SecureStore.getItemAsync("userToken");
   if (!userToken) {
@@ -456,7 +505,7 @@ export const fetchProfiles = async () => {
         },
       }
     );
-
+    console.log("response", response);
     // Check for HTTP errors
     if (!response.ok) {
       // Extract error message from response body if possible
@@ -509,7 +558,7 @@ export const fetchCategories = async () => {
       },
     }
   );
-  console.log("categories response", response);
+
   if (!response.ok) {
     console.error("API Response:", await response.text());
     throw new Error("Failed to fetch favorites");
@@ -551,7 +600,6 @@ export const fetchUserCategories = async () => {
         },
       }
     );
-    console.log("Getting Categores", response);
     if (!response.ok) {
       // Extract error message from response body if possible
       const errorText = await response.text();

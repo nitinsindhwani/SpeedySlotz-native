@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -11,18 +11,32 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import moment from "moment";
+
 const UserProfileForm = ({ profilesData }) => {
   const [profile, setProfile] = useState({
-    first_name: profilesData.first_name || "",
-    last_name: profilesData.last_name || "",
-    email: profilesData.email || "",
-    phoneNumber: profilesData.phoneNumber || "",
-    gender: profilesData.gender || "",
-    dateOfBirth: profilesData.dateOfBirth,
+    first_name: "",
+    last_name: "",
+    email: "",
+    phoneNumber: "",
+    gender: "",
+    dateOfBirth: "",
   });
 
+  useEffect(() => {
+    if (profilesData) {
+      setProfile({
+        first_name: profilesData.first_name || "",
+        last_name: profilesData.last_name || "",
+        email: profilesData.email || "",
+        phoneNumber: profilesData.phoneNumber || "",
+        gender: profilesData.gender || "",
+        dateOfBirth: profilesData.dateOfBirth || "",
+      });
+    }
+  }, [profilesData]);
+
   const formatDateForBackend = (date) => {
-    return date ? moment(date).format("MM-dd-yyyy") : null; // Use moment.js or any other library to format
+    return date ? moment(date).format("MM-DD-YYYY") : null; // Use moment.js or any other library to format
   };
 
   const handleInputChange = (name, value) => {
@@ -46,8 +60,9 @@ const UserProfileForm = ({ profilesData }) => {
         const response = await saveProfiles({
           userProfile: { ...profilesData, ...updatedFields },
         });
-
-        // Additional code to handle the response
+        if (response.success) {
+          alert("Profile information saved successfully");
+        }
       } catch (error) {
         console.error("Update failed:", error);
       }

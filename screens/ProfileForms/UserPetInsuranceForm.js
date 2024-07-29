@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -9,24 +9,29 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-const UserPetInsuranceForm = ({ profilesData }) => {
-  const [provider, setProvider] = useState(profilesData?.provider || "");
-  const [policyNumber, setPolicyNumber] = useState(
-    profilesData?.policyNumber || ""
-  );
-  const [coverageDetails, setCoverageDetails] = useState(
-    profilesData?.coverageDetails || ""
-  );
-  const [contact, setContact] = useState(profilesData?.contact || "");
-  const [claimDetails, setClaimDetails] = useState(
-    profilesData?.claimDetails || ""
-  );
-  const [exclusions, setExclusions] = useState(profilesData?.exclusions || "");
+import { FontAwesome5 } from "@expo/vector-icons";
 
-  const handleSave = () => {
-    let profileData = {
+const UserPetInsuranceForm = ({ profilesData }) => {
+  const [provider, setProvider] = useState("");
+  const [policyNumber, setPolicyNumber] = useState("");
+  const [coverageDetails, setCoverageDetails] = useState("");
+  const [contact, setContact] = useState("");
+  const [claimDetails, setClaimDetails] = useState("");
+  const [exclusions, setExclusions] = useState("");
+
+  useEffect(() => {
+    if (profilesData) {
+      setProvider(profilesData.provider || "");
+      setPolicyNumber(profilesData.policyNumber || "");
+      setCoverageDetails(profilesData.coverageDetails || "");
+      setContact(profilesData.contact || "");
+      setClaimDetails(profilesData.claimDetails || "");
+      setExclusions(profilesData.exclusions || "");
+    }
+  }, [profilesData]);
+
+  const handleSave = async () => {
+    const profileData = {
       userPetInsurance: {
         provider,
         policyNumber,
@@ -36,14 +41,19 @@ const UserPetInsuranceForm = ({ profilesData }) => {
         exclusions,
       },
     };
-    const response = saveProfiles(profileData);
+    try {
+      const response = await saveProfiles(profileData);
+      if (response.success) {
+        alert("Pet insurance information saved successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save pet insurance information:", error);
+    }
   };
 
   return (
     <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
       <View style={styles.container}>
-        {/* Insurance Provider */}
-        {/* Insurance Provider Name */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="clinic-medical"
@@ -58,7 +68,6 @@ const UserPetInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Policy Number */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="file-invoice-dollar"
@@ -73,7 +82,6 @@ const UserPetInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Coverage Details */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="book-medical"
@@ -90,7 +98,6 @@ const UserPetInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Insurance Contact Number */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="phone" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -101,7 +108,6 @@ const UserPetInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Claim Process Details */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="file-signature"
@@ -118,7 +124,6 @@ const UserPetInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Exclusions or Limitations */}
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="exclamation-triangle"
@@ -135,7 +140,6 @@ const UserPetInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        {/* Save Button */}
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
