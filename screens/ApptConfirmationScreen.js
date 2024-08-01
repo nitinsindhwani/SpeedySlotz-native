@@ -223,7 +223,9 @@ const ApptConfirmationScreen = ({ route }) => {
             <Text style={{ fontWeight: "bold" }}>
               Need service in zipcodes:{" "}
             </Text>
-            {slot.zipcodes.join(", ")}
+            {slot.zipcodes && Array.isArray(slot.zipcodes)
+              ? slot.zipcodes.join(", ")
+              : "N/A"}
           </Text>
           <Text style={styles.serviceType}>
             <Text style={{ fontWeight: "bold" }}>Priority Status: </Text>
