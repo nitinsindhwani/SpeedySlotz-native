@@ -182,19 +182,47 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
           //     You currently don't have any past appointments.
           //   </Text>
           // </View>
+          
           fetchedBusinesses &&
-          fetchedBusinesses.map((item, index) => (
-            <AppointmentCard
-              businesss={item}
-              getStatusText={getStatusText}
-              formatDate={formatDate}
-              formatTime={formatTime}
-              handleReschedule={handleReschedule}
-              identifier={"past"}
-              handleCancel={"handleCancelOne"}
-            />
-          ))
+          fetchedBusinesses.map((item, index) => {
+            return(
+              <>
+              {         
+  item?.slots && item?.slots?.length > 0 &&
+  item?.slots?.map((singleSlot)=>{
+return(
+  <AppointmentCard
+  businesss={item}
+  getStatusText={getStatusText}
+  formatDate={formatDate}
+  formatTime={formatTime}
+  handleReschedule={handleReschedule}
+  identifier={"past"}
+  handleCancel={"handleCancelOne"}
+  singleSlot={singleSlot}
+/>
+)
+  })
+             }
+      </>     
+            )           
+})
         )}
+
+{/* old method of rendering past buisness below */}
+        {/* //   fetchedBusinesses &&
+          // fetchedBusinesses.map((item, index) => (
+          //   <AppointmentCard
+          //     businesss={item}
+          //     getStatusText={getStatusText}
+          //     formatDate={formatDate}
+          //     formatTime={formatTime}
+          //     handleReschedule={handleReschedule}
+          //     identifier={"past"}
+          //     handleCancel={"handleCancelOne"}
+          //   />
+          // ))
+        // )} */}
 
         {/* <AppointmentCard businesss={"Pass the item value here"}
         getStatusText={getStatusText}

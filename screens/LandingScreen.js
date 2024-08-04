@@ -32,6 +32,7 @@ import DateFilterModal from "./Filters/DateFilterModal";
 import PopularBusinessList from "../components/PopularBusinesList";
 import NoDataFound from "./GlobalComponents/NoDataFound";
 import InLineLoader from "./GlobalComponents/InLineLoader";
+import LoadingModal from "./GlobalComponents/LoadingModal";
 
 const LandingScreen = ({ route }) => {
   const animation = useRef(null);
@@ -45,7 +46,7 @@ const LandingScreen = ({ route }) => {
   const [fetchedBusinesses, setFetchedBusinesses] = useState([]);
   const [radius, setRadius] = useState(5);
   const [radiusInMeters, setRadiusInMeters] = useState(radius * 1609.34);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [allBusinesses, setAllBusinesses] = useState([]);
@@ -148,7 +149,7 @@ const LandingScreen = ({ route }) => {
       let isActive = true;
 
       const fetchCategoriesData = async () => {
-        setIsLoading(true);
+        // setIsLoading(true);
         try {
           const userCategoriesData = await fetchUserCategories();
 
@@ -420,6 +421,8 @@ const LandingScreen = ({ route }) => {
         HideModal={onHideDateModal}
         onDateSelected={handleDateSelect}
       />
+      <LoadingModal show={isLoading} />
+
     </View>
   );
 };

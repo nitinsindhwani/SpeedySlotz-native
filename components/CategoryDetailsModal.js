@@ -8,6 +8,8 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import { MaterialIcons } from '@expo/vector-icons'; // Import Expo vector icons
+import { theme1, theme3 } from "../assets/branding/themes";
 
 const CategoryDetailsModal = ({ visible, onClose, category }) => {
   // Function to render category details
@@ -20,10 +22,12 @@ const CategoryDetailsModal = ({ visible, onClose, category }) => {
         // Render array items
         return (
           <View key={key} style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>{key}</Text>
+            <Text style={styles.sectionTitle}>
+              <MaterialIcons name="list" size={20} color={theme3.primaryColor} /> {key}
+            </Text>
             {value.map((item, index) => (
               <Text key={index} style={styles.itemText}>
-                {item}
+                <MaterialIcons name="chevron-right" size={16} color="#555" /> {item}
               </Text>
             ))}
           </View>
@@ -32,10 +36,12 @@ const CategoryDetailsModal = ({ visible, onClose, category }) => {
         // Render object properties
         return (
           <View key={key} style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>{key}</Text>
+            <Text style={styles.sectionTitle}>
+              <MaterialIcons name="folder" size={20} color={theme3.primaryColor} /> {key}
+            </Text>
             {Object.keys(value).map((subKey) => (
               <Text key={subKey} style={styles.detailText}>
-                {subKey}: {value[subKey]}
+                <MaterialIcons name="info" size={16} color="#555" /> {subKey}: {value[subKey]}
               </Text>
             ))}
           </View>
@@ -44,8 +50,12 @@ const CategoryDetailsModal = ({ visible, onClose, category }) => {
       // Render string/number/boolean values
       return (
         <View key={key} style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>{key}</Text>
-          <Text style={styles.detailText}>{value}</Text>
+          <Text style={styles.sectionTitle}>
+            <MaterialIcons name="label" size={20} color={theme3.primaryColor} /> {key}
+          </Text>
+          <Text style={styles.detailText}>
+            <MaterialIcons name="check-circle" size={16} color="#555" /> {value}
+          </Text>
         </View>
       );
     });
@@ -60,7 +70,14 @@ const CategoryDetailsModal = ({ visible, onClose, category }) => {
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Category Details</Text>
+          <View style={styles.header}>
+            <Text style={styles.modalTitle}>
+              <MaterialIcons name="category" size={24} color={theme3.fontColor} /> Category Details
+            </Text>
+            <TouchableOpacity onPress={onClose}>
+              <MaterialIcons name="close" size={24} color={theme3.fontColor} />
+            </TouchableOpacity>
+          </View>
           <ScrollView contentContainerStyle={styles.scrollViewContent}>
             {renderCategoryDetails()}
           </ScrollView>
@@ -86,20 +103,29 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalView: {
-    backgroundColor: "white",
-    borderRadius: 10,
+    backgroundColor: theme3.light,
+    borderRadius: 15,
     padding: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 5,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 10,
     width: "90%",
     maxHeight: height * 0.8, // Ensure modal does not exceed 80% of screen height
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
   button: {
     borderRadius: 10,
@@ -107,7 +133,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: theme3.primaryColor,
     marginTop: 15,
     width: "100%",
   },
@@ -117,11 +143,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   modalTitle: {
-    marginBottom: 15,
-    textAlign: "center",
     fontSize: 20,
     fontWeight: "bold",
-    color: "#333",
+    color: theme3.fontColor,
   },
   detailText: {
     fontSize: 16,
@@ -131,16 +155,19 @@ const styles = StyleSheet.create({
   sectionContainer: {
     marginBottom: 15,
     width: "100%",
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    padding: 10,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#555",
+    color: theme3.primaryColor,
     marginBottom: 5,
   },
   itemText: {
     fontSize: 14,
-    color: "#666",
+    color: "#555",
     marginBottom: 3,
     paddingLeft: 10,
   },

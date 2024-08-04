@@ -308,19 +308,39 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
           //     You currently don't have any past appointments.
           //   </Text>
           // </View>
+
+        
+
           fetchedBusinesses &&
-          fetchedBusinesses.map((item, index) => (
-            <AppointmentCard
-              key={item.id}
-              businesss={item}
-              getStatusText={getStatusText}
-              formatDate={formatDate}
-              formatTime={formatTime}
-              handleReschedule={handleReschedule}
-              identifier={"upcoming"}
-              handleCancel={handleCancelOne}
-            />
-          ))
+          fetchedBusinesses.map((item, index) => {
+            return(
+              <>
+              {  
+              
+  item?.slots && item?.slots?.length > 0 &&
+  item?.slots?.map((singleSlot)=>{
+return(
+  <AppointmentCard
+  key={item.id}
+  businesss={item}
+  getStatusText={getStatusText}
+  formatDate={formatDate}
+  formatTime={formatTime}
+  handleReschedule={handleReschedule}
+  identifier={"upcoming"}
+  handleCancel={handleCancelOne}
+  singleSlot={singleSlot}
+  />
+)
+  })
+
+
+             }
+
+      </>     
+            )
+           
+})
         )}
         {/* <NoDataFound/> */}
         {/* <AppointmentCard
