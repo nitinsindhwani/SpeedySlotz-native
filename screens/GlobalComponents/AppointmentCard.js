@@ -40,6 +40,7 @@ function AppointmentCard({
   handleReschedule,
   identifier,
   handleCancel,
+  singleSlot
 }) {
   const [ExpandCat, setExpandCat] = useState(false);
   const desc = "Description will be written here";
@@ -345,18 +346,27 @@ function AppointmentCard({
     horizontal={true}
     showsHorizontalScrollIndicator={false}
     >
-
-        {businesss?.slots?.map((item) => {
-          return (
-            <View style={[styles.CatList, {marginLeft:0, marginRight:5 }]}>
+{/* <Text>
+ {formatTime(singleSlot?.startTime)}
+</Text> */}
+<View style={[styles.CatList, {marginLeft:0, marginRight:5 }]}>
             <Text style={{ color: theme3.light, marginLeft: 5 }}>
-              {formatTime(item.startTime)} - {formatTime(item.endTime)}
+              {formatTime(singleSlot?.startTime)} - {formatTime(singleSlot?.endTime)}
               {/* {item.endTime}  */}
             </Text>
             </View>
 
+            {/* its the old slot rendering method below*/}
+        {/* {businesss?.slots?.map((item) => {
+          return (
+            <View style={[styles.CatList, {marginLeft:0, marginRight:5 }]}>
+            <Text style={{ color: theme3.light, marginLeft: 5 }}>
+              {formatTime(item.startTime)} - {formatTime(item.endTime)}
+            </Text>
+            </View>
+
           );
-        })}
+        })} */}
     </ScrollView>
 
 
@@ -373,6 +383,9 @@ function AppointmentCard({
           <Text style={Styles.LoginTxt}>Book Again</Text>
         </TouchableOpacity>
       )}
+      
+
+      {/* WHAT IS THE LOGIC BEHIND CANCELLING AND RE SCHEDULING THE SLOTS? */}
 
       {identifier === "upcoming" && (
         <View style={{flexDirection:'row',alignItems:'center'}}>

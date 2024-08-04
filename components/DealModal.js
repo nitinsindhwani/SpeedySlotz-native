@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { theme3 } from "../assets/branding/themes";
 
 const DealModal = ({ isVisible, deals, onClose }) => {
   const dummyDealImage = require("../assets/images/hot-deals.png");
@@ -82,7 +83,9 @@ const DealModal = ({ isVisible, deals, onClose }) => {
 
 const styles = StyleSheet.create({
   centeredView: {
-    flex: 1,
+    // flex: 1,
+    height:"100%",
+    width:"100%",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.4)",
@@ -92,6 +95,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 20,
     padding: 20,
+    height:"50%",
+    width:"90%",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -172,7 +177,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: theme3.primaryColor,
   },
   textStyle: {
     color: "white",

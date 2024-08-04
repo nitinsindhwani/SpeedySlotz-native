@@ -141,7 +141,7 @@ const ApptConfirmationScreen = ({ route }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    // <ScrollView style={styles.container}>
       <View style={styles.itemContainer}>
         <AnimatedLottieView
           autoPlay
@@ -158,6 +158,7 @@ const ApptConfirmationScreen = ({ route }) => {
                 backgroundColor: theme3.primaryColor,
                 padding: 10,
                 borderRadius: 20,
+                width:"100%"
               }}
             >
               <Image
@@ -255,24 +256,25 @@ const ApptConfirmationScreen = ({ route }) => {
           <Text style={styles.calendarButtonText}>Add to Calendar</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.homeButton}
+          // style={styles.homeButton}
           onPress={handleNavigateHome}
         >
           <Text style={styles.homeButtonText}>Back to Home</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 10,
+    // flex: 1,
+    // padding: 10,
   },
   itemContainer: {
-    marginBottom: 16,
-    padding: 16,
+    marginBottom: 0,
+    width:"100%",
+    height:"100%",
+    padding: 10,
     borderRadius: 20,
     elevation: 4,
     shadowColor: theme3.Dark,
@@ -280,8 +282,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: "50%",
-    height: 150,
+    width: "40%",
+    height: 100,
     borderRadius: 10,
     backgroundColor: theme3.primaryColor,
   },
@@ -311,6 +313,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(240,240,240,1)",
     marginTop: 10,
     padding: 10,
+    width:'100%',
     borderRadius: 10,
     elevation: 4,
     shadowColor: theme3.Dark,
@@ -328,6 +331,7 @@ const styles = StyleSheet.create({
   calendarButton: {
     backgroundColor: theme3.primaryColor,
     paddingVertical: 10,
+    padding:30,
     borderRadius: 5,
     alignItems: "center",
     marginTop: 10,
@@ -345,9 +349,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   homeButtonText: {
-    color: "#FFF",
+    color: theme3.secondaryColor,
+    textDecorationLine:'underline',
+    marginTop:10,
     fontSize: 16,
     fontWeight: "bold",
+  
   },
   lottieAnimation: {
     width: 200,

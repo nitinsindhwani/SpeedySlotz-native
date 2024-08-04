@@ -13,7 +13,7 @@ function LoadingModal({show}){
         <Modal
         visible={show}
         transparent={true}
-        animationType="slide"
+        animationType="fade"
         style={{height:"100%"}}
         >
         <View style={[Styles.Container,{backgroundColor:"rgba(0,0,0,0.4)",justifyContent:'center'}]}> 

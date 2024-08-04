@@ -6,8 +6,9 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
+import CategoryMOdal from "./CaterogryModal";
 
 const getIconName = (name) => {
   switch (name) {
@@ -116,6 +117,7 @@ const CategoryList = ({
 }) => {
   const scrollViewRef = useRef();
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
+  const [showCatModal,setCatMOdal]=useState(true)
 
   const uniqueCategories = Array.from(
     new Set(userCategoriesData?.map((item) => item.categoryName))
@@ -189,8 +191,10 @@ const CategoryList = ({
 
   const handleCategoryPress = (categoryName) => {
     setSelectedCategory(categoryName);
+    console.log("nameee",categoryName)
     setSelectedSubcategory("");
     setSelectedServiceTypeName("");
+    setCatMOdal(false)
   };
 
   const handleSubcategoryPress = (subcategoryName) => {
@@ -201,6 +205,12 @@ const CategoryList = ({
   return (
     <View>
       <View style={styles.categories}>
+        <TouchableOpacity 
+        onPress={()=> setCatMOdal(true)}
+        style={{flexDirection:'row',alignItems:'center'}}> 
+        <Text style={{color:theme3.secondaryColor,fontSize:14}}>{selectedCategory+" "}</Text>
+        <FontAwesome name="exchange" size={14} color= {theme3.secondaryColor}/>
+        </TouchableOpacity>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -209,7 +219,18 @@ const CategoryList = ({
             setScrollViewWidth(event.nativeEvent.layout.width)
           }
         >
-          {uniqueCategories.map((category) => (
+          {
+            uniqueCategories.length > 0 &&
+          <CategoryMOdal
+          uniqueCategories={uniqueCategories}
+          handleCategoryPress={(e)=>handleCategoryPress(e)}
+          selectedCategory={selectedCategory}
+          showCatModal={showCatModal}
+
+          />
+          }
+
+          {/* {uniqueCategories.map((category) => (
             <TouchableOpacity
               key={category.id}
               style={styles.categoryItem}
@@ -237,7 +258,7 @@ const CategoryList = ({
                 {category.name}
               </Text>
             </TouchableOpacity>
-          ))}
+          ))} */}
         </ScrollView>
       </View>
       {selectedCategory && (

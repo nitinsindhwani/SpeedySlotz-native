@@ -32,6 +32,8 @@ import SuccessModal from "./GlobalComponents/SuccessModal";
 import { theme3 } from "../assets/branding/themes";
 import Styles from "../assets/branding/GlobalStyles";
 import { baseApiUrl } from "../api/Config";
+import { setISODay } from "date-fns";
+import LoadingModal from "./GlobalComponents/LoadingModal";
 
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
@@ -57,6 +59,7 @@ const NewJobScreen = ({ route }) => {
   const [priorityStatus, setPriorityStatus] = useState(null);
   const [zipcodes, setZipcodes] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isLOading,setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -66,10 +69,10 @@ const NewJobScreen = ({ route }) => {
 
     fetchUserData();
   }, []);
-
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
+        setIsLoading(true)
         const userCategoriesData = await fetchUserCategories();
         if (
           Array.isArray(userCategoriesData) &&
@@ -88,6 +91,8 @@ const NewJobScreen = ({ route }) => {
       } catch (error) {
         console.error("Failed to fetch categories", error);
         setUserCategories([]);
+      } finally{
+        setIsLoading(false)
       }
     };
 
@@ -478,6 +483,9 @@ const NewJobScreen = ({ route }) => {
         show={showSuccess}
         onBack={setShowSuccess}
         title={"Booked Successfully"}
+      />
+      <LoadingModal 
+      show={isLOading}
       />
     </View>
   );
