@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -33,7 +34,7 @@ import PopularBusinessList from "../components/PopularBusinesList";
 import NoDataFound from "./GlobalComponents/NoDataFound";
 import InLineLoader from "./GlobalComponents/InLineLoader";
 import LoadingModal from "./GlobalComponents/LoadingModal";
-
+import yelp from '../assets/images/yelp_logo.png'
 const LandingScreen = ({ route }) => {
   const animation = useRef(null);
   const navigation = useNavigation();
@@ -422,7 +423,10 @@ const LandingScreen = ({ route }) => {
         onDateSelected={handleDateSelect}
       />
       <LoadingModal show={isLoading} />
-
+<Image 
+source={yelp}
+style={{width:60,height:22,position:'absolute',bottom:10,left:10}}
+/>
     </View>
   );
 };

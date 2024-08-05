@@ -15,6 +15,7 @@ import {
   MaterialCommunityIcons,
   AntDesign,
   FontAwesome,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
@@ -34,6 +35,7 @@ import Styles from "../assets/branding/GlobalStyles";
 import { baseApiUrl } from "../api/Config";
 import { setISODay } from "date-fns";
 import LoadingModal from "./GlobalComponents/LoadingModal";
+import { SwipeButton } from "react-native-expo-swipe-button";
 
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
@@ -59,7 +61,7 @@ const NewJobScreen = ({ route }) => {
   const [priorityStatus, setPriorityStatus] = useState(null);
   const [zipcodes, setZipcodes] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [isLOading,setIsLoading] = useState(true)
+  const [isLOading,setIsLoading] = useState(false)
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -72,7 +74,7 @@ const NewJobScreen = ({ route }) => {
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(false)
         const userCategoriesData = await fetchUserCategories();
         if (
           Array.isArray(userCategoriesData) &&
@@ -362,16 +364,20 @@ const NewJobScreen = ({ route }) => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Job Description:</Text>
+          <View style={styles.input}>
+            <Text style={styles.label}>Job Description:</Text>
           <TextInput
-            style={styles.input}
-            onChangeText={setJobDescription}
+              style={{ flex: 1, textAlignVertical: "top" }}
+              onChangeText={setJobDescription}
             value={jobDescription}
+            numberOfLines={4}
+
             placeholder="Enter job description"
             multiline
           />
+          </View>
         </View>
-        <View style={styles.outerContainer}>
+        <View style={styles.mostPopularItem}>
           <Text style={styles.label}>Priority Status:</Text>
           <View style={styles.radioButtonRow}>
             {["Routine", "Flexible", "Urgent", "Emergency"].map(
@@ -387,21 +393,80 @@ const NewJobScreen = ({ route }) => {
             )}
           </View>
         </View>
-        <FlatList
-          data={attachedProfiles}
-          horizontal
-          renderItem={renderAttachedProfile}
-          keyExtractor={(item, index) => index.toString()}
-          style={styles.attachedProfilesList}
-        />
-        <TouchableOpacity
-          style={styles.attachProfileButton}
-          onPress={() => setAttachProfileModalVisible(true)}
-        >
-          <Text style={styles.attachProfileButtonText}>Attach Profile</Text>
-        </TouchableOpacity>
+        <View style={styles.mostPopularItem}>
+          <Text style={styles.label}>Attach Profiles:</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity
+              onPress={() => setAttachProfileModalVisible(true)}
+            >
+              <MaterialIcons
+                name="add-circle"
+                size={35}
+                color={theme3.primaryColor}
+              />
+            </TouchableOpacity>
+            <FlatList
+              data={attachedProfiles}
+              horizontal
+              renderItem={renderAttachedProfile}
+              keyExtractor={(item, index) => index.toString()}
+              style={styles.attachedProfilesList}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+        </View>
+    
 
-        <View style={styles.mediaUploadSection}>
+
+
+        <View style={styles.mostPopularItem}>
+          <Text style={styles.label}>Add Images:</Text>
+          <View style={styles.mediaListContainer}>
+            <TouchableOpacity onPress={() => pickMedia("image")}>
+              <MaterialIcons
+                name="add-photo-alternate"
+                size={40}
+                color="#333"
+              />
+            </TouchableOpacity>
+            {selectedImages?.map((uri, index) => (
+              <View key={uri} style={styles.mediaItem}>
+                <Image source={{ uri }} style={styles.mediaThumbnail} />
+                <TouchableOpacity
+                  onPress={() => removeMedia("image", uri)}
+                  style={styles.removeMediaIcon}
+                >
+                  <AntDesign name="closecircle" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.mostPopularItem}>
+          <Text style={styles.label}>Add Videos:</Text>
+          <View style={styles.mediaListContainer}>
+            <TouchableOpacity onPress={() => pickMedia("video")}>
+              <MaterialIcons
+                name="add-photo-alternate"
+                size={40}
+                color="#333"
+              />
+            </TouchableOpacity>
+            {selectedVideos?.map((uri, index) => (
+              <View key={uri} style={styles.mediaItem}>
+                <FontAwesome name="file-video-o" size={48} color="#333" />
+                <TouchableOpacity
+                  onPress={() => removeMedia("video", uri)}
+                  style={styles.removeMediaIcon}
+                >
+                  <AntDesign name="closecircle" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        </View>
+        {/* <View style={styles.mediaUploadSection}>
           <TouchableOpacity
             onPress={() => pickMedia("image")}
             style={styles.mediaButton}
@@ -447,15 +512,40 @@ const NewJobScreen = ({ route }) => {
               </View>
             ))}
           </View>
-        </View>
+        </View> */}
 
         {selectedServiceTypeName &&
         jobDescription &&
         priorityStatus !== null &&
         priorityStatus !== undefined ? (
-          <TouchableOpacity onPress={handleBookNow} style={Styles.LoginBtn}>
-            <Text style={Styles.LoginTxt}>Submit</Text>
-          </TouchableOpacity>
+
+          <SwipeButton
+          Icon={
+            <MaterialIcons
+              name="keyboard-arrow-right"
+              size={50}
+              color="white"
+            />
+          }
+          width={320}
+          height={55}
+          onComplete={() => handleBookNow()}
+          title="Swipe to complete"
+          borderRadius={1000}
+          circleBackgroundColor={theme3.secondaryColor}
+          underlayContainerGradientProps={{
+            colors: [theme3.primaryColor, theme3.secondaryColor],
+            start: [0, 0.5],
+            end: [1.3, 0.5],
+          }}
+          titleStyle={{ color: "white" }}
+          containerStyle={{ backgroundColor: "gray" }}
+          underlayTitle="Release to complete"
+          underlayTitleStyle={{ color: theme3.light }}
+        />
+          // <TouchableOpacity onPress={handleBookNow} style={Styles.LoginBtn}>
+          //   <Text style={Styles.LoginTxt}>Submit</Text>
+          // </TouchableOpacity>
         ) : (
           <TouchableOpacity
             style={[Styles.LoginBtn, { backgroundColor: theme3.inActive }]}
@@ -494,10 +584,9 @@ const NewJobScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     height: WindowHeight,
-    backgroundColor: "#f4f4f4",
     width: WindowWidth,
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -581,6 +670,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 10,
   },
+  
   dealIconContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -611,15 +701,15 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   input: {
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
+    marginBottom: 16,
+    width: WindowWidth / 1.03,
+    height: WindowHeight / 5,
     padding: 10,
-    marginBottom: 20,
-    fontSize: 16,
-    backgroundColor: "#fff",
-    textAlignVertical: "top",
-    height: 100,
+    shadowColor: "rgba(0,0,0,0.1)",
+    elevation: 2,
+    shadowOpacity: 4,
+    borderRadius: 10,
+    backgroundColor: theme3.GlobalBg,
   },
   button: {
     backgroundColor: theme3.primaryColor,
@@ -665,19 +755,20 @@ const styles = StyleSheet.create({
   attachedProfile: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: theme3.secondaryColor,
-    borderRadius: 20,
-    padding: 10,
+    backgroundColor: theme3.primaryColor,
+    borderRadius: 8,
+    padding: 8,
     marginRight: 10,
   },
   attachedProfileText: {
     fontSize: 14,
     marginRight: 6,
+    color: theme3.light,
   },
   removeProfileButton: {
     backgroundColor: "red",
     borderRadius: 10,
-    padding: 5,
+    padding: 1,
   },
   attachProfileButton: {
     backgroundColor: theme3.secondaryColor,
@@ -723,15 +814,14 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "flex-start",
     alignItems: "center",
-    marginVertical: 10,
   },
   mediaItem: {
     position: "relative",
     margin: 5,
   },
   mediaThumbnail: {
-    width: 100,
-    height: 100,
+    width: 65,
+    height: 65,
   },
   removeMediaIcon: {
     position: "absolute",
