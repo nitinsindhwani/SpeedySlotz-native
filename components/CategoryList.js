@@ -117,7 +117,7 @@ const CategoryList = ({
 }) => {
   const scrollViewRef = useRef();
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
-  const [showCatModal,setCatMOdal]=useState(true)
+  const [showCatModal, setCatMOdal] = useState(true);
 
   const uniqueCategories = Array.from(
     new Set(userCategoriesData?.map((item) => item.categoryName))
@@ -191,10 +191,10 @@ const CategoryList = ({
 
   const handleCategoryPress = (categoryName) => {
     setSelectedCategory(categoryName);
-    console.log("nameee",categoryName)
+    console.log("nameee", categoryName);
     setSelectedSubcategory("");
     setSelectedServiceTypeName("");
-    setCatMOdal(false)
+    setCatMOdal(false);
   };
 
   const handleSubcategoryPress = (subcategoryName) => {
@@ -205,11 +205,18 @@ const CategoryList = ({
   return (
     <View>
       <View style={styles.categories}>
-        <TouchableOpacity 
-        onPress={()=> setCatMOdal(true)}
-        style={{flexDirection:'row',alignItems:'center'}}> 
-        <Text style={{color:theme3.secondaryColor,fontSize:14}}>{selectedCategory+" "}</Text>
-        <FontAwesome name="exchange" size={14} color= {theme3.secondaryColor}/>
+        <TouchableOpacity
+          onPress={() => setCatMOdal(true)}
+          style={{ flexDirection: "row", alignItems: "center" }}
+        >
+          <Text style={{ color: theme3.secondaryColor, fontSize: 14 }}>
+            {selectedCategory + " "}
+          </Text>
+          <FontAwesome
+            name="exchange"
+            size={14}
+            color={theme3.secondaryColor}
+          />
         </TouchableOpacity>
         <ScrollView
           horizontal
@@ -219,16 +226,14 @@ const CategoryList = ({
             setScrollViewWidth(event.nativeEvent.layout.width)
           }
         >
-          {
-            uniqueCategories.length > 0 &&
-          <CategoryMOdal
-          uniqueCategories={uniqueCategories}
-          handleCategoryPress={(e)=>handleCategoryPress(e)}
-          selectedCategory={selectedCategory}
-          showCatModal={showCatModal}
-
-          />
-          }
+          {uniqueCategories.length > 0 && (
+            <CategoryMOdal
+              uniqueCategories={uniqueCategories}
+              handleCategoryPress={(e) => handleCategoryPress(e)}
+              selectedCategory={selectedCategory}
+              showCatModal={showCatModal}
+            />
+          )}
 
           {/* {uniqueCategories.map((category) => (
             <TouchableOpacity

@@ -63,12 +63,22 @@ const ChatScreen = ({ route }) => {
   const loadChats = async (user, token) => {
     const chatInfo = { user_id: user.user_id, username: user.username };
     const fetchedChats = await fetchChatHistory(chatInfo, token);
-    const formattedChats = fetchedChats.data.map((chat) => ({
-      ...chat,
-      chatMessages: Object.values(chat.chatMessages || {}),
-    }));
-    setChats(formattedChats);
-    setFilteredResults(formattedChats);
+    console.log("fetchedChats", fetchedChats);
+
+    // Check if the payload is empty
+    if (fetchedChats.data.payload.length === 0) {
+      // Handle the empty payload scenario
+      setChats([]);
+      setFilteredResults([]);
+    } else {
+      // Format and set the chats when payload is not empty
+      const formattedChats = fetchedChats.data.payload.map((chat) => ({
+        ...chat,
+        chatMessages: Object.values(chat.chatMessages || {}),
+      }));
+      setChats(formattedChats);
+      setFilteredResults(formattedChats);
+    }
   };
   const isToday = (timestamp) => {
     const today = new Date();
@@ -221,7 +231,6 @@ const ChatScreen = ({ route }) => {
         (chat.chatMessages ? Object.values(chat.chatMessages).length : 0)
       );
     }, 0);
-   
   }, [chats]);
 
   const renderMessageItem = ({ item }) => {
