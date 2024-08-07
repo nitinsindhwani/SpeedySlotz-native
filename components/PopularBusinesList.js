@@ -131,11 +131,11 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     { name: "Punctuality Award", icon: "time-outline" },
     { name: "New", icon: "newspaper" },
   ];
-  const toggleFavorite = (itemId,changeTepFav) => {
+  const toggleFavorite = (itemId, changeTepFav) => {
     if (favorites[itemId]) {
-      removeFavorite(itemId,changeTepFav);
+      removeFavorite(itemId, changeTepFav);
     } else {
-      addFavorite(itemId,changeTepFav);
+      addFavorite(itemId, changeTepFav);
     }
   };
   const handleChatButtonPress = async (business) => {
@@ -167,7 +167,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     }
   };
 
-  const addFavorite = async (itemId,changeTepFav) => {
+  const addFavorite = async (itemId, changeTepFav) => {
     try {
       const secureToken = await getStoredToken();
 
@@ -184,11 +184,9 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         ...prevFavorites,
         [itemId]: true,
       }));
-      changeTepFav(true)
-      
-
+      changeTepFav(true);
     } catch (error) {
-      changeTepFav(false)
+      changeTepFav(false);
 
       console.log("Failed to add favorite:", error);
     }
@@ -223,8 +221,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     return defaultImageUrl;
   };
 
-  const removeFavorite = async (itemId,changeTepFav) => {
-
+  const removeFavorite = async (itemId, changeTepFav) => {
     try {
       const secureToken = await getStoredToken();
 
@@ -241,38 +238,33 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       //   ...prevFavorites,
       //   [itemId]: false,
       // }));
-      changeTepFav(false)
-      console.log("function remove")
-
+      changeTepFav(false);
+      console.log("function remove");
     } catch (error) {
-      changeTepFav(true)
+      changeTepFav(true);
 
       console.error("Failed to remove favorite:", error);
     }
   };
 
-
-
   function DetailCard({ item, index }) {
     const [ExpandCat, setExpandCat] = useState(false);
     const [showMore, setShowMore] = useState(false);
-    const [isFav,setIsFav]=useState(item.favorite)
-    function changeTepFav(val){
-     
-      setIsFav(val)
+    const [isFav, setIsFav] = useState(item.favorite);
+    function changeTepFav(val) {
+      setIsFav(val);
     }
 
-    function handleFav(itemId){
-      if(isFav===true){
-        setIsFav(false)
-        removeFavorite(itemId,changeTepFav);
-      }
-      else{
-        addFavorite(itemId,changeTepFav)
-        setIsFav(true)
+    function handleFav(itemId) {
+      if (isFav === true) {
+        setIsFav(false);
+        removeFavorite(itemId, changeTepFav);
+      } else {
+        addFavorite(itemId, changeTepFav);
+        setIsFav(true);
       }
     }
-  
+
     function SpecialityList({ item }) {
       return (
         <View style={styles.CatList}>
@@ -318,19 +310,16 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
           <TouchableOpacity
             onPress={() => {
               // setIsFav()
-           
+
               // toggleFavorite(item.yelpBusiness.id,changeTepFav)
-               handleFav(item.yelpBusiness.id)
-            }
-            }
+              handleFav(item.yelpBusiness.id);
+            }}
           >
             <HeartIcon
-              name={isFav=== true ? "heart" : "hearto"}
+              name={isFav === true ? "heart" : "hearto"}
               size={25}
-              color={isFav ===true ? "#FF0000" : "#FFA500"}
+              color={isFav === true ? "#FF0000" : "#FFA500"}
             />
-
-          
           </TouchableOpacity>
         </View>
         <Image
@@ -355,11 +344,9 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
           {item?.slots?.length > 0 && (
             <View style={Styles.OneRow}>
               {/* <Octicons name="dot-fill" size={20} color={theme3.send} /> */}
-              <View
-           style={{marginLeft:-20}}
-           >
-            <ChatAnim/>
-            </View>
+              <View style={{ marginLeft: -20 }}>
+                <ChatAnim />
+              </View>
               <Text style={[styles.DescText, { marginLeft: 0 }]}>
                 Slots Available
               </Text>
@@ -395,19 +382,17 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             )}
 
             {/* Display badges or 'No badges available' based on condition */}
-            {showMore &&
-              (item.yelpBusiness.badges &&
-              item.yelpBusiness.badges.length > 0 ? (
-                <FlatList
-                  data={item.yelpBusiness.badges}
-                  horizontal={true}
-                  renderItem={renderBadge} // Ensure this function is defined to render each badge
-                  keyExtractor={(badge, index) => `badge-${index}`}
-                  showsHorizontalScrollIndicator={false}
-                />
-              ) : (
-                <Text style={styles.noSlotsText}>No badges available.</Text>
-              ))}
+            {item.yelpBusiness.badges && item.yelpBusiness.badges.length > 0 ? (
+              <FlatList
+                data={item.yelpBusiness.badges}
+                horizontal={true}
+                renderItem={renderBadge} // Ensure this function is defined to render each badge
+                keyExtractor={(badge, index) => `badge-${index}`}
+                showsHorizontalScrollIndicator={false}
+              />
+            ) : (
+              <Text style={styles.noSlotsText}>No badges available.</Text>
+            )}
           </>
         )}
 
@@ -492,12 +477,9 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             {item.yelpBusiness.is_registered && (
               <View style={Styles.OneRow}>
                 {/* <Octicons name="dot-fill" size={20} color={theme3.send} /> */}
-                <View
-            style={{marginLeft:-6}}
-            >
-
-            <ChatAnim/>
-            </View>
+                <View style={{ marginLeft: -6 }}>
+                  <ChatAnim />
+                </View>
                 <TouchableOpacity
                   onPress={() => handleChatButtonPress(item.yelpBusiness)}
                 >
@@ -539,7 +521,6 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
               <TouchableOpacity
                 style={styles.dealIconContainer}
                 onPress={() => {
-                
                   openDealModal(item.yelpBusinessDeal);
                 }}
               >

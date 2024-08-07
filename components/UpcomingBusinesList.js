@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import moment from "moment";
 import * as Calendar from "expo-calendar";
 import axios from "axios";
@@ -21,8 +21,11 @@ import { getStoredToken } from "../api/ApiCall";
 import { FontAwesome } from "@expo/vector-icons";
 import { baseApiUrl } from "../api/Config";
 import AppointmentCard from "../screens/GlobalComponents/AppointmentCard";
+import { theme3 } from "../assets/branding/themes";
 import NoDataFound from "../screens/GlobalComponents/NoDataFound";
+
 const defaultImageUrl = require("../assets/images/defaultImage.png");
+
 const metersToMiles = (meters) => {
   const miles = meters * 0.000621371;
   return miles.toFixed(2);
@@ -59,138 +62,24 @@ const addToCalendar = async (date, time) => {
   }
 };
 
-const handleReschedule = async (
-  slot,
-  setBusinesses,
-  yelpBusinessSettings,
-  setErrorMessage
-) => {
-  try {
-    // Fetch the token
-    const userToken = await getStoredToken("userToken");
-    if (!userToken) {
-      console.log("No token found");
-      return;
-    }
-    const now = new Date();
-    const appointmentTime = new Date(slot.date); // Assuming slot has a 'date' property in a format that can be used to create a Date object
-    const timeDifference = appointmentTime - now; // This will give you the time difference in milliseconds
-
-    const rescheduleWindowInMs =
-      yelpBusinessSettings?.rescheduleWindow * 60 * 1000; // Convert the window from minutes to milliseconds
-
-    if (timeDifference < rescheduleWindowInMs) {
-      // If the time remaining to the appointment is less than the cancellation window
-      setErrorMessage(
-        `You cannot cancel the appointment within ${yelpBusinessSettings?.rescheduleWindow} minutes of its start time.`
-      );
-      return;
-    }
-
-    // Set the slot cancelled flag to true before sending the request
-    slot.rescheduled = true;
-
-    const response = await axios.post(
-      baseApiUrl + "/api/v1/userBookings",
-      slot,
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
-    );
-
-    if (response.data) {
-      setBusinesses((prevBusinesses) =>
-        prevBusinesses.map((business) =>
-          business.slot.id === slot.id
-            ? { ...business, slot: { ...business.slot, ...response.data } } // Assuming the updated slot info is within 'slot' field in response
-            : business
-        )
-      );
-    } else {
-      console.log("Booking failed:", response.data);
-      // Handle failure, perhaps show an error message
-    }
-  } catch (error) {
-    console.error("There was an error while booking:", error);
-    // Handle the error, perhaps show an error message to the user
-  }
+const handleReschedule = (id) => {
+  console.log(`Reschedule business with id: ${id}`);
+  // Add logic to reschedule the business
 };
 
-const handleCancel = async (
-  slot,
-  setBusinesses,
-  yelpBusinessSettings,
-  setErrorMessage
-) => {
-  try {
-    // Fetch the token
-    const userToken = await getStoredToken("userToken");
-    if (!userToken) {
-      console.log("No token found");
-      return;
-    }
-    const now = new Date();
-    const appointmentTime = new Date(slot.date); // Assuming slot has a 'date' property in a format that can be used to create a Date object
-    const timeDifference = appointmentTime - now; // This will give you the time difference in milliseconds
-
-    const cancellationWindowInMs =
-      yelpBusinessSettings?.cancellationWindow * 60 * 1000; // Convert the window from minutes to milliseconds
-
-    if (timeDifference < cancellationWindowInMs) {
-      // If the time remaining to the appointment is less than the cancellation window
-      setErrorMessage(
-        `You cannot cancel the appointment within ${yelpBusinessSettings?.cancellationWindow} minutes of its start time.`
-      );
-      return;
-    }
-
-    // Set the slot cancelled flag to true before sending the request
-    slot.cancelled = true;
-
-    const response = await axios.post(
-      baseApiUrl + "/api/v1/userBookings",
-      slot,
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
-    );
-
-    if (response.data) {
-      setBusinesses((prevBusinesses) =>
-        prevBusinesses.map((business) =>
-          business.slot.id === slot.id
-            ? { ...business, slot: { ...business.slot, ...response.data } } // Assuming the updated slot info is within 'slot' field in response
-            : business
-        )
-      );
-    } else {
-      console.log("Booking failed:", response.data);
-      // Handle failure, perhaps show an error message
-    }
-  } catch (error) {
-    console.error("There was an error while booking:", error);
-    // Handle the error, perhaps show an error message to the user
-  }
+const handleCancel = (id) => {
+  console.log(`Cancel business with id: ${id}`);
+  // Add logic to cancel the business
 };
 
-const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
+const UpcomingBusinessList = ({ fetchedBusinesses, navigation }) => {
   const initialFavorites = fetchedBusinesses.reduce((acc, business) => {
     acc[business.id] = business.favorite || false; // Default to false if 'favorite' is not provided
     return acc;
   }, {});
-  const [businesses, setBusinesses] = useState(fetchedBusinesses);
   const [favorites, setFavorites] = useState(initialFavorites);
   const { currentTheme } = useContext(ThemeContext);
   const styles = getStyles(currentTheme);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    console.log("fetchedBusinesses", fetchedBusinesses);
-  }, [fetchedBusinesses]);
 
   const toggleFavorite = (itemId) => {
     if (favorites[itemId]) {
@@ -200,9 +89,6 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
     }
   };
 
-  function handleCancelOne(slot, settings) {
-    handleCancel(slot, setBusinesses, settings, setErrorMessage);
-  }
   const addFavorite = async (itemId) => {
     try {
       const secureToken = await getStoredToken();
@@ -210,9 +96,6 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
       const headers = {
         Authorization: `Bearer ${secureToken}`,
       };
-
-      console.log("Headers:", headers);
-      console.log("Parameters:", { businessId: itemId });
 
       await axios.post(
         baseApiUrl + "/api/v1/favorites",
@@ -230,33 +113,23 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
   };
 
   const getStatusText = (slot) => {
-    console.log("Slottt", slot.cancellation_window);
-    if (
-      slot.booked &&
-      !slot.confirmed &&
-      !slot.cancelled &&
-      !slot.rescheduled &&
-      !slot.noshow
-    ) {
-      return "Pending";
-    } else if (
-      slot.booked &&
-      slot.confirmed &&
-      !slot.cancelled &&
-      !slot.rescheduled &&
-      !slot.noshow
-    ) {
-      return "Confirmed";
-    } else if (!slot.rescheduled && slot.cancelled) {
-      return "Cancelled";
-    } else if (slot.rescheduled) {
+    if (slot.booked) {
+      if (slot.confirmed) {
+        return "Confirmed";
+      } else {
+        return "Pending";
+      }
+    } else if (slot.rescheduled && !slot.cancelled) {
       return "Rescheduled";
+    } else if (slot.cancelled) {
+      return "Cancelled";
     } else if (slot.noshow) {
       return "No Show";
     } else {
       return "Unknown Status"; // a default fallback status
     }
   };
+
   function formatDate(dateString) {
     return moment(dateString).format("LL"); // e.g., "September 4, 1986"
   }
@@ -278,7 +151,7 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
   const removeFavorite = async (itemId) => {
     try {
       const secureToken = await getStoredToken();
-      console.log("SecureToken in delete", { secureToken });
+
       const headers = {
         Authorization: `Bearer ${secureToken}`,
       };
@@ -303,55 +176,25 @@ const UpcomingBusinesList = ({ fetchedBusinesses, navigation }) => {
         {fetchedBusinesses && fetchedBusinesses.length === 0 ? (
           <NoDataFound />
         ) : (
-          // <View style={styles.noAppointmentsContainer}>
-          //   <Text style={styles.noAppointmentsText}>
-          //     You currently don't have any past appointments.
-          //   </Text>
-          // </View>
-
-        
-
           fetchedBusinesses &&
-          fetchedBusinesses.map((item, index) => {
-            return(
-              <>
-              {  
-              
-  item?.slots && item?.slots?.length > 0 &&
-  item?.slots?.map((singleSlot)=>{
-return(
-  <AppointmentCard
-  key={item.id}
-  businesss={item}
-  getStatusText={getStatusText}
-  formatDate={formatDate}
-  formatTime={formatTime}
-  handleReschedule={handleReschedule}
-  identifier={"upcoming"}
-  handleCancel={handleCancelOne}
-  singleSlot={singleSlot}
-  />
-)
-  })
-
-
-             }
-
-      </>     
-            )
-           
-})
+          fetchedBusinesses.map(
+            (item) =>
+              item?.slots &&
+              item?.slots.map((singleSlot) => (
+                <AppointmentCard
+                  key={`${item.id}-${singleSlot.id}`} // Use a combination of item id and singleSlot id as key
+                  businesss={item}
+                  getStatusText={getStatusText}
+                  formatDate={formatDate}
+                  formatTime={formatTime}
+                  handleReschedule={handleReschedule}
+                  identifier={"past"}
+                  handleCancel={"handleCancelOne"}
+                  singleSlot={singleSlot}
+                />
+              ))
+          )
         )}
-        {/* <NoDataFound/> */}
-        {/* <AppointmentCard
-          businesss={"Pass the item value here"}
-          getStatusText={getStatusText}
-          formatDate={formatDate}
-          formatTime={formatTime}
-          handleReschedule={handleReschedule}
-          identifier={"upcoming"}
-          handleCancel={handleCancelOne}
-        /> */}
       </ScrollView>
     </View>
   );
@@ -437,7 +280,6 @@ const getStyles = (currentTheme) =>
       alignSelf: "flex-start",
     },
     linkContainer: {
-      flexDirection: "row",
       width: "100%",
       justifyContent: "space-between",
     },
@@ -449,20 +291,7 @@ const getStyles = (currentTheme) =>
       flex: 0.48,
       alignItems: "center",
     },
-    cancelButton: {
-      backgroundColor: "#FF6347",
-      paddingVertical: 12,
-      paddingHorizontal: 25,
-      borderRadius: 5,
-      flex: 0.48,
-      alignItems: "center",
-    },
     rescheduleLink: {
-      color: "white",
-      fontSize: 16,
-      fontWeight: "600",
-    },
-    cancelLink: {
       color: "white",
       fontSize: 16,
       fontWeight: "600",
@@ -542,122 +371,4 @@ const getStyles = (currentTheme) =>
     },
   });
 
-export default UpcomingBusinesList;
-
-// return (
-//   <View style={styles.mostPopular}>
-//     <ScrollView>
-//       {fetchedBusinesses && fetchedBusinesses.length === 0 ? (
-//         <View style={styles.noAppointmentsContainer}>
-//           <Text style={styles.noAppointmentsText}>
-//             You currently don't have any past appointments.
-//           </Text>
-//         </View>
-//       ) : (
-//         fetchedBusinesses &&
-//         fetchedBusinesses.map((item, index) => (
-//           <TouchableOpacity key={index} style={styles.mostPopularItem}>
-//             {errorMessage && (
-//               <Text style={{ color: "red", textAlign: "center" }}>
-//                 {errorMessage}
-//               </Text>
-//             )}
-//             <View style={styles.favoriteIconContainer}>
-//               <TouchableOpacity
-//                 onPress={() => toggleFavorite(item.yelpBusiness.id)}
-//               >
-//                 <HeartIcon
-//                   name={favorites[item.yelpBusiness.id] ? "heart" : "hearto"}
-//                   size={25}
-//                   color={
-//                     favorites[item.yelpBusiness.id] ? "#FF0000" : "#FFA500"
-//                   }
-//                 />
-//               </TouchableOpacity>
-//             </View>
-//             <Image
-//               source={
-//                 item.yelpBusiness.image_url
-//                   ? { uri: item.yelpBusiness.image_url.image }
-//                   : defaultImageUrl
-//               }
-//               style={styles.mostPopularImage}
-//             />
-//             <View style={styles.infoContainer}>
-//               <View style={styles.nameStatusContainer}>
-//                 <Text style={styles.mostPopularName}>
-//                   {item.yelpBusiness.name}
-//                 </Text>
-//                 <Text style={styles.confirmationText}>
-//                   {getStatusText(item.slot)}
-//                 </Text>
-//               </View>
-
-//               <Text style={styles.dateText}>
-//                 {formatDate(item.slot.start)}
-//               </Text>
-
-//               <Text style={styles.timeRangeText}>
-//                 {formatTime(item.slot.startTime)} -{" "}
-//                 {formatTime(item.slot.endTime)}
-//               </Text>
-
-//               <View style={styles.extraInfoContainer}>
-//                 <Text style={styles.mostPopularCity}>
-//                   {item.yelpBusinessLocation.city}
-//                 </Text>
-//                 <TouchableOpacity
-//                   style={styles.mapIconContainer}
-//                   onPress={() =>
-//                     Linking.openURL(
-//                       `http://maps.apple.com/?q=${item.yelpBusinessLocation.address1},${item.yelpBusinessLocation.city}`
-//                     )
-//                   }
-//                 >
-//                   <MapIcon name="map-marker-alt" size={16} color="#555" />
-//                   <Text style={styles.mapText}>Directions</Text>
-//                 </TouchableOpacity>
-//               </View>
-//             </View>
-//             <TouchableOpacity
-//               onPress={() =>
-//                 Linking.openURL(`tel:${item.yelpBusiness.phone}`)
-//               }
-//             >
-//               <Text style={styles.mostPopularPhone}>
-//                 <FontAwesome name="phone" size={20} color="#084887" />{" "}
-//                 {item.yelpBusiness.display_phone}
-//               </Text>
-//             </TouchableOpacity>
-
-//             <View style={styles.buttonsContainer}>
-//               {!item.slot.cancelled && (
-//                 <>
-//                   <TouchableOpacity
-//                     style={styles.rescheduleButton}
-//                     onPress={() => handleReschedule(item.yelpBusiness.id)}
-//                   >
-//                     <Text style={styles.rescheduleLink}>Reschedule</Text>
-//                   </TouchableOpacity>
-//                   <TouchableOpacity
-//                     style={styles.cancelButton}
-//                     onPress={() =>
-//                       handleCancel(
-//                         item.slot,
-//                         setBusinesses,
-//                         item.yelpBusinessSettings,
-//                         setErrorMessage
-//                       )
-//                     }
-//                   >
-//                     <Text style={styles.cancelLink}>Cancel</Text>
-//                   </TouchableOpacity>
-//                 </>
-//               )}
-//             </View>
-//           </TouchableOpacity>
-//         ))
-//       )}
-//     </ScrollView>
-//   </View>
-// );
+export default UpcomingBusinessList;

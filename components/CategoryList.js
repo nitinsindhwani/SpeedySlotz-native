@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,103 +8,8 @@ import {
 } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
-import CategoryMOdal from "./CaterogryModal";
-
-const getIconName = (name) => {
-  switch (name) {
-    case "Handyman":
-    case "Home":
-      return "construct";
-    case "Appliance":
-    case "Electrical Repair":
-      return "flash";
-    case "Window Cleaning":
-    case "Pool Cleaning":
-      return "water";
-    case "Interior Design":
-    case "Art Teaching":
-      return "color-palette-outline";
-    case "Auto Detailing":
-    case "Automotive":
-      return "car-sport-outline";
-    case "Boarding":
-      return "bed-outline";
-    case "Boxing":
-      return "fitness-outline";
-    case "Business Legal Services":
-    case "Legal Finance":
-      return "briefcase-outline";
-    case "Criminal Law":
-      return "lock-closed-outline";
-    case "Employment Law":
-      return "people-outline";
-    case "Estate Planning":
-      return "document-text-outline";
-    case "Family Law":
-      return "heart-outline";
-    case "Immigration":
-      return "airplane-outline";
-    case "Intellectual Property":
-      return "bulb-outline";
-    case "Personal Injury":
-      return "medkit-outline";
-    case "CrossFit":
-    case "Personal Training":
-    case "Fitness":
-      return "medkit-outline";
-    case "Martial Arts":
-      return "fitness-outline";
-    case "Dance":
-      return "musical-notes-outline";
-    case "Dog Walking":
-    case "Pets":
-      return "paw-outline";
-    case "Event Planning":
-      return "calendar-outline";
-    case "Grooming":
-      return "cut-outline";
-    case "Group Classes":
-      return "people-outline";
-    case "Life Coaching":
-      return "heart-half-outline";
-    case "Makeup":
-    case "Beauty":
-      return "brush-outline";
-    case "Massage":
-      return "hand-left-outline";
-    case "Music Teaching":
-      return "musical-note-outline";
-    case "Nutrition":
-    case "Diet":
-      return "restaurant-outline";
-    case "Performance":
-      return "mic-outline";
-    case "Pet Sitting":
-      return "home-outline";
-    case "Photography":
-      return "camera-outline";
-    case "Real Estate":
-      return "home-outline";
-    case "Seasonal":
-      return "leaf-outline";
-    case "Training":
-    case "Tutor":
-    case "Education":
-      return "school-outline";
-    case "Wellness":
-    case "Winter Sports":
-    case "Sports":
-      return "snow-outline";
-    case "Yoga":
-      return "body-outline";
-    case "Financial Services":
-      return "cash-outline";
-    case "Tax Services":
-      return "document-outline";
-    default:
-      return "help-outline";
-  }
-};
+import CategoryModal from "./CaterogryModal";
+import { getIconName } from "./IconsData";
 
 const CategoryList = ({
   userCategoriesData,
@@ -117,7 +22,7 @@ const CategoryList = ({
 }) => {
   const scrollViewRef = useRef();
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
-  const [showCatModal, setCatMOdal] = useState(true);
+  const [showCatModal, setCatModal] = useState(false); // Initially set to false
 
   const uniqueCategories = Array.from(
     new Set(userCategoriesData?.map((item) => item.categoryName))
@@ -164,10 +69,17 @@ const CategoryList = ({
       const item = userCategoriesData.find(
         (item) => item.serviceTypeName === serviceTypeName
       );
+      const iconName = getIconName(item.serviceTypeName);
+      if (!iconName) {
+        console.error("Unresolved Service Type:", {
+          name: item.serviceTypeName,
+          iconName,
+        }); // Log unresolved service types
+      }
       return {
         id: item.key.serviceTypeId,
         name: item.serviceTypeName,
-        iconName: getIconName(item.serviceTypeName),
+        iconName: iconName,
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -182,6 +94,10 @@ const CategoryList = ({
   };
 
   useEffect(() => {
+    console.log("Show Category Modal:", showCatModal);
+  }, [showCatModal]);
+
+  useEffect(() => {
     adjustScrollViewPosition(selectedSubcategory, uniqueSubcategories);
   }, [selectedSubcategory, scrollViewWidth]);
 
@@ -191,10 +107,10 @@ const CategoryList = ({
 
   const handleCategoryPress = (categoryName) => {
     setSelectedCategory(categoryName);
-    console.log("nameee", categoryName);
+    console.log("Category selected:", categoryName);
     setSelectedSubcategory("");
     setSelectedServiceTypeName("");
-    setCatMOdal(false);
+    setCatModal(false);
   };
 
   const handleSubcategoryPress = (subcategoryName) => {
@@ -206,11 +122,11 @@ const CategoryList = ({
     <View>
       <View style={styles.categories}>
         <TouchableOpacity
-          onPress={() => setCatMOdal(true)}
+          onPress={() => setCatModal(true)}
           style={{ flexDirection: "row", alignItems: "center" }}
         >
           <Text style={{ color: theme3.secondaryColor, fontSize: 14 }}>
-            {selectedCategory + " "}
+            {selectedCategory ? selectedCategory + " " : "Select Category"}
           </Text>
           <FontAwesome
             name="exchange"
@@ -227,7 +143,7 @@ const CategoryList = ({
           }
         >
           {uniqueCategories.length > 0 && (
-            <CategoryMOdal
+            <CategoryModal
               uniqueCategories={uniqueCategories}
               handleCategoryPress={(e) => handleCategoryPress(e)}
               selectedCategory={selectedCategory}

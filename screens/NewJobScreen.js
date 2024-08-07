@@ -61,7 +61,7 @@ const NewJobScreen = ({ route }) => {
   const [priorityStatus, setPriorityStatus] = useState(null);
   const [zipcodes, setZipcodes] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [isLOading,setIsLoading] = useState(false)
+  const [isLOading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -74,7 +74,7 @@ const NewJobScreen = ({ route }) => {
   useEffect(() => {
     const fetchCategoriesData = async () => {
       try {
-        setIsLoading(false)
+        setIsLoading(false);
         const userCategoriesData = await fetchUserCategories();
         if (
           Array.isArray(userCategoriesData) &&
@@ -93,8 +93,8 @@ const NewJobScreen = ({ route }) => {
       } catch (error) {
         console.error("Failed to fetch categories", error);
         setUserCategories([]);
-      } finally{
-        setIsLoading(false)
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -335,11 +335,6 @@ const NewJobScreen = ({ route }) => {
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          <Text
-            style={[styles.mostPopularName, { fontSize: 14, marginLeft: 0 }]}
-          >
-            Categories
-          </Text>
           {userCategories && userCategories.length > 0 && (
             <CategoryList
               userCategoriesData={userCategories}
@@ -366,15 +361,14 @@ const NewJobScreen = ({ route }) => {
         <View style={styles.inputContainer}>
           <View style={styles.input}>
             <Text style={styles.label}>Job Description:</Text>
-          <TextInput
+            <TextInput
               style={{ flex: 1, textAlignVertical: "top" }}
               onChangeText={setJobDescription}
-            value={jobDescription}
-            numberOfLines={4}
-
-            placeholder="Enter job description"
-            multiline
-          />
+              value={jobDescription}
+              numberOfLines={4}
+              placeholder="Enter job description"
+              multiline
+            />
           </View>
         </View>
         <View style={styles.mostPopularItem}>
@@ -415,9 +409,6 @@ const NewJobScreen = ({ route }) => {
             />
           </View>
         </View>
-    
-
-
 
         <View style={styles.mostPopularItem}>
           <Text style={styles.label}>Add Images:</Text>
@@ -518,35 +509,34 @@ const NewJobScreen = ({ route }) => {
         jobDescription &&
         priorityStatus !== null &&
         priorityStatus !== undefined ? (
-
           <SwipeButton
-          Icon={
-            <MaterialIcons
-              name="keyboard-arrow-right"
-              size={50}
-              color="white"
-            />
-          }
-          width={320}
-          height={55}
-          onComplete={() => handleBookNow()}
-          title="Swipe to complete"
-          borderRadius={1000}
-          circleBackgroundColor={theme3.secondaryColor}
-          underlayContainerGradientProps={{
-            colors: [theme3.primaryColor, theme3.secondaryColor],
-            start: [0, 0.5],
-            end: [1.3, 0.5],
-          }}
-          titleStyle={{ color: "white" }}
-          containerStyle={{ backgroundColor: "gray" }}
-          underlayTitle="Release to complete"
-          underlayTitleStyle={{ color: theme3.light }}
-        />
+            Icon={
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={50}
+                color="white"
+              />
+            }
+            width={320}
+            height={55}
+            onComplete={() => handleBookNow()}
+            title="Swipe to complete"
+            borderRadius={1000}
+            circleBackgroundColor={theme3.secondaryColor}
+            underlayContainerGradientProps={{
+              colors: [theme3.primaryColor, theme3.secondaryColor],
+              start: [0, 0.5],
+              end: [1.3, 0.5],
+            }}
+            titleStyle={{ color: "white" }}
+            containerStyle={{ backgroundColor: "gray" }}
+            underlayTitle="Release to complete"
+            underlayTitleStyle={{ color: theme3.light }}
+          />
+        ) : (
           // <TouchableOpacity onPress={handleBookNow} style={Styles.LoginBtn}>
           //   <Text style={Styles.LoginTxt}>Submit</Text>
           // </TouchableOpacity>
-        ) : (
           <TouchableOpacity
             style={[Styles.LoginBtn, { backgroundColor: theme3.inActive }]}
           >
@@ -574,9 +564,7 @@ const NewJobScreen = ({ route }) => {
         onBack={setShowSuccess}
         title={"Booked Successfully"}
       />
-      <LoadingModal 
-      show={isLOading}
-      />
+      <LoadingModal show={isLOading} />
     </View>
   );
 };
@@ -670,7 +658,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 10,
   },
-  
+
   dealIconContainer: {
     flexDirection: "row",
     alignItems: "center",
