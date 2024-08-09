@@ -569,6 +569,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             onClose={() => setIsDealModalVisible(false)}
           />
         </View>
+        
       </View>
     );
   }
