@@ -349,15 +349,19 @@ const NewJobScreen = ({ route }) => {
           )}
         </View>
 
-        <View style={styles.InputView}>
-          <TextInput
-            style={{ marginLeft: 13, flex: 1 }}
-            placeholder="Enter zipcode 76262,72623"
-            value={zipcodes}
-            onChangeText={(e) => setZipcodes(e)}
-            autoCapitalize="none"
-          />
+        <View style={styles.inputContainer}>
+          <View style={styles.InputView}>
+            <Text style={styles.label}>Zipcode:</Text>
+            <TextInput
+              style={styles.inputField}
+              placeholder="Enter zipcodes (e.g., 76262,72623)"
+              value={zipcodes}
+              onChangeText={(e) => setZipcodes(e)}
+              autoCapitalize="none"
+            />
+          </View>
         </View>
+
         <View style={styles.inputContainer}>
           <View style={styles.input}>
             <Text style={styles.label}>Job Description:</Text>
@@ -574,18 +578,32 @@ const styles = StyleSheet.create({
     height: WindowHeight,
     width: WindowWidth,
     flex: 1,
-    // backgroundColor: "",
     alignItems: "center",
     justifyContent: "center",
   },
+  inputContainer: {
+    width: "100%",
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
   InputView: {
-    width: WindowWidth / 1.08,
-    height: WindowHeight / 17,
+    width: "100%",
+    padding: 10,
     borderRadius: 8,
     borderColor: "#E1E1E1",
     borderWidth: 1,
-    alignItems: "center",
-    flexDirection: "row",
+    backgroundColor: theme3.GlobalBg,
+    marginBottom: 8,
+  },
+  inputField: {
+    fontSize: 16,
+    color: theme3.fontColor,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: theme3.fontColor,
+    marginBottom: 5,
   },
   datePickerContainer: {
     margin: 20,

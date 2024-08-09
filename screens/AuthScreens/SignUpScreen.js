@@ -22,9 +22,8 @@ import {
 // import { ThemeContext, ThemeProvider } from "../../components/ThemeContext";
 // import { translation } from "../../assets/translations/translations";
 import { PushNotification } from "../../api/PushNotification";
-
 import Styles from "../../assets/branding/GlobalStyles";
-
+import ErrorAlert from "../GlobalComponents/ErrorAlert";
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Logo from "../../assets/newimage/Logo1.png";
 import eye from "../../assets/newimage/eye.png";
@@ -32,7 +31,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { theme3 } from "../../assets/branding/themes";
 
 const WindowWidth = Dimensions.get("window").width;
-const WindowHeight = Dimensions.get("screen").height;
+
 const SignUpScreen = () => {
   const navigation = useNavigation();
   const [index, setIndex] = useState(0);
@@ -56,11 +55,10 @@ const SignUpScreen = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
-
-  // const { currentTheme } = useContext(ThemeContext);
-  // const styles = getStyles(currentTheme);
+  const [errorModal, setErrorModal] = useState(false);
+  const [AlertTitle, setAlertTitle] = useState("Signup Error");
+  const [AlertBody, setAlertBody] = useState("");
 
   useEffect(() => {
     PushNotification();
@@ -69,7 +67,6 @@ const SignUpScreen = () => {
   const validateForm = () => {
     let hasError = false;
 
-    // Basic validation to check if fields are not empty
     if (!username) {
       setUsernameError("Username is required.");
       hasError = true;
@@ -94,6 +91,9 @@ const SignUpScreen = () => {
     if (!email) {
       setEmailError("Email is required.");
       hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setEmailError("Invalid email format.");
+      hasError = true;
     } else {
       setEmailError("");
     }
@@ -101,18 +101,22 @@ const SignUpScreen = () => {
     if (!phoneNumber) {
       setPhoneNumberError("Phone number is required.");
       hasError = true;
+    } else if (!/^\d{10,15}$/.test(phoneNumber)) {
+      setPhoneNumberError("Invalid phone number.");
+      hasError = true;
     } else {
       setPhoneNumberError("");
     }
 
-    // Password validation
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
     if (!password) {
       setPasswordError("Password is required.");
       hasError = true;
     } else if (!passwordRegex.test(password)) {
       setPasswordError(
-        "Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, and one digit."
+        "Password must be at least 8 characters long, and include one uppercase letter, one lowercase letter, and one number."
       );
       hasError = true;
     } else {
@@ -132,53 +136,17 @@ const SignUpScreen = () => {
     return !hasError;
   };
 
-  const ValidateForm = () => {
-    setPressed(true);
-    if (index === 0) {
-      if (!firstname) {
-        setFirstnameError("Firstname is required");
-      }
-      if (!lastname) {
-        setLastnameError("Lastname is required");
-      }
-      if (!username) {
-        setUsernameError("Username is required");
-      }
-      if (!email) {
-        setEmailError("Email is required");
-      } else {
-        setIndex(1);
-        setPressed(false);
-      }
-    } else {
-      if (!phoneNumber) {
-        setPhoneNumberError("Phone is required");
-      }
-      if (password.length < 6) {
-        setPasswordError("password should at least 6 characters");
-      }
-      if (confirmPassword.length < 6) {
-        setConfirmPasswordError(
-          "Confirm password should be atleast 6 charaters"
-        );
-      } else if (confirmPassword !== password) {
-        setConfirmPasswordError("Confirm password should match password");
-      } else {
-        handleSignUp();
-      }
-    }
-  };
-
   const handleSignUp = async () => {
-    // if (!validateForm()) {
-    //   return;
-    // }
+    setPressed(true);
+    if (!validateForm()) {
+      return;
+    }
 
     const token = await SecureStore.getItemAsync("push_notification");
-  
+
     const userData = {
       username,
-      password: password,
+      password,
       email,
       first_name: firstname,
       last_name: lastname,
@@ -189,13 +157,13 @@ const SignUpScreen = () => {
     };
 
     try {
-      // Call the signup API to register the user
+      setLoading(true);
       const response = await signupUser(userData);
-     
 
-      // Clear form fields after successful signup
-
-      if (response) {
+      if (response.payload.warnings && response.payload.warnings.length > 0) {
+        setAlertBody(response.payload.warnings.join("\n"));
+        setErrorModal(true);
+      } else if (response.payload) {
         setUsername("");
         setFirstname("");
         setLastname("");
@@ -203,49 +171,44 @@ const SignUpScreen = () => {
         setPhoneNumber("");
         setPassword("");
         setConfirmPassword("");
-        navigation.navigate("ResendEmailScreen", { user: response });
+        navigation.navigate("ResendEmailScreen", { user: response.payload });
       }
     } catch (error) {
       console.error("Signup failed:", error.message);
-      // Handle signup failure here (e.g., show an error message to the user)
-      alert("Signup failed. Please check your data and try again.");
+      setAlertBody("Signup failed. Please check your data and try again.");
+      setErrorModal(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   const togglePasswordVisibility = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
+    setShowPassword(!showPassword);
   };
 
   const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(
-      (prevShowConfirmPassword) => !prevShowConfirmPassword
-    );
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   function handleBack() {
     setIndex(0);
   }
+
+  function onErrorAction() {
+    setErrorModal(false);
+  }
+
   return (
     <ImageBackground source={AuthBg} style={Styles.Container}>
-      <ScrollView
-        contentContainerStyle={{ alignItems: "center" }}
-        // style={Styles.Container}
-      >
-        {/* <ImageBackground
-     source={AuthBg}
-    style={Styles.Container}
-    > */}
-
+      <ScrollView contentContainerStyle={{ alignItems: "center" }}>
         <View style={Styles.TopView}>
           <Ionicons
             name="arrow-back-outline"
             style={{ marginLeft: 5 }}
             size={25}
             color="#4C4C4C"
+            onPress={handleBack}
           />
-
-          {/* <Text style={{color:"#4C4C4C",fontSize:24,marginLeft:5,marginTop:15,fontWeight:'bold'}}>Create an account</Text>
- <Text style={{color:'#8A8A8A',margin:5}}>Sign up to continue</Text> */}
         </View>
 
         <Image source={Logo} style={{ width: 160, height: 160 }} />
@@ -258,51 +221,48 @@ const SignUpScreen = () => {
                 <TextInput
                   style={{ marginLeft: 13, flex: 1 }}
                   placeholder="Firstname"
-                  keyboardType="email-address"
                   value={firstname}
                   onChangeText={(e) => setFirstname(e)}
                 />
               </View>
-              {isPressed === true && firstname.length < 1 && (
+              {isPressed && firstnameError && (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {firstnameError}
                 </Text>
               )}
+
               <Text style={styles.Text}>Last Name</Text>
               <View style={Styles.InputView}>
                 <TextInput
                   style={{ marginLeft: 13, flex: 1 }}
                   placeholder="Lastname"
-                  keyboardType="email-address"
                   value={lastname}
                   onChangeText={(e) => setLastname(e)}
                 />
               </View>
-
-              {isPressed === true && lastname.length < 1 && (
+              {isPressed && lastnameError && (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {lastnameError}
                 </Text>
               )}
+
               <Text style={styles.Text}>Username</Text>
               <View style={Styles.InputView}>
                 <TextInput
                   style={{ marginLeft: 13, flex: 1 }}
                   placeholder="Username"
-                  keyboardType="email-address"
                   value={username}
                   onChangeText={(e) => setUsername(e)}
                   autoCapitalize="none"
                 />
               </View>
-
-              {isPressed === true && username.length < 1 && (
+              {isPressed && usernameError && (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {usernameError}
                 </Text>
               )}
 
-              <Text style={[styles.Text]}>Email</Text>
+              <Text style={styles.Text}>Email</Text>
               <View style={Styles.InputView}>
                 <TextInput
                   style={{ marginLeft: 13, flex: 1 }}
@@ -312,7 +272,7 @@ const SignUpScreen = () => {
                   autoCapitalize="none"
                 />
               </View>
-              {isPressed === true && email.length < 1 && (
+              {isPressed && emailError && (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {emailError}
                 </Text>
@@ -321,7 +281,6 @@ const SignUpScreen = () => {
           ) : (
             <>
               <Text style={styles.Text}>Phone</Text>
-
               <View style={Styles.InputView}>
                 <TextInput
                   style={{ marginLeft: 13, flex: 1 }}
@@ -331,21 +290,21 @@ const SignUpScreen = () => {
                   onChangeText={(e) => setPhoneNumber(e)}
                 />
               </View>
-
-              {isPressed === true && phoneNumber.length < 1 && (
+              {isPressed && phoneNumberError && (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {phoneNumberError}
                 </Text>
               )}
 
               <Text style={styles.Text}>Password</Text>
-              <View style={[Styles.InputView]}>
+              <View style={Styles.InputView}>
                 <TextInput
                   style={{ marginLeft: 13, flex: 1 }}
-                  placeholder="password"
+                  placeholder="Password"
                   value={password}
                   onChangeText={(e) => setPassword(e)}
-                  secureTextEntry={!showPassword} // Here showPassword will hide text if true
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
                 />
                 <TouchableOpacity onPress={togglePasswordVisibility}>
                   <Image
@@ -354,22 +313,21 @@ const SignUpScreen = () => {
                   />
                 </TouchableOpacity>
               </View>
-
-              {isPressed === true && password.length < 6 && (
+              {isPressed && passwordError && (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {passwordError}
                 </Text>
               )}
 
               <Text style={styles.Text}>Confirm Password</Text>
-
-              <View style={[Styles.InputView]}>
+              <View style={Styles.InputView}>
                 <TextInput
                   style={{ marginLeft: 13, flex: 1 }}
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChangeText={(e) => setConfirmPassword(e)}
-                  secureTextEntry={!showConfirmPassword} // Here showConfirmPassword will hide text if true
+                  secureTextEntry={!showConfirmPassword}
+                  autoCapitalize="none"
                 />
                 <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
                   <Image
@@ -378,44 +336,32 @@ const SignUpScreen = () => {
                   />
                 </TouchableOpacity>
               </View>
-              {isPressed === true && confirmPassword.length < 6 && (
+              {isPressed && confirmPasswordError && (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {confirmPasswordError}
                 </Text>
               )}
-              {isPressed === true &&
-                confirmPassword !== password &&
-                confirmPassword.length >= 6 && (
-                  <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
-                    {confirmPasswordError}
-                  </Text>
-                )}
             </>
           )}
         </View>
 
         <TouchableOpacity
-          onPress={() => (index === 0 ? ValidateForm() : handleBack())}
+          onPress={() => (index === 0 ? setIndex(1) : handleSignUp())}
           style={Styles.LoginBtn}
         >
           <Text style={Styles.LoginTxt}>
-            {index === 0 ? "Next >>>" : "Back <<<"}
+            {index === 0 ? "Next >>>" : "Sign Up"}
           </Text>
         </TouchableOpacity>
 
         {index === 1 && (
-          <TouchableOpacity
-            onPress={() => ValidateForm()}
-            style={Styles.LoginBtn}
-          >
-            <Text style={Styles.LoginTxt}>
-              {loading === false ? "Sign Up" : "Loading..."}
-            </Text>
+          <TouchableOpacity onPress={handleBack} style={Styles.LoginBtn}>
+            <Text style={Styles.LoginTxt}>{"<<< Back"}</Text>
           </TouchableOpacity>
         )}
 
         <Text style={{ color: "#8A8A8A", marginTop: 20 }}>
-          By signing Up you agree to terms and policy
+          By signing up you agree to terms and policy.
         </Text>
 
         <Text style={{ color: "#8A8A8A", marginTop: 20 }}>
@@ -427,7 +373,13 @@ const SignUpScreen = () => {
             Login
           </Text>
         </Text>
-        {/* </ImageBackground> */}
+
+        <ErrorAlert
+          show={errorModal}
+          onAction={onErrorAction}
+          title={AlertTitle}
+          body={AlertBody}
+        />
       </ScrollView>
     </ImageBackground>
   );
@@ -439,12 +391,6 @@ const styles = StyleSheet.create({
     margin: 5,
     fontWeight: "bold",
   },
-
-  PasswordTextView: {
-    marginTop: 25,
-    flexDirection: "row",
-    width: WindowWidth / 1.08,
-    justifyContent: "space-between",
-  },
 });
+
 export default SignUpScreen;

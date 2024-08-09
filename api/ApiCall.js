@@ -281,10 +281,6 @@ export const signupUser = async (userData) => {
   try {
     const response = await axios.post(signUpApiUrl, userData);
 
-    if (response.data) {
-      const accessToken = response.headers["access_token"];
-      await SecureStore.setItemAsync("userToken", accessToken);
-    }
     return response.data;
   } catch (error) {
     console.error("Signup failed:", error.message);

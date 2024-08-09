@@ -62,6 +62,7 @@ function AppointmentCard({
     rescheduled: { label: "Rescheduled", color: "#FFD700" },
     noshow: { label: "No Show", color: "#FF4500" },
     completed: { label: "Completed", color: "#32CD32" },
+    confirmed: { label: "Confirmed", color: "#32CD32" },
     accepted: { label: "Accepted", color: "#4682B4" },
     booked: { label: "Booked", color: "#1E90FF" },
     open: { label: "Open", color: "#6EBD6A" },
@@ -82,6 +83,7 @@ function AppointmentCard({
       };
     }
     if (slot.noshow) return statusLabels.noshow;
+    if (slot.confirmed) return statusLabels.confirmed;
     if (slot.completed) return statusLabels.completed;
     if (slot.accepted) return statusLabels.accepted;
     if (slot.booked) return statusLabels.booked;

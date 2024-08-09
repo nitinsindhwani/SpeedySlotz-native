@@ -436,6 +436,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F5FCFF",
   },
+  yelpLogoContainer: {
+    position: "absolute",
+    top: 20, // Changed this
+    right: 20, // Changed this
+    zIndex: 2,
+    padding: 5, // Added this to make it touch-friendly
+    borderRadius: 20, // Added this for a rounded touch area
+    backgroundColor: "rgba(255, 255, 255, 0.5)", // Added a light background for visibility
+  },
   yelpLogo: {
     width: 60,
     height: 22,
