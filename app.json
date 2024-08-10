@@ -16,11 +16,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
-      "buildNumber": "4",
+      "buildNumber": "5",
       "infoPlist": {
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": ["speedyslotz"]
+            "CFBundleURLSchemes": [
+              "speedyslotz"
+            ]
           }
         ]
       }
@@ -31,7 +33,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.speedyzslotznitinapp.app",
-      "versionCode": 10,
+      "versionCode": 11,
       "intentFilters": [
         {
           "action": "VIEW",
@@ -45,7 +47,10 @@
               "scheme": "speedyslotz"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -59,7 +64,10 @@
         {
           "icon": "./assets/images/notification.png",
           "color": "#ffffff",
-          "sounds": ["./assets/sounds/tone1.wav", "./assets/sounds/tone2.wav"]
+          "sounds": [
+            "./assets/sounds/tone1.wav",
+            "./assets/sounds/tone2.wav"
+          ]
         }
       ]
     ],
