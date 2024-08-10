@@ -94,10 +94,6 @@ const CategoryList = ({
   };
 
   useEffect(() => {
-    console.log("Show Category Modal:", showCatModal);
-  }, [showCatModal]);
-
-  useEffect(() => {
     adjustScrollViewPosition(selectedSubcategory, uniqueSubcategories);
   }, [selectedSubcategory, scrollViewWidth]);
 

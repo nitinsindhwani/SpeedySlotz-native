@@ -2,6 +2,8 @@
   "expo": {
     "name": "SpeedySlotz",
     "slug": "speedySlotzfinalapp",
+    "scheme": "speedyslotz",
+    "deepLinking": true,
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,14 +15,39 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.speedyzslotznitinapp.app"
+      "bundleIdentifier": "com.speedyzslotznitinapp.app",
+      "buildNumber": "4",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": ["speedyslotz"]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.speedyzslotznitinapp.app"
+      "package": "com.speedyzslotznitinapp.app",
+      "versionCode": 10,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "www.speedyslotz.com",
+              "pathPrefix": "/login"
+            },
+            {
+              "scheme": "speedyslotz"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

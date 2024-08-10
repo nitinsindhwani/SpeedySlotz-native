@@ -36,3 +36,5 @@ yarn-error.*
 package-lock.json
 package-lock.json
 package-lock.json
+android/app/build.gradle
+package-lock.json

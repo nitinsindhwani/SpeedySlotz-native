@@ -25,7 +25,7 @@ function NoDataFound() {
           fontWeight: "bold",
         }}
       >
-        No data available. Please refine search.
+        Adjust your search for more options.
       </Text>
     </View>
   );

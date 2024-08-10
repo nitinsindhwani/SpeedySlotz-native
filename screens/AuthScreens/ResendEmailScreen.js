@@ -1,47 +1,27 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   Image,
   ImageBackground,
-  Pressable,
-  Dimensions,
   TouchableOpacity,
-  KeyboardAvoidingView,
   StyleSheet,
-  Platform,
+  Dimensions,
 } from "react-native";
-import { loginUser } from "../../api/ApiCall";
 import { useNavigation } from "@react-navigation/native";
-
-import FbLogin from "../../assets/newimage/fbLogin.png";
-import Line from "../../assets/newimage/Line.png";
-import googleIcon from "../../assets/newimage/googlIcon.png";
-
-// import SocialButton from '../../components/SocialButton';
-// import { ThemeContext, ThemeProvider } from "../../components/ThemeContext"
-// import { translation } from "../assets/translations/translations";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import Styles from "../../assets/branding/GlobalStyles";
-
-import eye from "../../assets/newimage/eye.png";
-import AuthBg from "../../assets/newimage/AuthBg.png";
-import Logo from "../../assets/newimage/Logo1.png";
-
-import { theme3 } from "../../assets/branding/themes";
-import { PushNotification } from "../../api/PushNotification";
-import LoadingModal from "../GlobalComponents/LoadingModal";
-import ErrorAlert from "../GlobalComponents/ErrorAlert";
 import { resendVerifyEmail } from "../../api/ApiCall"; // Ensure this API function is correctly defined to handle the request
 
+import AuthBg from "../../assets/newimage/AuthBg.png";
+import Logo from "../../assets/newimage/Logo1.png";
+import { theme3 } from "../../assets/branding/themes";
+
 const WindowWidth = Dimensions.get("window").width;
-const WindowHeight = Dimensions.get("window").height;
 
 const ResendEmailScreen = ({ route }) => {
   const { user } = route?.params;
-
-
   const navigation = useNavigation();
   const [message, setMessage] = useState("");
   const [messageColor, setMessageColor] = useState("red");
@@ -72,16 +52,13 @@ const ResendEmailScreen = ({ route }) => {
 
   return (
     <ImageBackground source={AuthBg} style={styles.container}>
-      <View style={Styles.TopView}>
+      <View style={styles.topView}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons
-            name="arrow-back-outline"
-            style={{ marginLeft: 5 }}
-            size={25}
-            color="#4C4C4C"
-          />
+          <Ionicons name="arrow-back-outline" size={25} color="#4C4C4C" />
         </TouchableOpacity>
       </View>
+
+      <Image source={Logo} style={styles.logo} />
 
       <View style={styles.content}>
         <Text style={styles.heading}>Verify Your Email</Text>
@@ -97,10 +74,35 @@ const ResendEmailScreen = ({ route }) => {
         ) : null}
       </View>
 
+      <Text
+        style={{
+          color: "#8A8A8A",
+          marginTop: 20,
+          textAlign: "center",
+          paddingHorizontal: 20,
+        }}
+      >
+        By resending, you agree to our Terms and Privacy Policy.
+      </Text>
+
       <Text style={{ color: theme3.LightTxtClr, marginTop: 20 }}>
-        Don{"'"}t have an account?{" "}
+        Already verified?{" "}
         <Text
           onPress={() => navigation.navigate("LoginScreen")}
+          style={{
+            color: theme3.primaryColor,
+            fontWeight: "bold",
+            marginLeft: 10,
+          }}
+        >
+          Login
+        </Text>
+      </Text>
+
+      <Text style={{ color: theme3.LightTxtClr, marginTop: 10 }}>
+        Don't have an account?{" "}
+        <Text
+          onPress={() => navigation.navigate("SignUpScreen")}
           style={{
             color: theme3.primaryColor,
             fontWeight: "bold",
@@ -123,11 +125,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   topView: {
-    marginTop: 60,
+    position: "absolute",
+    top: 40, // Adjust this value as needed to position correctly on the screen
+    left: 20, // Adjust this value to position the back button
   },
   logo: {
     width: 160,
     height: 160,
+    marginBottom: 20,
   },
   content: {
     alignItems: "center",

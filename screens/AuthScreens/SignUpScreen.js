@@ -64,15 +64,34 @@ const SignUpScreen = () => {
     PushNotification();
   }, []);
 
-  const validateForm = () => {
+  const resetErrors = () => {
+    setUsernameError("");
+    setFirstnameError("");
+    setLastnameError("");
+    setEmailError("");
+    setPhoneNumberError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+  };
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+
+  // Updated password policy as an array of bullet points
+  const passwordPolicy = [
+    "At least 8 characters long",
+    "One uppercase letter",
+    "One lowercase letter",
+    "One number",
+    "One special character (@, $, !, %, *, ?, &)",
+  ];
+
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  const validateFirstScreen = () => {
     let hasError = false;
 
-    if (!username) {
-      setUsernameError("Username is required.");
-      hasError = true;
-    } else {
-      setUsernameError("");
-    }
+    resetErrors();
 
     if (!firstname) {
       setFirstnameError("First name is required.");
@@ -88,10 +107,56 @@ const SignUpScreen = () => {
       setLastnameError("");
     }
 
+    if (!username) {
+      setUsernameError("Username is required.");
+      hasError = true;
+    } else {
+      setUsernameError("");
+    }
+
     if (!email) {
       setEmailError("Email is required.");
       hasError = true;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (!emailRegex.test(email)) {
+      setEmailError("Invalid email format.");
+      hasError = true;
+    } else {
+      setEmailError("");
+    }
+
+    return !hasError;
+  };
+
+  const validateForm = () => {
+    let hasError = false;
+
+    resetErrors();
+
+    if (!firstname) {
+      setFirstnameError("First name is required.");
+      hasError = true;
+    } else {
+      setFirstnameError("");
+    }
+
+    if (!lastname) {
+      setLastnameError("Last name is required.");
+      hasError = true;
+    } else {
+      setLastnameError("");
+    }
+
+    if (!username) {
+      setUsernameError("Username is required.");
+      hasError = true;
+    } else {
+      setUsernameError("");
+    }
+
+    if (!email) {
+      setEmailError("Email is required.");
+      hasError = true;
+    } else if (!emailRegex.test(email)) {
       setEmailError("Invalid email format.");
       hasError = true;
     } else {
@@ -108,16 +173,11 @@ const SignUpScreen = () => {
       setPhoneNumberError("");
     }
 
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
     if (!password) {
       setPasswordError("Password is required.");
       hasError = true;
     } else if (!passwordRegex.test(password)) {
-      setPasswordError(
-        "Password must be at least 8 characters long, and include one uppercase letter, one lowercase letter, and one number."
-      );
+      setPasswordError("Password does not meet the required criteria.");
       hasError = true;
     } else {
       setPasswordError("");
@@ -138,6 +198,7 @@ const SignUpScreen = () => {
 
   const handleSignUp = async () => {
     setPressed(true);
+    resetErrors();
     if (!validateForm()) {
       return;
     }
@@ -147,7 +208,7 @@ const SignUpScreen = () => {
     const userData = {
       username,
       password,
-      email,
+      email: email.toLowerCase(), // Convert email to lowercase
       first_name: firstname,
       last_name: lastname,
       phoneNumber,
@@ -159,9 +220,20 @@ const SignUpScreen = () => {
     try {
       setLoading(true);
       const response = await signupUser(userData);
+      console.log("response", response);
 
-      if (response.payload.warnings && response.payload.warnings.length > 0) {
-        setAlertBody(response.payload.warnings.join("\n"));
+      if (
+        response.success &&
+        response.payload === null &&
+        response.warnings &&
+        response.warnings.length > 0
+      ) {
+        // Show generic message with warnings in bullet points
+        let warningMessage = "Please address the following issues:";
+        response.warnings.forEach((warning) => {
+          warningMessage += `\n• ${warning}`;
+        });
+        setAlertBody(warningMessage);
         setErrorModal(true);
       } else if (response.payload) {
         setUsername("");
@@ -225,11 +297,11 @@ const SignUpScreen = () => {
                   onChangeText={(e) => setFirstname(e)}
                 />
               </View>
-              {isPressed && firstnameError && (
+              {isPressed && firstnameError ? (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {firstnameError}
                 </Text>
-              )}
+              ) : null}
 
               <Text style={styles.Text}>Last Name</Text>
               <View style={Styles.InputView}>
@@ -240,11 +312,11 @@ const SignUpScreen = () => {
                   onChangeText={(e) => setLastname(e)}
                 />
               </View>
-              {isPressed && lastnameError && (
+              {isPressed && lastnameError ? (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {lastnameError}
                 </Text>
-              )}
+              ) : null}
 
               <Text style={styles.Text}>Username</Text>
               <View style={Styles.InputView}>
@@ -256,11 +328,11 @@ const SignUpScreen = () => {
                   autoCapitalize="none"
                 />
               </View>
-              {isPressed && usernameError && (
+              {isPressed && usernameError ? (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {usernameError}
                 </Text>
-              )}
+              ) : null}
 
               <Text style={styles.Text}>Email</Text>
               <View style={Styles.InputView}>
@@ -269,14 +341,15 @@ const SignUpScreen = () => {
                   placeholder="Email"
                   value={email}
                   onChangeText={(e) => setEmail(e)}
-                  autoCapitalize="none"
+                  autoCapitalize="none" // This line ensures no auto-capitalization.
+                  keyboardType="email-address"
                 />
               </View>
-              {isPressed && emailError && (
+              {isPressed && emailError ? (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {emailError}
                 </Text>
-              )}
+              ) : null}
             </>
           ) : (
             <>
@@ -290,11 +363,11 @@ const SignUpScreen = () => {
                   onChangeText={(e) => setPhoneNumber(e)}
                 />
               </View>
-              {isPressed && phoneNumberError && (
+              {isPressed && phoneNumberError ? (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {phoneNumberError}
                 </Text>
-              )}
+              ) : null}
 
               <Text style={styles.Text}>Password</Text>
               <View style={Styles.InputView}>
@@ -313,10 +386,29 @@ const SignUpScreen = () => {
                   />
                 </TouchableOpacity>
               </View>
-              {isPressed && passwordError && (
-                <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
-                  {passwordError}
-                </Text>
+              {isPressed && passwordError ? (
+                <>
+                  <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
+                    {passwordError}
+                  </Text>
+                  {passwordPolicy.map((item, index) => (
+                    <Text
+                      key={index}
+                      style={{ color: "#8A8A8A", marginTop: 5, marginLeft: 15 }}
+                    >
+                      • {item}
+                    </Text>
+                  ))}
+                </>
+              ) : (
+                passwordPolicy.map((item, index) => (
+                  <Text
+                    key={index}
+                    style={{ color: "#8A8A8A", marginTop: 5, marginLeft: 15 }}
+                  >
+                    • {item}
+                  </Text>
+                ))
               )}
 
               <Text style={styles.Text}>Confirm Password</Text>
@@ -336,32 +428,47 @@ const SignUpScreen = () => {
                   />
                 </TouchableOpacity>
               </View>
-              {isPressed && confirmPasswordError && (
+              {isPressed && confirmPasswordError ? (
                 <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
                   {confirmPasswordError}
                 </Text>
-              )}
+              ) : null}
             </>
           )}
         </View>
 
-        <TouchableOpacity
-          onPress={() => (index === 0 ? setIndex(1) : handleSignUp())}
-          style={Styles.LoginBtn}
-        >
-          <Text style={Styles.LoginTxt}>
-            {index === 0 ? "Next >>>" : "Sign Up"}
-          </Text>
-        </TouchableOpacity>
-
-        {index === 1 && (
-          <TouchableOpacity onPress={handleBack} style={Styles.LoginBtn}>
-            <Text style={Styles.LoginTxt}>{"<<< Back"}</Text>
+        {index === 0 ? (
+          <TouchableOpacity
+            onPress={() => {
+              setPressed(true);
+              if (validateFirstScreen()) {
+                setIndex(1);
+              }
+            }}
+            style={Styles.LoginBtn}
+          >
+            <Text style={Styles.LoginTxt}>Next &gt;&gt;&gt;</Text>
           </TouchableOpacity>
+        ) : (
+          <>
+            <TouchableOpacity onPress={handleSignUp} style={Styles.LoginBtn}>
+              <Text style={Styles.LoginTxt}>Sign Up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleBack} style={Styles.LoginBtn}>
+              <Text style={Styles.LoginTxt}>{"<<< Back"}</Text>
+            </TouchableOpacity>
+          </>
         )}
 
-        <Text style={{ color: "#8A8A8A", marginTop: 20 }}>
-          By signing up you agree to terms and policy.
+        <Text
+          style={{
+            color: "#8A8A8A",
+            marginTop: 20,
+            textAlign: "center",
+            paddingHorizontal: 20,
+          }}
+        >
+          By signing up, you agree to our Terms and Privacy Policy.
         </Text>
 
         <Text style={{ color: "#8A8A8A", marginTop: 20 }}>

@@ -18,15 +18,10 @@ import { useNavigation } from "@react-navigation/native";
 import FbLogin from "../../assets/newimage/fbLogin.png";
 import Line from "../../assets/newimage/Line.png";
 import googleIcon from "../../assets/newimage/googlIcon.png";
-
-// import SocialButton from '../../components/SocialButton';
-// import { ThemeContext, ThemeProvider } from "../../components/ThemeContext"
-// import { translation } from "../assets/translations/translations";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Styles from "../../assets/branding/GlobalStyles";
 
 const WindowWidth = Dimensions.get("window").width;
-const WindowHeight = Dimensions.get("window").height;
 import eye from "../../assets/newimage/eye.png";
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Logo from "../../assets/newimage/Logo1.png";
@@ -35,94 +30,90 @@ import { theme3 } from "../../assets/branding/themes";
 import { PushNotification } from "../../api/PushNotification";
 import LoadingModal from "../GlobalComponents/LoadingModal";
 import ErrorAlert from "../GlobalComponents/ErrorAlert";
+
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState(null);
-  const [isPressed, setPressed] = useState(false);
-  const [errorCode, setErrorCode] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [errorModal, setErrorModal] = useState(false);
-  const [AlertTitle, setAlertTitle] = useState("Error Login");
-  const [AlertBody, setAlertBody] = useState(
-    "Something Went Wrong PLease check the credentials!"
-  );
-
   const [passwordError, setPasswordError] = useState(null);
   const [securetext, setSecureText] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [AlertTitle, setAlertTitle] = useState("Error Login");
+  const [AlertBody, setAlertBody] = useState(
+    "Invalid username or password. Please check your credentials and try again."
+  );
   const navigation = useNavigation();
-  // const { currentTheme } = useContext(ThemeContext);
-  // const styles = getStyles(currentTheme);
 
   useEffect(() => {
     PushNotification();
   }, []);
 
-  const handleLogin = async () => {
-    // navigation.navigate('LandingScreen');
+  const passwordPolicy = [
+    "At least 8 characters long",
+    "One uppercase letter",
+    "One lowercase letter",
+    "One number",
+    "One special character (@, $, !, %, *, ?, &)",
+  ];
 
-    if (username.length < 4) {
-      setErrorMessage("Username must be at least 4 characters");
-      setErrorCode("phone");
-    } else if (password.length < 6) {
-      setErrorCode("password");
-      setErrorMessage(
-        "Password must be at least 6 characters poioip pipi ipi iiiopi"
-      );
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  const validateForm = () => {
+    let hasError = false;
+
+    if (!username) {
+      setUsernameError("Username is required.");
+      hasError = true;
     } else {
-      setErrorCode(false);
+      setUsernameError("");
+    }
 
-      try {
-        setLoading(true);
-        const response = await loginUser(username, password);
-        // // if (response && response.push_notification === null) {
-        // //   // The user is logged in but doesn't have a push token saved.
-        // //   const pushToken = await PushNotification();
-        // //   if (pushToken) {
-        // //     // Call an API endpoint to update the user's push token in your backend.
-        // //     console.log("Push Token:", pushToken);
-        // //   }
-        // console.log(response)
-        // }
-        console.log(response);
-        if (response.success) {
-          if (response.payload.email_verified) {
-            navigation.navigate("BottomNavigation", { user: response.payload });
-          } else {
-            navigation.navigate("ResendEmailScreen", {
-              user: response.payload,
-            });
-          }
+    if (!password) {
+      setPasswordError("Password is required.");
+      hasError = true;
+    } else if (!passwordRegex.test(password)) {
+      setPasswordError("Password does not meet the required criteria.");
+      hasError = true;
+    } else {
+      setPasswordError("");
+    }
+
+    return !hasError;
+  };
+
+  const handleLogin = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const response = await loginUser(username, password);
+      console.log(response);
+      if (response.success) {
+        if (response.payload.email_verified) {
+          navigation.navigate("BottomNavigation", { user: response.payload });
         } else {
-          setErrorModal(true);
-          setErrorMessage("An error occurred. Please try again.");
+          navigation.navigate("ResendEmailScreen", {
+            user: response.payload,
+          });
         }
-        ////// UN COMMENT THE FUNCTION ABOVE AFTER MAKING THOSE CHANGES IN BACKEND/////
-        // if (response.status === "200") {
-        //   navigation.navigate('BottomNavigation', { user: response });
-
-        // } else if(response.status === "401") {
-        //   console.log('Login failed. Please check your credentials and try dsdagain.');
-        //   setErrorModal(true)
-        //   setErrorCode(response.title)
-        //   setErrorMessage(response.message)
-        // }
-      } catch (error) {
-        console.error("Login error:", error.message);
+      } else {
         setErrorModal(true);
-      } finally {
-        setLoading(false);
+        setAlertBody("An error occurred. Please try again.");
       }
+    } catch (error) {
+      console.error("Login error:", error.message);
+      setErrorModal(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleForgotPassword = () => {
     navigation.navigate("ForgotPasswordScreen");
-  };
-
-  const handleSocialLogin = (platform) => {
-    console.log(`Logged in with ${platform}`);
   };
 
   function onErrorAction() {
@@ -150,15 +141,15 @@ const LoginScreen = () => {
         <View style={Styles.InputView}>
           <TextInput
             style={{ marginLeft: 13, flex: 1 }}
-            placeholder="username"
+            placeholder="Username"
             value={username}
             onChangeText={(e) => setUsername(e)}
             autoCapitalize="none"
           />
         </View>
-        {errorCode === "phone" && username.length < 4 && (
+        {usernameError && (
           <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
-            {errorMessage}
+            {usernameError}
           </Text>
         )}
 
@@ -176,7 +167,7 @@ const LoginScreen = () => {
         <View style={[Styles.InputView]}>
           <TextInput
             style={{ marginLeft: 13, flex: 1 }}
-            placeholder="password"
+            placeholder="Password"
             value={password}
             onChangeText={(e) => setPassword(e)}
             secureTextEntry={securetext}
@@ -195,59 +186,26 @@ const LoginScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {errorCode === "password" && password.length < 6 && (
-          <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
-            {errorMessage}
-          </Text>
+        {passwordError && (
+          <>
+            <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
+              {passwordError}
+            </Text>
+            {passwordPolicy.map((item, index) => (
+              <Text
+                key={index}
+                style={{ color: "#8A8A8A", marginTop: 5, marginLeft: 15 }}
+              >
+                • {item}
+              </Text>
+            ))}
+          </>
         )}
       </View>
 
-      <TouchableOpacity onPress={() => handleLogin()} style={Styles.LoginBtn}>
+      <TouchableOpacity onPress={handleLogin} style={Styles.LoginBtn}>
         <Text style={Styles.LoginTxt}>Login</Text>
       </TouchableOpacity>
-
-      {/* {loading===true?
-    <TouchableOpacity 
-  
-  style={Styles.LoginBtn}>
-  <Text style={Styles.LoginTxt}>Loading....</Text>
-  </TouchableOpacity>:
-  <TouchableOpacity 
-  onPress={()=> handleLogin()}
-  style={Styles.LoginBtn}>
-  <Text style={Styles.LoginTxt}>Login</Text>
-  </TouchableOpacity>
-  
-  } */}
-
-      <View style={styles.socialView}>
-        {/* <Pressable
-          onPress={() => handleSocialLogin("Facebook")}
-          style={styles.SocialBtn}
-        >
-          <Image source={FbLogin} style={{ width: 10, height: 20 }} />
-        </Pressable>
-        <Pressable
-          onPress={() => handleSocialLogin("Google")}
-          style={styles.SocialBtn}
-        >
-          <Image source={googleIcon} style={{ width: 20, height: 20 }} />
-        </Pressable>
-        <Pressable
-          onPress={() => handleSocialLogin("Apple")}
-          style={styles.SocialBtn}
-        >
-          <MaterialCommunityIcons name="apple" size={24} color="black" />
-        </Pressable> */}
-      </View>
-
-      {/* <View style={{flexDirection:'row',alignItems:'center',marginTop:20}}>
-<Text style={{color:theme3.LightTxtClr}}>Have apple account? <Text 
-  
-  onPress={() => handleSocialLogin("Apple")}
-  style={{color:theme3.fontColor ,fontWeight:'bold',marginLeft:10}}> Login Apple</Text></Text> 
-  <MaterialCommunityIcons name="apple" size={24} color="black" />
-</View> */}
 
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Image source={Line} style={{ width: WindowWidth / 2.9, height: 2 }} />
@@ -256,6 +214,7 @@ const LoginScreen = () => {
         </Text>
         <Image source={Line} style={{ width: WindowWidth / 2.6, height: 2 }} />
       </View>
+
       <Text style={{ color: theme3.LightTxtClr, marginTop: 20 }}>
         Don{"'"}t have an account?{" "}
         <Text
@@ -293,31 +252,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: WindowWidth / 1.08,
     justifyContent: "space-between",
-  },
-  socialView: {
-    width: WindowWidth / 1.2,
-    margin: 20,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-  },
-  SocialBtn: {
-    width: 50,
-    height: 50,
-    borderRadius: 1000,
-    backgroundColor: "#F4F7FD",
-    //  borderRadius:8,
-    shadowColor: "rgba(0,0,0,0.3)",
-    elevation: 10,
-    opacity: 0.8,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowOpacity: 2,
-  },
-  socialLoginTxt: {
-    color: "#4C4C4C",
-    fontWeight: "bold",
-    marginLeft: 10,
   },
 });
 

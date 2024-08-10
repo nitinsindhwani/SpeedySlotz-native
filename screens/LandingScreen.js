@@ -43,7 +43,7 @@ const LandingScreen = ({ route }) => {
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedCoordinates, setSelectedCoordinates] = useState("");
   const [selectedZipcode, setSelectedZipcode] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Pets");
+  const [selectedCategory, setSelectedCategory] = useState(null); // Initialize as null to check if a category is selected
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [selectedServiceTypeName, setSelectedServiceTypeName] = useState("");
   const [fetchedBusinesses, setFetchedBusinesses] = useState([]);
@@ -76,22 +76,6 @@ const LandingScreen = ({ route }) => {
       console.log("No businesses fetched yet, or they have no badges.");
       return [];
     }
-    console.log("fetchedBusinesses", fetchedBusinesses);
-
-    if (
-      !fetchedBusinesses.some(
-        (business) =>
-          (business.yelpBusiness.badges &&
-            business.yelpBusiness.badges.length > 0) ||
-          (business.yelpBusinessSettings &&
-            business.yelpBusinessSettings.allowEmergencyRequest)
-      )
-    ) {
-      console.log(
-        "No badges or emergency services found in the fetched businesses."
-      );
-      return [];
-    }
 
     const allBadges = fetchedBusinesses.flatMap((business) => {
       const badges = business.yelpBusiness.badges
@@ -105,8 +89,6 @@ const LandingScreen = ({ route }) => {
       }
       return badges;
     });
-
-    console.log("All badges:", allBadges);
 
     const uniqueBadges = Array.from(new Set(allBadges));
 
@@ -152,7 +134,6 @@ const LandingScreen = ({ route }) => {
       let isActive = true;
 
       const fetchCategoriesData = async () => {
-        // setIsLoading(true);
         try {
           const userCategoriesData = await fetchUserCategories();
 
@@ -201,7 +182,7 @@ const LandingScreen = ({ route }) => {
       setLoader(true);
       try {
         const businesses = await fetchBusinessesByServiceName(
-          serviceName, // Updated to use serviceName directly
+          serviceName,
           selectedLocation,
           locationData.coordinates.latitude,
           locationData.coordinates.longitude,
@@ -259,7 +240,6 @@ const LandingScreen = ({ route }) => {
 
   const handleDateSelect = (date) => {
     const newDate = date.toISOString().split("T")[0];
-    console.log("New date selected:", newDate);
     setSelectedDate(newDate);
   };
 
@@ -408,7 +388,7 @@ const LandingScreen = ({ route }) => {
               )}
             />
           ) : (
-            <NoDataFound />
+            selectedCategory && <NoDataFound />
           )}
         </>
       )}
