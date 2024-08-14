@@ -16,7 +16,7 @@ const badges = [
   { name: "Tech-Savvy", icon: "laptop-code" },
 ];
 
-export default function RemarkModal() {
+export default function RemarkModal({visible,onCLose,onSave}) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [positiveRatedBadges, setPositiveRatedBadges] = useState([]);
@@ -85,14 +85,13 @@ export default function RemarkModal() {
   };
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Text style={styles.openModalText}>Open Review Modal</Text>
-      </TouchableOpacity>
 
-      <Modal animationType="slide" transparent={false} visible={modalVisible}>
+
+      <Modal animationType="slide" transparent={false} visible={visible}>
         <View style={styles.modalContainer}>
           <Text style={styles.title}>Leave Your Remarks</Text>
+          <Text style={{fontSize:14,marginTop:0}}>Leave 2 positive and 2 negative remarks</Text>
+
 <View style={{height:"50%",}}>
 
 <FlatList
@@ -117,12 +116,11 @@ multiline={true}
 />
           </View>
 
-          <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+          <TouchableOpacity style={styles.closeButton} onPress={() => onCLose()}>
             <Text style={styles.closeButtonText}>Submit Remarks</Text>
           </TouchableOpacity>
         </View>
       </Modal>
-    </View>
   );
 }
 
@@ -149,7 +147,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme3.fontColor,
     textAlign: 'center',
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   badgeContainer: {
     width: '30%',
@@ -198,7 +196,7 @@ const styles = StyleSheet.create({
   },
   ReviewCOntainer: {
    backgroundColor:theme3.light,
-   width:"90%",
+   width:"95%",
    height:"20%",
    borderRadius:20,
    shadowColor:"rgba(0,0,0,0.1)",

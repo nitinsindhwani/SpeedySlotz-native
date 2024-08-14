@@ -39,6 +39,7 @@ import DealModal from "./DealModal";
 // import { faV } from "@fortawesome/free-solid-svg-icons";
 // import { set } from "date-fns";
 import ChatAnim from "../screens/GlobalComponents/ChatAnim";
+import RemarkModal from "../screens/Modals/FeedbackModal";
 
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
@@ -303,6 +304,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         </View>
       );
     }
+    const [ remarkMOdal,setRemarkModal] = useState(false)
 
     return (
       <View key={index} style={styles.mostPopularItem}>
@@ -337,7 +339,9 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             justifyContent: "space-between",
           }}
         >
-          <Text style={[styles.mostPopularName, { width: "70%" }]}>
+          <Text 
+          onPress={()=> setRemarkModal(true)}
+          style={[styles.mostPopularName, { width: "70%" }]}>
             {item.yelpBusiness.name}
           </Text>
 
@@ -569,6 +573,10 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             onClose={() => setIsDealModalVisible(false)}
           />
         </View>
+        <RemarkModal 
+      visible={remarkMOdal}
+      onCLose={()=> setRemarkModal(false)}
+      />
       </View>
     );
   }

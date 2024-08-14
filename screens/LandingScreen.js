@@ -412,7 +412,7 @@ const LandingScreen = ({ route }) => {
           )}
         </>
       )}
-      <RemarkModal/>
+    
       <FilterModal
         show={showFilterModal}
         onHideModal={hideModal}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef ,useState} from "react";
 import {
   View,
   Text,
@@ -39,6 +39,7 @@ const ApptConfirmationScreen = ({ route }) => {
     const options = { hour: "2-digit", minute: "2-digit", hour12: true };
     return date.toLocaleTimeString(undefined, options);
   }
+  const [isAnimationVisible, setIsAnimationVisible] = useState(true);
 
   useEffect(() => {
     navigation.setOptions({
@@ -61,6 +62,11 @@ const ApptConfirmationScreen = ({ route }) => {
         backgroundColor: "#FFF",
       },
     });
+    const timer = setTimeout(() => {
+      setIsAnimationVisible(false);
+    }, 5000); // Hide animation after 5 seconds
+
+    return () => clearTimeout(timer);
   }, [navigation]);
 
   const priorityStatusMap = {
@@ -143,22 +149,30 @@ const ApptConfirmationScreen = ({ route }) => {
   return (
     // <ScrollView style={styles.container}>
       <View style={styles.itemContainer}>
-        <AnimatedLottieView
+        {
+          isAnimationVisible ?
+          <AnimatedLottieView
           autoPlay
           loop={true}
           ref={animation}
           style={styles.lottieAnimation}
           source={loaderAnimation}
         />
+:
+<>
+       
         {businessDetails && (
           <>
             <View
               style={{
-                flexDirection: "row",
-                backgroundColor: theme3.primaryColor,
+                // flexDirection: "row",
+                backgroundColor: theme3.light,
                 padding: 10,
                 borderRadius: 20,
-                width:"100%"
+                marginTop:50,
+                width:"100%",
+                shadowColor:"rgba(0,0,0,0.4)",
+                shadowOpacity:1
               }}
             >
               <Image
@@ -168,7 +182,7 @@ const ApptConfirmationScreen = ({ route }) => {
                 )}
                 style={styles.image}
               />
-              <View style={{ marginLeft: 10 }}>
+              <View style={{ marginLeft: 0 }}>
                 <Text style={styles.name}>
                   {businessDetails.yelpBusiness.name}
                 </Text>
@@ -197,43 +211,80 @@ const ApptConfirmationScreen = ({ route }) => {
                   </Text>
                 </TouchableOpacity>
               </View>
+              <View style={{alignItems:'flex-start'}}>
+<Text style={styles.timeSlot}>
+        Service Type 
+        </Text>
+        <View style={styles.wrapper}>
+        <Text style={{color:theme3.light}}>
+        {service_type}
+        </Text>
+        </View>    
+</View>
+
+              <Text style={styles.timeSlot}>
+            Selected Date & Time 
+          </Text> 
+              <View style={styles.rowMAker}>
+
+        <View style={styles.wrapper}>
+        <Text style={{color:theme3.light}}>
+            {formatDate(slot.date)}
+          </Text>
+          </View>    
+
+ 
+
+
+ 
+<View style={styles.wrapper}>
+
+        <Text style={{color:theme3.light}}>
+            {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
+          </Text>
+          </View>
+
+
+              </View>
+              <Text style={styles.timeSlot}>
+              Priority Status: <Text style={{color:theme3.send}}>
+            {getPriorityStatusText(slot.priorityStatus)}
+          </Text>
+          </Text> 
+          <Text style={styles.timeSlot}>
+              Job Description: <Text style={{fontWeight:'400'}}>
+              {slot.job_description}
+          </Text>
+          </Text>  
+  
             </View>
           </>
         )}
-
-        <View style={styles.cardDesign}>
-          <Text style={styles.timeSlot}>
-            <Text style={{ fontWeight: "bold" }}>Selected Time: </Text>
-            {formatDate(slot.date)}
-          </Text>
-          <Text style={styles.timeSlot}>
-            <Text style={{ fontWeight: "bold" }}>Selected Time: </Text>
-            {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-          </Text>
-          <Text style={styles.serviceType}>
-            <Text style={{ fontWeight: "bold" }}>Service Type: </Text>
-            {service_type}
-          </Text>
-        </View>
-        <View style={styles.cardDesign}>
-          <Text style={styles.serviceType}>
-            <Text style={{ fontWeight: "bold" }}>Job Description: </Text>
-            {slot.job_description}
-          </Text>
-          <Text style={styles.serviceType}>
+    {/* <Text style={styles.serviceType}>
             <Text style={{ fontWeight: "bold" }}>
               Need service in zipcodes:{" "}
             </Text>
             {slot.zipcodes && Array.isArray(slot.zipcodes)
               ? slot.zipcodes.join(", ")
               : "N/A"}
-          </Text>
-          <Text style={styles.serviceType}>
-            <Text style={{ fontWeight: "bold" }}>Priority Status: </Text>
-            {getPriorityStatusText(slot.priorityStatus)}
-          </Text>
-        </View>
-
+          </Text> */}
+    
+    
+<View style={[styles.rowMAker,{paddingHorizontal:10}]}>
+<TouchableOpacity
+          style={styles.calendarButton}
+          onPress={handleAddToCalendar}
+        >
+          <Text style={styles.calendarButtonText}>Add to Calendar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.calendarButton,{backgroundColor:theme3.secondaryColor}]}
+          onPress={handleNavigateHome}
+        >
+          <Text style={styles.calendarButtonText}>Back Home</Text>
+        </TouchableOpacity>
+     
+</View>
         {slot.open && !slot.booked && !slot.confirmed && (
           <Text style={{ color: "#FFA500", fontWeight: "bold", marginTop: 10 }}>
             Awaiting Provider Action
@@ -249,18 +300,8 @@ const ApptConfirmationScreen = ({ route }) => {
             Appointment Confirmed
           </Text>
         )}
-        <TouchableOpacity
-          style={styles.calendarButton}
-          onPress={handleAddToCalendar}
-        >
-          <Text style={styles.calendarButtonText}>Add to Calendar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          // style={styles.homeButton}
-          onPress={handleNavigateHome}
-        >
-          <Text style={styles.homeButtonText}>Back to Home</Text>
-        </TouchableOpacity>
+     </>
+}
       </View>
   );
 };
@@ -281,16 +322,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     alignItems: "center",
   },
+  rowMAker:{flexDirection:'row',width:"100%",justifyContent:'space-between'},
   image: {
-    width: "40%",
-    height: 100,
+    width: "100%",
+    height: 200,
     borderRadius: 10,
-    backgroundColor: theme3.primaryColor,
+    backgroundColor: theme3.light,
   },
   name: {
     fontSize: 18,
     fontWeight: "bold",
-    color: theme3.light,
+    color: theme3.fontColor,
     marginBottom: 5,
   },
   locationContainer: {
@@ -301,13 +343,13 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 14,
-    color: theme3.light,
-    width: "40%",
+    color: theme3.fontColor,
+    // width: "40%",
   },
   phone: {
     fontSize: 14,
-    color: theme3.light,
-    marginBottom: 10,
+    color: theme3.fontColor,
+    // marginBottom: 10,
   },
   cardDesign: {
     backgroundColor: "rgba(240,240,240,1)",
@@ -321,7 +363,16 @@ const styles = StyleSheet.create({
   timeSlot: {
     fontSize: 14,
     color: theme3.fontColor,
-    marginBottom: 10,
+    // marginBottom: 10,
+    fontWeight:'bold',
+    marginVertical:5
+  },
+  wrapper:{
+backgroundColor:theme3.primaryColor,
+borderRadius:8,
+minWidth:"20%",
+padding:20,
+paddingVertical:5
   },
   serviceType: {
     fontSize: 14,
@@ -360,7 +411,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     alignSelf: "center",
-    marginTop: 10,
+    marginTop: 200,
     marginBottom: 0,
     backgroundColor: "#FFF",
   },
