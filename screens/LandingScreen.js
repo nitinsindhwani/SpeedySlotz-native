@@ -35,7 +35,6 @@ import NoDataFound from "./GlobalComponents/NoDataFound";
 import InLineLoader from "./GlobalComponents/InLineLoader";
 import LoadingModal from "./GlobalComponents/LoadingModal";
 import yelp from "../assets/images/yelp_logo.png";
-import RemarkModal from "./Modals/FeedbackModal";
 
 const LandingScreen = ({ route }) => {
   const animation = useRef(null);
@@ -392,7 +391,7 @@ const LandingScreen = ({ route }) => {
           )}
         </>
       )}
-      <RemarkModal/>
+
       <FilterModal
         show={showFilterModal}
         onHideModal={hideModal}

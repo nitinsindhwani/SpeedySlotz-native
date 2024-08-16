@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: "100%",
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 10,
   },
   InputView: {
     width: "100%",
@@ -642,7 +642,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   mostPopularItem: {
-    marginBottom: 16,
+    marginBottom: 10,
     width: WindowWidth / 1.03,
     padding: 16,
     shadowColor: "rgba(0,0,0,0.1)",
@@ -707,7 +707,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   input: {
-    marginBottom: 16,
+    marginBottom: 10,
     width: WindowWidth / 1.03,
     height: WindowHeight / 5,
     padding: 10,

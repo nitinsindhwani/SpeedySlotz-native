@@ -88,7 +88,7 @@ android {
         applicationId 'com.speedyzslotznitinapp.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 11
+        versionCode 10
         versionName "1.0.0"
     }
     signingConfigs {

@@ -19,6 +19,7 @@ function CalenderCustom({
   SlotAvailable,
   selectedSlotId,
   handleSlotPress,
+  customContainerStyle, // New prop for custom styling
 }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [dates, setDates] = useState([]);
@@ -103,7 +104,7 @@ function CalenderCustom({
   }
 
   return (
-    <View style={styles.modalContainer}>
+    <View style={[styles.modalContainer, customContainerStyle]}>
       <View style={styles.monthSwitchContainer}>
         <TouchableOpacity onPress={switchToPreviousMonth}>
           <Ionicons name="arrow-back" size={24} color={theme3.secondaryColor} />

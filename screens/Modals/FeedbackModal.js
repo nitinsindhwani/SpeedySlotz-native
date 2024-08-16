@@ -1,33 +1,55 @@
-import React, { useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { FlatList } from 'react-native-gesture-handler';
-import { theme3 } from '../../assets/branding/themes';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { FlatList } from "react-native-gesture-handler";
+import { theme3 } from "../../assets/branding/themes";
+import ErrorAlert from "../GlobalComponents/ErrorAlert";
+import axios from "axios";
+import { baseApiUrl } from "../../api/Config"; // Assuming this contains your API base URL
+import { getStoredToken } from "../../api/ApiCall";
+import { v4 as uuidv4 } from "uuid";
 
 const badges = [
   { name: "Top Rated", icon: "star-outline" },
   { name: "Low Price", icon: "pricetags-outline" },
-  { name: "Response Within 1 Hour", icon: "time-outline" },
   { name: "Punctuality Award", icon: "alarm-outline" },
   { name: "Fair Business", icon: "thumbs-up-outline" },
-  { name: "Most Busy In The Category", icon: "people-outline" },
-  { name: "Customer Loyalty", icon: "heart" },
-  { name: "Safety Champion", icon: "shield-alt" },
-  { name: "Tech-Savvy", icon: "laptop-code" },
+  { name: "Customer Satisfaction", icon: "happy-outline" },
+  { name: "Speedy Service", icon: "flash-outline" },
+  { name: "Communication Pro", icon: "chatbox-ellipses-outline" },
+  { name: "Commitment Keeper", icon: "checkmark-done-outline" },
+  { name: "Exclusive Discounts", icon: "pricetag-outline" },
 ];
 
-export default function RemarkModal() {
-  const [modalVisible, setModalVisible] = useState(false);
+export default function RemarkModal({
+  modalVisible,
+  setModalVisible,
+  slotId,
+  userId,
+  businessId,
+  onReviewSubmit,
+}) {
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [positiveRatedBadges, setPositiveRatedBadges] = useState([]);
   const [negativeRatedBadges, setNegativeRatedBadges] = useState([]);
-  const [review, setReview] = useState("")
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [review, setReview] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toggleOptions = (badgeName) => {
     if (selectedBadge === badgeName) {
-      setSelectedBadge(null); // Deselect if tapped again
+      setSelectedBadge(null);
     } else {
-      setSelectedBadge(badgeName); // Show options for the selected item
+      setSelectedBadge(badgeName);
     }
   };
 
@@ -35,31 +57,130 @@ export default function RemarkModal() {
     let updatedPositive = [...positiveRatedBadges];
     let updatedNegative = [...negativeRatedBadges];
 
-    if (rating) { // Thumbs Up
+    if (rating) {
+      // Thumbs Up
       if (positiveRatedBadges.includes(badgeName)) {
-        updatedPositive = updatedPositive.filter(b => b !== badgeName);
-      } else if (positiveRatedBadges.length < 2) {
+        // If already in positive, remove it (toggle off)
+        updatedPositive = updatedPositive.filter((b) => b !== badgeName);
+      } else {
+        // Add to positive and remove from negative if present
         updatedPositive.push(badgeName);
-        updatedNegative = updatedNegative.filter(b => b !== badgeName);
+        updatedNegative = updatedNegative.filter((b) => b !== badgeName);
       }
-    } else { // Thumbs Down
+    } else {
+      // Thumbs Down
       if (negativeRatedBadges.includes(badgeName)) {
-        updatedNegative = updatedNegative.filter(b => b !== badgeName);
-      } else if (negativeRatedBadges.length < 2) {
+        // If already in negative, remove it (toggle off)
+        updatedNegative = updatedNegative.filter((b) => b !== badgeName);
+      } else {
+        // Add to negative and remove from positive if present
         updatedNegative.push(badgeName);
-        updatedPositive = updatedPositive.filter(b => b !== badgeName);
+        updatedPositive = updatedPositive.filter((b) => b !== badgeName);
       }
     }
 
     setPositiveRatedBadges(updatedPositive);
     setNegativeRatedBadges(updatedNegative);
-    setSelectedBadge(null); // Hide options after selection
+    setSelectedBadge(null);
   };
 
+  const submitRemarks = async () => {
+    console.log(
+      "slotId " + slotId + " userId " + userId + " businessId " + businessId
+    );
+    try {
+      const userToken = await getStoredToken();
+      if (!userToken) {
+        setErrorMessage("User token not found. Please log in again.");
+        setShowError(true);
+        return;
+      }
+
+      const reviewData = {
+        key: {
+          slotId: slotId,
+          reviewId: uuidv4(), // Generate a new UUID for the review
+        },
+        userId: userId,
+        businessId: businessId,
+        positiveBadges: positiveRatedBadges,
+        negativeBadges: negativeRatedBadges,
+        reviewText: review,
+        rating: calculateRating(),
+        completed: true,
+        createdAt: new Date().toISOString(),
+      };
+
+      console.log("Sending review data:", reviewData);
+
+      const response = await axios.post(
+        `${baseApiUrl}/api/v1/reviews`,
+        reviewData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Response:", response.data);
+
+      if (response.data.success) {
+        if (response.data.warnings && response.data.warnings.length > 0) {
+          // Handle warnings as errors
+          setErrorMessage(response.data.warnings.join("\n"));
+          setShowError(true);
+        } else {
+          // Handle success
+          setSuccessMessage("Review submitted successfully!");
+          setShowSuccess(true);
+          setTimeout(() => {
+            setModalVisible(false);
+            setShowSuccess(false);
+            if (onReviewSubmit) {
+              onReviewSubmit();
+            }
+          }, 2000); // Close modal after 2 seconds
+        }
+      } else {
+        // Handle error
+        setErrorMessage("Failed to submit review. Please try again.");
+        setShowError(true);
+      }
+      setModalVisible(false);
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      let errorMsg = "An unexpected error occurred. Please try again.";
+
+      if (error.response) {
+        console.error("Error data:", error.response.data);
+        console.error("Error status:", error.response.status);
+        console.error("Error headers:", error.response.headers);
+
+        errorMsg = `Error: ${error.response.status} - ${JSON.stringify(
+          error.response.data
+        )}`;
+      } else if (error.request) {
+        console.error("Error request:", error.request);
+        errorMsg = "No response received from server";
+      } else {
+        console.error("Error message:", error.message);
+        errorMsg = `Error: ${error.message}`;
+      }
+
+      setErrorMessage(errorMsg);
+      setShowError(true);
+    }
+  };
   const renderBadge = ({ item }) => {
     const isPositive = positiveRatedBadges.includes(item.name);
     const isNegative = negativeRatedBadges.includes(item.name);
-    const backgroundColor = isPositive ?  "rgba(172, 246, 161, 0.8)" : isNegative ?  "rgba(255, 139, 152, 0.8)" : '#fff';
+    const backgroundColor = isPositive
+      ? "rgba(172, 246, 161, 0.8)"
+      : isNegative
+      ? "rgba(255, 139, 152, 0.8)"
+      : "#fff";
 
     return (
       <View style={styles.badgeContainer}>
@@ -73,10 +194,18 @@ export default function RemarkModal() {
         {selectedBadge === item.name && (
           <View style={styles.ratingContainer}>
             <TouchableOpacity onPress={() => handleRating(item.name, true)}>
-              <Ionicons name="thumbs-up" size={25} color={isPositive ? theme3.send : theme3.light} />
+              <Ionicons
+                name="thumbs-up"
+                size={25}
+                color={isPositive ? theme3.send : theme3.light}
+              />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleRating(item.name, false)}>
-              <Ionicons name="thumbs-down" size={25} color={isNegative ? theme3.danger : theme3.light} />
+              <Ionicons
+                name="thumbs-down"
+                size={25}
+                color={isNegative ? theme3.danger : theme3.light}
+              />
             </TouchableOpacity>
           </View>
         )}
@@ -84,44 +213,80 @@ export default function RemarkModal() {
     );
   };
 
+  const calculateRating = () => {
+    const positiveCount = positiveRatedBadges.length;
+    const negativeCount = negativeRatedBadges.length;
+    const totalBadges = positiveCount + negativeCount;
+
+    if (totalBadges === 0) {
+      return 0; // No rating if no badges selected
+    }
+
+    // Calculate the percentage of positive badges
+    const positivePercentage = (positiveCount / totalBadges) * 100;
+
+    // Convert percentage to a 5-star scale
+    let rating = (positivePercentage / 100) * 5;
+
+    // Round to nearest half star
+    rating = Math.round(rating * 2) / 2;
+
+    return rating;
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <Text style={styles.openModalText}>Open Review Modal</Text>
-      </TouchableOpacity>
-
       <Modal animationType="slide" transparent={false} visible={modalVisible}>
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Leave Your Remarks</Text>
-<View style={{height:"50%",}}>
-
-<FlatList
-            data={badges}
-            numColumns={3}
-            renderItem={renderBadge}
-            keyExtractor={(item) => item.name}
-            style={{paddingTop:40}}
-          />
-</View>
-         <Text style={{color:theme3.fontColor,fontWeight:'bold',margin:10,fontSize:18,alignSelf:'flex-start'}}>
-            Leave a review
-         </Text>
-          <View  style={styles.ReviewCOntainer}>
-<TextInput
-value={review}
-onChangeText={(e)=> setReview(e)}
-style={{flex:1}}
-placeholder='Write a review'
-placeholderTextColor={theme3.placeHolder}
-multiline={true}
-/>
+          <TouchableOpacity
+            style={styles.closeIconContainer}
+            onPress={() => setModalVisible(false)}
+          >
+            <Ionicons name="close-circle" size={30} color={theme3.danger} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Rate Your Experience</Text>
+          <Text style={styles.instructionText}>
+            Choose any number of positive or negative badges to best represent
+            your experience.
+          </Text>
+          <View style={{ height: "50%" }}>
+            <FlatList
+              data={badges}
+              numColumns={3}
+              renderItem={renderBadge}
+              keyExtractor={(item) => item.name}
+              style={{ paddingTop: 40 }}
+            />
+          </View>
+          <Text style={styles.reviewTitle}>Leave a review</Text>
+          <View style={styles.ReviewContainer}>
+            <TextInput
+              value={review}
+              onChangeText={(e) => setReview(e)}
+              style={{ flex: 1 }}
+              placeholder="Write a review"
+              placeholderTextColor={theme3.placeHolder}
+              multiline={true}
+            />
           </View>
 
-          <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-            <Text style={styles.closeButtonText}>Submit Remarks</Text>
+          <TouchableOpacity style={styles.submitButton} onPress={submitRemarks}>
+            <Text style={styles.submitButtonText}>Submit Remarks</Text>
           </TouchableOpacity>
         </View>
       </Modal>
+      <ErrorAlert
+        show={showError}
+        onAction={() => setShowError(false)}
+        title="Attention!"
+        body={errorMessage}
+      />
+      <ErrorAlert
+        show={showSuccess}
+        onAction={() => setShowSuccess(false)}
+        title="Success!"
+        body={successMessage}
+      />
     </View>
   );
 }
@@ -129,82 +294,99 @@ multiline={true}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-  },
-  openModalText: {
-    fontSize: 18,
-    color: '#00A896',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
   },
   modalContainer: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#f6f6f6',
+    alignItems: "center",
+    backgroundColor: "#f6f6f6",
     paddingHorizontal: 20,
     paddingTop: 60,
   },
+  closeIconContainer: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 10,
+  },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: theme3.fontColor,
-    textAlign: 'center',
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  instructionText: {
+    fontSize: 16,
+    color: theme3.fontColor,
+    textAlign: "center",
     marginBottom: 20,
   },
   badgeContainer: {
-    width: '30%',
+    width: "30%",
     margin: 5,
-    alignItems: 'center',
-    shadowColor:"rgba(0,0,0,0.1)",
-    shadowOpacity:2,
-    elevation:4
+    alignItems: "center",
+    shadowColor: "rgba(0,0,0,0.1)",
+    shadowOpacity: 2,
+    elevation: 4,
   },
   ratingContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: -30,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     paddingHorizontal: 10,
-    paddingVertical:5,
-    borderRadius:20,
-    backgroundColor:theme3.primaryColor,shadowColor:"rgba(0,0,0,0.1)",shadowOpacity:1
+    paddingVertical: 5,
+    borderRadius: 20,
+    backgroundColor: theme3.primaryColor,
+    shadowColor: "rgba(0,0,0,0.1)",
+    shadowOpacity: 1,
   },
   iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 10,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     height: 100,
-    width: '100%',
+    width: "100%",
   },
   badgeText: {
     fontSize: 14,
-    color: '#022C43',
+    color: "#022C43",
     marginTop: 5,
-    textAlign: 'center',
+    textAlign: "center",
   },
-  closeButton: {
-    backgroundColor: theme3.primaryColor,width:"80%",
+  reviewTitle: {
+    color: theme3.fontColor,
+    fontWeight: "bold",
+    margin: 10,
+    fontSize: 18,
+    alignSelf: "flex-start",
+  },
+  ReviewContainer: {
+    backgroundColor: theme3.light,
+    width: "90%",
+    height: "20%",
+    borderRadius: 20,
+    shadowColor: "rgba(0,0,0,0.1)",
+    shadowOpacity: 1,
+    elevation: 1,
+    padding: 10,
+  },
+  submitButton: {
+    backgroundColor: theme3.primaryColor,
+    width: "80%",
     paddingVertical: 15,
     borderRadius: 10,
     marginVertical: 30,
   },
-  closeButtonText: {
-    textAlign: 'center',
-    color: '#fff',
+  submitButtonText: {
+    textAlign: "center",
+    color: "#fff",
     fontSize: 18,
-  },
-  ReviewCOntainer: {
-   backgroundColor:theme3.light,
-   width:"90%",
-   height:"20%",
-   borderRadius:20,
-   shadowColor:"rgba(0,0,0,0.1)",
-   shadowOpacity:1,
-   elevation:1,
-   padding:10
-
   },
 });

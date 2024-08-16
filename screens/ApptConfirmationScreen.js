@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,84 +7,45 @@ import {
   TouchableOpacity,
   Linking,
   ScrollView,
+  SafeAreaView,
+  Platform,
+  StatusBar,
 } from "react-native";
-import MapIcon from "react-native-vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import * as Calendar from "expo-calendar";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import AnimatedLottieView from "lottie-react-native";
 import loaderAnimation from "../assets/Animated/success.json";
-import Styles from "../assets/branding/GlobalStyles";
-import { theme3 } from "../assets/branding/themes";
 import moment from "moment";
+import getImageSource from "./CallFuncGlobal/getImageSource";
+import { theme3 } from "../assets/branding/themes";
+import * as Calendar from "expo-calendar";
 
 const ApptConfirmationScreen = ({ route }) => {
   const navigation = useNavigation();
   const { userData, businessDetails, slot, service_type } = route.params;
-  const animation = useRef();
+  const animation = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [expandDescription, setExpandDescription] = useState(false);
 
-  function formatDate(dateString) {
-    return moment(dateString).format("LL"); // e.g., "September 4, 1986"
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
-  function formatTime(timeString) {
-    if (!timeString) {
-      return "";
-    }
+  const formatDate = (dateString) => {
+    return moment(dateString).format("LL");
+  };
 
+  const formatTime = (timeString) => {
+    if (!timeString) return "";
     const [hours, minutes] = timeString.split(":");
     const date = new Date();
     date.setHours(parseInt(hours));
     date.setMinutes(parseInt(minutes));
     const options = { hour: "2-digit", minute: "2-digit", hour12: true };
     return date.toLocaleTimeString(undefined, options);
-  }
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Ionicons
-          name="arrow-back"
-          size={25}
-          color="black"
-          style={{ marginLeft: 15 }}
-          onPress={() => navigation.goBack()}
-        />
-      ),
-      headerTitle: "Confirmation",
-      headerTitleStyle: {
-        fontWeight: "bold",
-        fontSize: 20,
-        color: "#000",
-      },
-      headerStyle: {
-        backgroundColor: "#FFF",
-      },
-    });
-  }, [navigation]);
-
-  const priorityStatusMap = {
-    0: "Routine",
-    1: "Flexible",
-    2: "Urgent",
-    3: "Emergency",
-  };
-  const getPriorityStatusText = (priorityStatus) => {
-    return priorityStatusMap[priorityStatus] || "Unknown";
-  };
-  const getImageSource = (businessName, image_url) => {
-    if (image_url && typeof image_url === "object") {
-      if (image_url.Main) {
-        return { uri: image_url.Main };
-      } else {
-        const firstImageKey = Object.keys(image_url)[0];
-        const firstImageUri = image_url[firstImageKey];
-        return { uri: firstImageUri };
-      }
-    } else if (typeof image_url === "string" && image_url.trim() !== "") {
-      return { uri: image_url };
-    }
-    return defaultImageUrl;
   };
 
   const handleAddToCalendar = async () => {
@@ -106,12 +67,12 @@ const ApptConfirmationScreen = ({ route }) => {
       const deviceTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       const eventDetails = {
-        title: "My Event Title",
-        startDate: new Date(),
-        endDate: new Date(new Date().getTime() + 60 * 60 * 1000),
+        title: `Appointment with ${businessDetails.yelpBusiness.name}`,
+        startDate: new Date(slot.date + "T" + slot.startTime),
+        endDate: new Date(slot.date + "T" + slot.endTime),
         timeZone: deviceTimeZone,
-        location: "Event Location",
-        notes: "Details about the event",
+        location: `${businessDetails.yelpBusinessLocation.address1}, ${businessDetails.yelpBusinessLocation.city}`,
+        notes: `Service Type: ${service_type}\nJob Description: ${slot.job_description}`,
       };
 
       const { id: calendarId } = calendars[0];
@@ -125,244 +86,297 @@ const ApptConfirmationScreen = ({ route }) => {
     } catch (error) {
       console.error("Error adding event to calendar:", error);
       alert("An error occurred. Please try again.");
-    } finally {
-      navigation.navigate("BottomNavigation");
     }
-  };
-
-  const openDirections = () => {
-    Linking.openURL(
-      `http://maps.apple.com/?q=${businessDetails?.yelpBusinessLocation.address1},${businessDetails?.yelpBusinessLocation.city},${businessDetails?.yelpBusinessLocation.zip_code}`
-    );
   };
 
   const handleNavigateHome = () => {
     navigation.navigate("BottomNavigation", { user: userData });
   };
 
-  return (
-    // <ScrollView style={styles.container}>
-      <View style={styles.itemContainer}>
+  const handleBookAgain = () => {
+    navigation.navigate("DetailScreen", { business: businessDetails });
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loaderContainer}>
         <AnimatedLottieView
-          autoPlay
-          loop={true}
           ref={animation}
-          style={styles.lottieAnimation}
           source={loaderAnimation}
+          autoPlay
+          loop
+          style={styles.lottieAnimation}
         />
-        {businessDetails && (
-          <>
-            <View
-              style={{
-                flexDirection: "row",
-                backgroundColor: theme3.primaryColor,
-                padding: 10,
-                borderRadius: 20,
-                width:"100%"
-              }}
-            >
-              <Image
-                source={getImageSource(
-                  businessDetails.yelpBusiness.name,
-                  businessDetails.yelpBusiness.image_url
-                )}
-                style={styles.image}
-              />
-              <View style={{ marginLeft: 10 }}>
-                <Text style={styles.name}>
-                  {businessDetails.yelpBusiness.name}
-                </Text>
-                <Text style={styles.location}>
-                  {businessDetails.yelpBusinessLocation.address1}
-                  {businessDetails.yelpBusinessLocation.address2
-                    ? `, ${businessDetails.yelpBusinessLocation.address2}`
-                    : ""}
-                  {businessDetails.yelpBusinessLocation.address3
-                    ? `, ${businessDetails.yelpBusinessLocation.address3}`
-                    : ""}
-                  {`, ${businessDetails.yelpBusinessLocation.city}, ${businessDetails.yelpBusinessLocation.state} ${businessDetails.yelpBusinessLocation.zipCode}, ${businessDetails.yelpBusinessLocation.country}`}
-                </Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    Linking.openURL(
-                      `tel:${businessDetails.yelpBusiness.display_phone.replace(
-                        /\D/g,
-                        ""
-                      )}`
-                    )
-                  }
-                >
-                  <Text style={styles.phone}>
-                    {businessDetails.yelpBusiness.display_phone}
-                  </Text>
-                </TouchableOpacity>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Appointment Confirmation</Text>
+        </View>
+      </SafeAreaView>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.card}>
+          <Image
+            source={getImageSource(
+              businessDetails?.yelpBusiness?.name,
+              businessDetails?.yelpBusiness?.image_url
+            )}
+            style={styles.image}
+          />
+          <View style={styles.contentContainer}>
+            <View style={styles.headerContainer}>
+              <Text style={styles.title}>
+                {businessDetails?.yelpBusiness?.name}
+              </Text>
+              <View style={styles.reviewedContainer}>
+                <View style={styles.dot} />
+                <Text style={styles.reviewedText}>Reviewed</Text>
               </View>
             </View>
-          </>
-        )}
-
-        <View style={styles.cardDesign}>
-          <Text style={styles.timeSlot}>
-            <Text style={{ fontWeight: "bold" }}>Selected Time: </Text>
-            {formatDate(slot.date)}
-          </Text>
-          <Text style={styles.timeSlot}>
-            <Text style={{ fontWeight: "bold" }}>Selected Time: </Text>
-            {formatTime(slot.startTime)} - {formatTime(slot.endTime)}
-          </Text>
-          <Text style={styles.serviceType}>
-            <Text style={{ fontWeight: "bold" }}>Service Type: </Text>
-            {service_type}
-          </Text>
-        </View>
-        <View style={styles.cardDesign}>
-          <Text style={styles.serviceType}>
-            <Text style={{ fontWeight: "bold" }}>Job Description: </Text>
-            {slot.job_description}
-          </Text>
-          <Text style={styles.serviceType}>
-            <Text style={{ fontWeight: "bold" }}>
-              Need service in zipcodes:{" "}
+            <Text style={styles.description}>
+              Need Grooming...{" "}
+              <Text
+                style={styles.readMoreText}
+                onPress={() => setExpandDescription(!expandDescription)}
+              >
+                {expandDescription ? "Read Less" : "Read More"}
+              </Text>
             </Text>
-            {slot.zipcodes && Array.isArray(slot.zipcodes)
-              ? slot.zipcodes.join(", ")
-              : "N/A"}
-          </Text>
-          <Text style={styles.serviceType}>
-            <Text style={{ fontWeight: "bold" }}>Priority Status: </Text>
-            {getPriorityStatusText(slot.priorityStatus)}
-          </Text>
+            {expandDescription && (
+              <Text style={styles.fullDescription}>{slot.job_description}</Text>
+            )}
+            <View style={styles.infoContainer}>
+              <InfoItem icon="building" text="Northlake" />
+              <InfoItem icon="dollar" text="$100" />
+              <InfoItem icon="map-marker" text="Directions" />
+              <InfoItem
+                icon="phone"
+                text={businessDetails.yelpBusiness.phone}
+              />
+              <InfoItem icon="comment" text="Chat Now" />
+              <InfoItem
+                icon="exclamation-triangle"
+                text="Emergency"
+                color="red"
+              />
+            </View>
+            <Text style={styles.bookingTitle}>Booking Details</Text>
+            <View style={styles.bookingDetails}>
+              <BookingItem text={formatDate(slot?.date)} />
+              <BookingItem
+                text={`${formatTime(slot?.startTime)} - ${formatTime(
+                  slot?.endTime
+                )}`}
+              />
+              <BookingItem text={service_type} />
+            </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleAddToCalendar}
+              >
+                <Text style={styles.buttonText}>Add to Calendar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleNavigateHome}
+              >
+                <Text style={styles.buttonText}>Back Home</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={styles.bookAgainButton}
+              onPress={handleBookAgain}
+            >
+              <Text style={styles.bookAgainText}>Book Again</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-
-        {slot.open && !slot.booked && !slot.confirmed && (
-          <Text style={{ color: "#FFA500", fontWeight: "bold", marginTop: 10 }}>
-            Awaiting Provider Action
-          </Text>
-        )}
-        {slot.booked && !slot.confirmed && (
-          <Text style={{ color: "#FFA500", fontWeight: "bold", marginTop: 10 }}>
-            Awaiting Provider Confirmation
-          </Text>
-        )}
-        {slot.booked && slot.confirmed && (
-          <Text style={{ color: "#00AA00", fontWeight: "bold", marginTop: 10 }}>
-            Appointment Confirmed
-          </Text>
-        )}
-        <TouchableOpacity
-          style={styles.calendarButton}
-          onPress={handleAddToCalendar}
-        >
-          <Text style={styles.calendarButtonText}>Add to Calendar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          // style={styles.homeButton}
-          onPress={handleNavigateHome}
-        >
-          <Text style={styles.homeButtonText}>Back to Home</Text>
-        </TouchableOpacity>
-      </View>
+      </ScrollView>
+    </View>
   );
 };
 
+const InfoItem = ({ icon, text, color }) => (
+  <View style={styles.infoItem}>
+    <FontAwesome name={icon} size={16} color={color || theme3.primaryColor} />
+    <Text style={[styles.infoText, color && { color }]}>{text}</Text>
+  </View>
+);
+
+const BookingItem = ({ text }) => (
+  <View style={styles.bookingItem}>
+    <Text style={styles.bookingItemText}>{text}</Text>
+  </View>
+);
+
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // padding: 10,
-  },
-  itemContainer: {
-    marginBottom: 0,
-    width:"100%",
-    height:"100%",
-    padding: 10,
-    borderRadius: 20,
-    elevation: 4,
-    shadowColor: theme3.Dark,
-    backgroundColor: "#FFF",
-    alignItems: "center",
-  },
-  image: {
-    width: "40%",
-    height: 100,
-    borderRadius: 10,
+    flex: 1,
     backgroundColor: theme3.primaryColor,
   },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: theme3.light,
-    marginBottom: 5,
+  safeArea: {
+    backgroundColor: theme3.primaryColor,
   },
-  locationContainer: {
+  header: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5,
-    width: "95%",
-  },
-  location: {
-    fontSize: 14,
-    color: theme3.light,
-    width: "40%",
-  },
-  phone: {
-    fontSize: 14,
-    color: theme3.light,
-    marginBottom: 10,
-  },
-  cardDesign: {
-    backgroundColor: "rgba(240,240,240,1)",
-    marginTop: 10,
-    padding: 10,
-    width:'100%',
-    borderRadius: 10,
-    elevation: 4,
-    shadowColor: theme3.Dark,
-  },
-  timeSlot: {
-    fontSize: 14,
-    color: theme3.fontColor,
-    marginBottom: 10,
-  },
-  serviceType: {
-    fontSize: 14,
-    color: theme3.fontColor,
-    marginBottom: 10,
-  },
-  calendarButton: {
+    padding: 16,
     backgroundColor: theme3.primaryColor,
-    paddingVertical: 10,
-    padding:30,
-    borderRadius: 5,
-    alignItems: "center",
-    marginTop: 10,
   },
-  calendarButtonText: {
-    color: "#FFF",
-    fontSize: 16,
+  headerTitle: {
+    color: "white",
+    fontSize: 20,
     fontWeight: "bold",
+    marginLeft: 16,
   },
-  homeButton: {
-    backgroundColor: theme3.primaryColor,
-    paddingVertical: 10,
-    borderRadius: 5,
+  scrollView: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
-  },
-  homeButtonText: {
-    color: theme3.secondaryColor,
-    textDecorationLine:'underline',
-    marginTop:10,
-    fontSize: 16,
-    fontWeight: "bold",
-  
+    backgroundColor: "white",
   },
   lottieAnimation: {
     width: 200,
     height: 200,
-    alignSelf: "center",
+  },
+  card: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    margin: 16,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    resizeMode: "cover",
+  },
+  contentContainer: {
+    padding: 16,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: theme3.fontColor,
+  },
+  reviewedContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "green",
+    marginRight: 4,
+  },
+  reviewedText: {
+    color: "purple",
+    fontWeight: "bold",
+  },
+  description: {
+    fontSize: 16,
+    color: theme3.fontColorI,
+    marginBottom: 8,
+  },
+  readMoreText: {
+    color: theme3.primaryColor,
+  },
+  fullDescription: {
+    fontSize: 14,
+    color: theme3.fontColorI,
+    marginBottom: 8,
+  },
+  infoContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  infoItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "48%",
+    marginBottom: 8,
+  },
+  infoText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: theme3.fontColorI,
+  },
+  bookingTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: theme3.fontColor,
+    marginBottom: 8,
+  },
+  bookingDetails: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  bookingItem: {
+    backgroundColor: theme3.primaryColor,
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  bookingItemText: {
+    color: "white",
+    fontSize: 14,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  button: {
+    backgroundColor: theme3.primaryColor,
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  bookAgainButton: {
+    backgroundColor: theme3.secondaryColor,
+    borderRadius: 5,
+    paddingVertical: 12,
+    alignItems: "center",
     marginTop: 10,
-    marginBottom: 0,
-    backgroundColor: "#FFF",
+  },
+  bookAgainText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

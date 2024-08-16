@@ -54,7 +54,7 @@ function WelcomeStack() {
   const swiperRef = useRef(null);
   const handleNextButtonPress = () => {
     if (swiperRef.current) {
-      swiperRef.current.scrollBy(1); // Scrolls to the next slide
+      swiperRef.current.scrollBy(1);
     }
   };
   return (

@@ -3,13 +3,12 @@ import { FontAwesome, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import getImageSource from "../CallFuncGlobal/getImageSource";
 import { theme3 } from "../../assets/branding/themes";
 import Styles from "../../assets/branding/GlobalStyles";
-import metersToMiles from "../CallFuncGlobal/metersoMiles";
-import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { getStoredUser } from "../../api/ApiCall";
-import { v4 as uuidv4 } from "uuid"; // Ensure this import is present
-import { Linking } from "react-native";
+import { getStoredUser, getStoredToken } from "../../api/ApiCall";
+import CancelModal from "../Modals/CancelModal";
+import axios from "axios";
 import {
+  Linking,
   View,
   TouchableOpacity,
   Text,
@@ -19,34 +18,39 @@ import {
   FlatList,
   Platform,
 } from "react-native";
-import DealIcons from "./DealIcons";
-import { getBadgeDetails } from "../../components/BadgeInfo";
 import ChatAnim from "./ChatAnim";
-
+import ErrorAlert from "./ErrorAlert";
+import { baseApiUrl } from "../../api/Config";
+import RescheduleModal from "../Modals/RescheduleModal";
+import ConfirmModal from "../Modals/ConfirmModal";
+import RemarkModal from "../Modals/FeedbackModal";
+import moment from "moment";
+import { v4 as uuidv4 } from "uuid";
 function AppointmentCard({
   businesss,
-  getStatusText,
   formatDate,
   formatTime,
-  handleReschedule,
-  handleCancel,
-  handleReview,
-  handleConfirm,
-  handleReject,
   singleSlot,
+  setBusinesses,
 }) {
+  // ... (other state declarations)
+  const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [isRemarkModalVisible, setRemarkModalVisible] = useState(false);
+  const [isCancelModalVisible, setCancelModalVisible] = useState(false);
+  const [isReviewed, setIsReviewed] = useState(
+    localSingleSlot?.reviewed || false
+  );
   const [expandDescription, setExpandDescription] = useState(false);
+  const [isRescheduleModalVisible, setRescheduleModalVisible] = useState(false);
+  const [localSingleSlot, setLocalSingleSlot] = useState(singleSlot);
+  const [selectedSlotId, setSelectedSlotId] = useState(null);
+  const [slots, setSlots] = useState([]);
   const [userData, setUserData] = useState(null);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null); // State to manage selected date
+  const [selectedServiceType, setSelectedServiceType] = useState(null);
   const navigation = useNavigation();
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const storedUserData = await getStoredUser();
-      setUserData(storedUserData);
-    };
-
-    fetchUserData();
-  }, []);
 
   const priorityLabels = ["Flexible", "Routine", "Urgent", "Emergency"];
   const priorityColor = ["#6EBD6A", "#FFD700", "#FFA500", "#FF4500"];
@@ -57,57 +61,433 @@ function AppointmentCard({
     "alert-outline", // Emergency
   ];
 
-  const statusLabels = {
-    cancelled: { label: "Cancelled", color: "#FF6347" },
-    rescheduled: { label: "Rescheduled", color: "#FFD700" },
-    noshow: { label: "No Show", color: "#FF4500" },
-    completed: { label: "Completed", color: "#32CD32" },
-    confirmed: { label: "Confirmed", color: "#32CD32" },
-    accepted: { label: "Accepted", color: "#4682B4" },
-    booked: { label: "Booked", color: "#1E90FF" },
-    open: { label: "Open", color: "#6EBD6A" },
-    unknown: { label: "Unknown Status", color: "#808080" },
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const storedUserData = await getStoredUser();
+      setUserData(storedUserData);
+    };
 
-  const getStatusMessage = (slot) => {
-    if (slot.cancelled) {
-      return {
-        ...statusLabels.cancelled,
-        label: `Cancelled: ${slot.cancellation_reason || "No reason provided"}`,
-      };
-    }
-    if (slot.rescheduled) {
-      return {
-        ...statusLabels.rescheduled,
-        label: `Rescheduled: ${slot.rejection_reason || "No reason provided"}`,
-      };
-    }
-    if (slot.noshow) return statusLabels.noshow;
-    if (slot.confirmed) return statusLabels.confirmed;
-    if (slot.completed) return statusLabels.completed;
-    if (slot.accepted) return statusLabels.accepted;
-    if (slot.booked) return statusLabels.booked;
-    if (slot.open) return statusLabels.open;
-    return statusLabels.unknown;
-  };
+    fetchUserData();
+  }, []);
 
-  const handleChatButtonPress = async (business) => {
-    let user = userData;
-    if (!user) {
-      user = await getStoredUser();
-      if (!user) {
-        console.error("User data is not available.");
+  const fetchSlots = async (selectedDate) => {
+    try {
+      const providerId = businesss?.yelpBusiness?.id;
+      const userToken = await getStoredToken("userToken");
+      console.log("Fetching slots with:", providerId, selectedDate, userToken);
+
+      if (!providerId || !selectedDate || !userToken) {
+        console.error("Missing required parameters");
         return;
       }
+
+      const dataString = `providerId=${providerId}&date=${selectedDate}`;
+
+      const response = await axios.post(
+        `${baseApiUrl}/api/v1/slots/getSlotsByUser`,
+        { data: dataString },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data) {
+        console.log("Slots fetched:", response.data);
+        setSlots(response.data);
+      } else {
+        console.error("No slots data received.");
+      }
+    } catch (error) {
+      console.error("There was an error fetching the slots", error);
+    }
+  };
+  useEffect(() => {
+    setIsReviewed(singleSlot?.reviewed || false);
+    setLocalSingleSlot(singleSlot);
+  }, [singleSlot]);
+
+  const onDayPress = (day) => {
+    console.log("Selected day in AppointmentCard:", day);
+    // Check if day is a string (date) or an object with dateString
+    const dateString = typeof day === "string" ? day : day.dateString;
+    setSelectedDate(dateString);
+    fetchSlots(dateString);
+  };
+
+  const handleRescheduleSubmit = async () => {
+    if (!selectedSlotId || !selectedServiceType || !selectedDate) {
+      setErrorMessage("Please select a new date, slot, and service type.");
+      setShowError(true);
+      return;
+    }
+
+    try {
+      const userToken = await getStoredToken("userToken");
+      if (!userToken) {
+        console.log("No token found");
+        return;
+      }
+
+      const rescheduleData = {
+        oldSlotId: localSingleSlot.key.slotId,
+        newSlotId: selectedSlotId,
+        newServiceType: selectedServiceType,
+      };
+
+      const response = await axios.post(
+        `${baseApiUrl}/api/v1/userBookings/reschedule`,
+        rescheduleData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      console.log("Reschedule response:", response.data);
+
+      if (response.status === 200 && response.data.success) {
+        const updatedSlot = {
+          ...response.data.payload,
+          rescheduled: true,
+          booked: true,
+        };
+
+        // Update local state
+        setLocalSingleSlot(updatedSlot);
+
+        // Update parent component state
+        setBusinesses((prevBusinesses) =>
+          prevBusinesses.map((business) =>
+            business.id === businesss.id
+              ? {
+                  ...business,
+                  slots: business.slots.map((slot) =>
+                    slot.key.slotId === localSingleSlot.key.slotId
+                      ? updatedSlot
+                      : slot
+                  ),
+                }
+              : business
+          )
+        );
+
+        setRescheduleModalVisible(false);
+      } else {
+        setErrorMessage("Rescheduling failed. Please try again.");
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error("Error during rescheduling:", error);
+      setErrorMessage(
+        "An error occurred during rescheduling. Please try again."
+      );
+      setShowError(true);
+    }
+  };
+
+  const handleSlotPress = (slot) => {
+    setSelectedSlotId(slot.key.slotId);
+  };
+
+  const handleServiceTypePress = (serviceType) => {
+    setSelectedServiceType(serviceType);
+  };
+  const handleReview = () => {
+    setRemarkModalVisible(true);
+  };
+  const handleReviewSubmit = () => {
+    setIsReviewed(true);
+    const updatedSlot = { ...localSingleSlot, reviewed: true };
+    setLocalSingleSlot(updatedSlot);
+    updateBusinessesState(updatedSlot);
+    setRemarkModalVisible(false);
+  };
+  const handleConfirm = async () => {
+    setConfirmModalVisible(true);
+  };
+
+  const handleConfirmModalClose = () => {
+    setConfirmModalVisible(false);
+  };
+
+  const handleComplete = async () => {
+    try {
+      const userToken = await getStoredToken("userToken");
+      if (!userToken) {
+        console.log("No token found");
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseApiUrl}/api/v1/userBookings/confirm`,
+        { ...localSingleSlot, completed: true },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response.data && response.data.success) {
+        const updatedSlot = { ...localSingleSlot, completed: true };
+        setLocalSingleSlot(updatedSlot);
+        updateBusinessesState(updatedSlot);
+        setErrorMessage("Your appointment has been marked as completed.");
+        setShowError(true);
+      } else {
+        setErrorMessage("Completion failed. Please try again.");
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error("Error during completion:", error);
+      setErrorMessage("An error occurred during completion. Please try again.");
+      setShowError(true);
+    }
+  };
+  const handleConfirmModalConfirm = async () => {
+    try {
+      const userToken = await getStoredToken("userToken");
+      if (!userToken) {
+        console.log("No token found");
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseApiUrl}/api/v1/userBookings/confirm`,
+        { ...localSingleSlot, confirmed: true },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response.data && response.data.success) {
+        const updatedSlot = { ...localSingleSlot, confirmed: true };
+        setLocalSingleSlot(updatedSlot);
+        updateBusinessesState(updatedSlot);
+        setErrorMessage("Your appointment has been confirmed.");
+        setShowError(true);
+      } else {
+        setErrorMessage("Confirmation failed. Please try again.");
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error("Error during confirmation:", error);
+      setErrorMessage(
+        "An error occurred during confirmation. Please try again."
+      );
+      setShowError(true);
+    } finally {
+      setConfirmModalVisible(false);
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      const userToken = await getStoredToken("userToken");
+      if (!userToken) {
+        console.log("No token found");
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseApiUrl}/api/v1/userBookings/reject`,
+        { ...localSingleSlot, rejected: true },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response.data && response.data.success) {
+        const updatedSlot = { ...localSingleSlot, rejected: true };
+        setLocalSingleSlot(updatedSlot);
+        updateBusinessesState(updatedSlot);
+        setErrorMessage("Your appointment has been rejected.");
+        setShowError(true);
+      } else {
+        setErrorMessage("Rejection failed. Please try again.");
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error("Error during rejection:", error);
+      setErrorMessage("An error occurred during rejection. Please try again.");
+      setShowError(true);
+    }
+  };
+  const formatTimeWindow = (minutes) => {
+    if (minutes >= 60) {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+      if (remainingMinutes === 0) {
+        return `${hours} hour${hours > 1 ? "s" : ""}`;
+      } else {
+        return `${hours} hour${
+          hours > 1 ? "s" : ""
+        } and ${remainingMinutes} minute${remainingMinutes > 1 ? "s" : ""}`;
+      }
+    } else {
+      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+    }
+  };
+  const handleBookAgain = () => {
+    // Implement book again logic here
+    console.log("Book again for business:", businesss.yelpBusiness.id);
+    navigation.navigate("DetailScreen", { business: businesss });
+    // You might want to navigate to a booking screen or open a booking modal
+  };
+
+  const updateBusinessesState = (updatedSlot) => {
+    setBusinesses((prevBusinesses) =>
+      prevBusinesses.map((business) =>
+        business.id === businesss.id
+          ? {
+              ...business,
+              slots: business.slots.map((slot) =>
+                slot.key.slotId === updatedSlot.key.slotId ? updatedSlot : slot
+              ),
+            }
+          : business
+      )
+    );
+  };
+  const handleReschedule = () => {
+    if (localSingleSlot.rescheduled) {
+      setErrorMessage(
+        "We apologize, but this appointment has already been rescheduled. For any further changes, please contact our customer support team."
+      );
+      setShowError(true);
+      return;
+    }
+
+    const now = new Date();
+    const appointmentTime = new Date(
+      `${localSingleSlot.date}T${localSingleSlot.startTime}`
+    );
+    const timeDifference = appointmentTime.getTime() - now.getTime();
+    const reschedulingWindowInMinutes =
+      businesss.yelpBusinessSettings?.rescheduleWindow || 60;
+    const reschedulingWindowInMs =
+      (businesss.yelpBusinessSettings?.rescheduleWindow || 60) * 60 * 1000; // Default to 60 minutes if not set
+
+    if (timeDifference <= reschedulingWindowInMs) {
+      const formattedTimeWindow = formatTimeWindow(reschedulingWindowInMinutes);
+      setErrorMessage(
+        `We're sorry, but rescheduling is only allowed up to ${formattedTimeWindow} before the appointment. Please contact our support team for assistance.`
+      );
+      setShowError(true);
+      return;
+    }
+
+    const formattedDate = localSingleSlot.date;
+    setSelectedDate(formattedDate);
+    fetchSlots(formattedDate);
+    setRescheduleModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setCancelModalVisible(true);
+  };
+
+  const handleCancelConfirm = async (reason) => {
+    try {
+      if (!localSingleSlot || !localSingleSlot.date) {
+        setErrorMessage("Unable to cancel. Invalid appointment slot.");
+        setShowError(true);
+        return;
+      }
+
+      const userToken = await getStoredToken("userToken");
+      if (!userToken) {
+        console.log("No token found");
+        return;
+      }
+
+      const now = new Date();
+      const appointmentTime = new Date(
+        `${localSingleSlot.date}T${localSingleSlot.startTime}`
+      );
+      const timeDifference = appointmentTime.getTime() - now.getTime();
+      const cancellationWindowInMinutes =
+        businesss.yelpBusinessSettings?.cancellationWindow || 60;
+      const cancellationWindowInMs = cancellationWindowInMinutes * 60 * 1000;
+
+      if (timeDifference <= cancellationWindowInMs) {
+        const formattedTimeWindow = formatTimeWindow(
+          cancellationWindowInMinutes
+        );
+        setErrorMessage(
+          `You cannot cancel the appointment within ${formattedTimeWindow} of its start time.`
+        );
+        setShowError(true);
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseApiUrl}/api/v1/userBookings/cancel`,
+        { ...localSingleSlot, cancelled: true, cancellationReason: reason },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response.data && response.data.success) {
+        const updatedSlot = {
+          ...localSingleSlot,
+          cancelled: true,
+          cancellationReason: reason,
+        };
+        setLocalSingleSlot(updatedSlot);
+        setBusinesses((prevBusinesses) =>
+          prevBusinesses.map((business) =>
+            business.id === businesss.id
+              ? {
+                  ...business,
+                  slots: business.slots.map((slot) =>
+                    slot.key.slotId === localSingleSlot.key.slotId
+                      ? updatedSlot
+                      : slot
+                  ),
+                }
+              : business
+          )
+        );
+        setErrorMessage("Your appointment has been successfully cancelled.");
+        setShowError(true);
+      } else {
+        console.log("Cancellation failed:", response.data);
+        setErrorMessage("Cancellation failed. Please try again.");
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error("There was an error while canceling:", error);
+      setErrorMessage("There was an error while canceling. Please try again.");
+      setShowError(true);
+    } finally {
+      setCancelModalVisible(false);
+    }
+  };
+  const handleChatButtonPress = () => {
+    if (!userData) {
+      console.error("User data not available");
+      return;
     }
 
     const selectedChat = {
       chat_id: uuidv4(),
       project_name: "New Job",
-      user_id: user.user_id,
-      username: user.username,
-      business_id: business.id,
-      business_name: business.name,
+      user_id: userData.user_id,
+      username: userData.username,
+      business_id: businesss.yelpBusiness.id,
+      business_name: businesss.yelpBusiness.name,
       chatMessages: [],
     };
 
@@ -118,99 +498,130 @@ function AppointmentCard({
       },
     });
   };
-
-  const renderBadge = ({ item }) => {
-    const badge = getBadgeDetails(item);
-    if (!badge) return null;
-
-    return (
-      <View style={styles.CatList}>
-        <Ionicons name={badge.icon} size={20} color={theme3.secondaryColor} />
-        <Text style={{ color: theme3.light, marginLeft: 5 }}>{badge.name}</Text>
-      </View>
-    );
+  const getStatusMessage = (slot) => {
+    const statusLabels = {
+      cancelled: { label: "Cancelled", color: "#FF6347" },
+      rescheduled: { label: "Rescheduled", color: "#FFD700" },
+      noshow: { label: "No Show", color: "#FF4500" },
+      completed: { label: "Completed", color: "#32CD32" },
+      confirmed: { label: "Confirmed", color: "#32CD32" },
+      accepted: { label: "Accepted", color: "#4682B4" },
+      booked: { label: "Booked", color: "#1E90FF" },
+      open: { label: "Open", color: "#6EBD6A" },
+      unknown: { label: "Unknown Status", color: "#808080" },
+      reviewed: { label: "Reviewed", color: "#8A2BE2" }, // Added reviewed status
+    };
+    if (slot.reviewed) {
+      return statusLabels.reviewed;
+    }
+    if (slot.cancelled) {
+      return statusLabels.cancelled;
+    }
+    if (slot.noshow) {
+      return statusLabels.noshow;
+    }
+    if (slot.completed) {
+      return statusLabels.completed;
+    }
+    if (slot.confirmed) {
+      return {
+        ...statusLabels.confirmed,
+        label: slot.rescheduled ? "Confirmed (R)" : "Confirmed",
+      };
+    }
+    if (slot.accepted) {
+      return {
+        ...statusLabels.accepted,
+        label: slot.rescheduled ? "Accepted (R)" : "Accepted",
+      };
+    }
+    if (slot.rescheduled) {
+      return {
+        ...statusLabels.rescheduled,
+        label: slot.booked ? "Booked (R)" : "Rescheduled",
+      };
+    }
+    if (slot.booked) {
+      return statusLabels.booked;
+    }
+    if (slot.open) {
+      return statusLabels.open;
+    }
+    return statusLabels.unknown;
   };
 
-  const status = getStatusMessage(singleSlot);
+  const status = getStatusMessage(localSingleSlot);
 
-  // Determine which buttons to render based on the slot status
   const renderButtons = () => {
-    if (singleSlot.completed) {
+    const buttonStyle = (color, width = "47%") => [
+      Styles.LoginBtn,
+      {
+        backgroundColor: color,
+        padding: 10,
+        width: width,
+      },
+    ];
+
+    if (localSingleSlot.cancelled || isReviewed) {
       return (
         <TouchableOpacity
-          onPress={() => handleReview(businesss.yelpBusiness.id)}
-          style={[
-            Styles.LoginBtn,
-            {
-              backgroundColor: theme3.primaryColor,
-              padding: 10,
-              width: "100%",
-            },
-          ]}
+          onPress={handleBookAgain}
+          style={buttonStyle(theme3.primaryColor, "100%")}
+        >
+          <Text style={Styles.LoginTxt}>Book Again</Text>
+        </TouchableOpacity>
+      );
+    }
+    if (localSingleSlot.completed && !isReviewed) {
+      return (
+        <TouchableOpacity
+          onPress={handleReview}
+          style={buttonStyle(theme3.primaryColor, "100%")}
         >
           <Text style={Styles.LoginTxt}>Review</Text>
         </TouchableOpacity>
       );
     }
-    if (singleSlot.accepted) {
+    if (localSingleSlot.confirmed) {
       return (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <TouchableOpacity
+          onPress={handleComplete}
+          style={buttonStyle(theme3.primaryColor, "100%")}
+        >
+          <Text style={Styles.LoginTxt}>Mark Complete</Text>
+        </TouchableOpacity>
+      );
+    }
+    if (localSingleSlot.accepted) {
+      return (
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <TouchableOpacity
-            onPress={() => handleConfirm(businesss.yelpBusiness.id)}
-            style={[
-              Styles.LoginBtn,
-              {
-                backgroundColor: theme3.primaryColor,
-                padding: 10,
-                width: "50%",
-                marginRight: 10,
-              },
-            ]}
+            onPress={handleConfirm}
+            style={buttonStyle(theme3.primaryColor)}
           >
             <Text style={Styles.LoginTxt}>Confirm</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleReject(businesss.yelpBusiness.id)}
-            style={[
-              Styles.LoginBtn,
-              {
-                backgroundColor: theme3.danger,
-                padding: 10,
-                width: "50%",
-              },
-            ]}
+            onPress={handleReject}
+            style={buttonStyle(theme3.danger)}
           >
             <Text style={Styles.LoginTxt}>Reject</Text>
           </TouchableOpacity>
         </View>
       );
     }
-    if (singleSlot.booked) {
+    if (localSingleSlot.booked) {
       return (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <TouchableOpacity
-            onPress={() => handleReschedule(businesss.yelpBusiness.id)}
-            style={[
-              Styles.LoginBtn,
-              {
-                backgroundColor: theme3.primaryColor,
-                padding: 10,
-                width: "50%",
-                marginRight: 10,
-              },
-            ]}
+            onPress={handleReschedule}
+            style={buttonStyle(theme3.primaryColor)}
           >
             <Text style={Styles.LoginTxt}>Reschedule</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            onPress={() =>
-              handleCancel(businesss.slot, businesss.yelpBusinessSettings)
-            }
-            style={[
-              Styles.LoginBtn,
-              { backgroundColor: theme3.danger, padding: 10, width: "47%" },
-            ]}
+            onPress={handleCancel}
+            style={buttonStyle(theme3.danger)}
           >
             <Text style={Styles.LoginTxt}>Cancel</Text>
           </TouchableOpacity>
@@ -219,7 +630,6 @@ function AppointmentCard({
     }
     return null;
   };
-
   return (
     <View style={styles.mostPopularItem}>
       <Image
@@ -402,23 +812,62 @@ function AppointmentCard({
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         <View style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}>
           <Text style={{ color: theme3.light, marginLeft: 5 }}>
-            {formatDate(singleSlot?.key?.date)}
+            {formatDate(localSingleSlot?.date)}
           </Text>
         </View>
         <View style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}>
           <Text style={{ color: theme3.light, marginLeft: 5 }}>
-            {formatTime(singleSlot?.startTime)} -{" "}
-            {formatTime(singleSlot?.endTime)}
+            {formatTime(localSingleSlot?.startTime)} -{" "}
+            {formatTime(localSingleSlot?.endTime)}
           </Text>
         </View>
         <View style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}>
           <Text style={{ color: theme3.light, marginLeft: 5 }}>
-            {singleSlot.selectedServiceTypes.join(", ")}
+            {localSingleSlot.selectedServiceTypes.join(", ")}
           </Text>
         </View>
       </ScrollView>
 
       <View style={{ marginTop: 10 }}>{renderButtons()}</View>
+
+      <ErrorAlert
+        show={showError}
+        onAction={() => setShowError(false)}
+        title="Attention!"
+        body={errorMessage}
+      />
+      <CancelModal
+        isVisible={isCancelModalVisible}
+        onClose={() => setCancelModalVisible(false)}
+        onConfirm={handleCancelConfirm}
+      />
+      <ConfirmModal
+        isVisible={isConfirmModalVisible}
+        onClose={handleConfirmModalClose}
+        onConfirm={handleConfirmModalConfirm}
+        amountDue={localSingleSlot.amountDue || 0}
+      />
+      <RescheduleModal
+        isVisible={isRescheduleModalVisible}
+        onClose={() => setRescheduleModalVisible(false)}
+        providerId={businesss?.yelpBusiness?.id}
+        slots={slots}
+        onDayPress={onDayPress}
+        selectedSlotId={selectedSlotId}
+        handleSlotPress={handleSlotPress}
+        selectedDate={selectedDate}
+        selectedServiceType={selectedServiceType}
+        handlePress={handleServiceTypePress}
+        onSubmit={handleRescheduleSubmit}
+      />
+      <RemarkModal
+        modalVisible={isRemarkModalVisible}
+        setModalVisible={setRemarkModalVisible}
+        slotId={localSingleSlot.key.slotId}
+        userId={userData?.user_id}
+        businessId={businesss?.yelpBusiness?.id}
+        onReviewSubmit={handleReviewSubmit}
+      />
     </View>
   );
 }
@@ -501,5 +950,39 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  submitButton: {
+    marginTop: 20,
+    backgroundColor: theme3.primaryColor,
+    padding: 10,
+    borderRadius: 5,
+  },
+  submitButtonText: {
+    color: "white",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  cancelButton: {
+    marginTop: 10,
+    padding: 10,
+    borderRadius: 5,
+  },
+  cancelButtonText: {
+    color: "red",
+    fontSize: 16,
+    textAlign: "center",
   },
 });

@@ -683,3 +683,48 @@ export const deleteUserCategoriesBatch = async (categoryDTOs) => {
     );
   }
 };
+
+export const fetchBusinessDetailsById = async (businessId) => {
+  if (!businessId) {
+    return Promise.reject(new Error("No businessId provided"));
+  }
+  try {
+    const secureToken = await getStoredToken();
+    const requestUrl = `${baseApiUrl}/api/v1/getRegisteredBusinessById?providerId=${businessId}`;
+
+    // Log the request details
+    console.log("Fetching business details with the following:");
+    console.log("URL:", requestUrl);
+    console.log("Method: POST");
+    console.log("Provider ID (businessId) in URL:", businessId);
+    console.log("Headers:", {
+      Authorization: `Bearer ${secureToken}`,
+      "Content-Type": "application/json",
+    });
+
+    const response = await fetch(requestUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secureToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("Response:", response);
+
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      throw new Error(`Server Error: ${errorResponse.detail}`);
+    }
+
+    const responseData = await response.json();
+    console.log("Parsed response data:", responseData);
+
+    return responseData;
+  } catch (error) {
+    console.error("Fetching business details failed:", error.message);
+    throw new Error(
+      "Fetching business details failed. Please check your data and try again."
+    );
+  }
+};

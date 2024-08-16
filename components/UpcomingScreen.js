@@ -16,7 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 const UpcomingScreen = () => {
   const navigation = useNavigation();
   const [fetchedBusinesses, setFetchedBusinesses] = useState([]);
-
+  const [businesses, setBusinesses] = useState([]); // Define the businesses state
+  const [errorMessage, setErrorMessage] = useState("");
   useFocusEffect(
     React.useCallback(() => {
       fetchBookings("NEW")
@@ -33,6 +34,8 @@ const UpcomingScreen = () => {
     <View style={{ flex: 1 }}>
       <UpcomingBusinesList
         fetchedBusinesses={fetchedBusinesses}
+        setBusinesses={setBusinesses}
+        setErrorMessage={setErrorMessage}
         navigation={navigation}
       />
     </View>
