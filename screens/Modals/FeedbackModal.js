@@ -15,18 +15,25 @@ import axios from "axios";
 import { baseApiUrl } from "../../api/Config"; // Assuming this contains your API base URL
 import { getStoredToken } from "../../api/ApiCall";
 import { v4 as uuidv4 } from "uuid";
+import { getBadgeDetails } from "../../components/BadgeInfo";
 
-const badges = [
-  { name: "Top Rated", icon: "star-outline" },
-  { name: "Low Price", icon: "pricetags-outline" },
-  { name: "Punctuality Award", icon: "alarm-outline" },
-  { name: "Fair Business", icon: "thumbs-up-outline" },
-  { name: "Customer Satisfaction", icon: "happy-outline" },
-  { name: "Speedy Service", icon: "flash-outline" },
-  { name: "Communication Pro", icon: "chatbox-ellipses-outline" },
-  { name: "Commitment Keeper", icon: "checkmark-done-outline" },
-  { name: "Exclusive Discounts", icon: "pricetag-outline" },
+// Prepare the badges array dynamically from getBadgeDetails
+const badgeCodes = [
+  "TOPR",
+  "LOWP",
+  "PUNC",
+  "FAIR",
+  "CSTF",
+  "SPDS",
+  "COMM",
+  "CMKP",
+  "EMRG",
 ];
+
+const badges = badgeCodes.map((code) => ({
+  ...getBadgeDetails(code),
+  code,
+}));
 
 export default function RemarkModal({
   modalVisible,
@@ -45,37 +52,37 @@ export default function RemarkModal({
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const toggleOptions = (badgeName) => {
-    if (selectedBadge === badgeName) {
+  const toggleOptions = (badgeCode) => {
+    if (selectedBadge === badgeCode) {
       setSelectedBadge(null);
     } else {
-      setSelectedBadge(badgeName);
+      setSelectedBadge(badgeCode);
     }
   };
 
-  const handleRating = (badgeName, rating) => {
+  const handleRating = (badgeCode, rating) => {
     let updatedPositive = [...positiveRatedBadges];
     let updatedNegative = [...negativeRatedBadges];
 
     if (rating) {
       // Thumbs Up
-      if (positiveRatedBadges.includes(badgeName)) {
+      if (positiveRatedBadges.includes(badgeCode)) {
         // If already in positive, remove it (toggle off)
-        updatedPositive = updatedPositive.filter((b) => b !== badgeName);
+        updatedPositive = updatedPositive.filter((b) => b !== badgeCode);
       } else {
         // Add to positive and remove from negative if present
-        updatedPositive.push(badgeName);
-        updatedNegative = updatedNegative.filter((b) => b !== badgeName);
+        updatedPositive.push(badgeCode);
+        updatedNegative = updatedNegative.filter((b) => b !== badgeCode);
       }
     } else {
       // Thumbs Down
-      if (negativeRatedBadges.includes(badgeName)) {
+      if (negativeRatedBadges.includes(badgeCode)) {
         // If already in negative, remove it (toggle off)
-        updatedNegative = updatedNegative.filter((b) => b !== badgeName);
+        updatedNegative = updatedNegative.filter((b) => b !== badgeCode);
       } else {
         // Add to negative and remove from positive if present
-        updatedNegative.push(badgeName);
-        updatedPositive = updatedPositive.filter((b) => b !== badgeName);
+        updatedNegative.push(badgeCode);
+        updatedPositive = updatedPositive.filter((b) => b !== badgeCode);
       }
     }
 
@@ -173,9 +180,10 @@ export default function RemarkModal({
       setShowError(true);
     }
   };
+
   const renderBadge = ({ item }) => {
-    const isPositive = positiveRatedBadges.includes(item.name);
-    const isNegative = negativeRatedBadges.includes(item.name);
+    const isPositive = positiveRatedBadges.includes(item.code);
+    const isNegative = negativeRatedBadges.includes(item.code);
     const backgroundColor = isPositive
       ? "rgba(172, 246, 161, 0.8)"
       : isNegative
@@ -186,21 +194,21 @@ export default function RemarkModal({
       <View style={styles.badgeContainer}>
         <TouchableOpacity
           style={[styles.iconContainer, { backgroundColor }]}
-          onPress={() => toggleOptions(item.name)}
+          onPress={() => toggleOptions(item.code)}
         >
           <Ionicons name={item.icon} size={40} color={theme3.primaryColor} />
           <Text style={styles.badgeText}>{item.name}</Text>
         </TouchableOpacity>
-        {selectedBadge === item.name && (
+        {selectedBadge === item.code && (
           <View style={styles.ratingContainer}>
-            <TouchableOpacity onPress={() => handleRating(item.name, true)}>
+            <TouchableOpacity onPress={() => handleRating(item.code, true)}>
               <Ionicons
                 name="thumbs-up"
                 size={25}
                 color={isPositive ? theme3.send : theme3.light}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleRating(item.name, false)}>
+            <TouchableOpacity onPress={() => handleRating(item.code, false)}>
               <Ionicons
                 name="thumbs-down"
                 size={25}
@@ -254,7 +262,7 @@ export default function RemarkModal({
               data={badges}
               numColumns={3}
               renderItem={renderBadge}
-              keyExtractor={(item) => item.name}
+              keyExtractor={(item) => item.code}
               style={{ paddingTop: 40 }}
             />
           </View>

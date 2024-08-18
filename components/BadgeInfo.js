@@ -1,5 +1,5 @@
 const badgesInfo = {
-  //For Review
+  // For Review
   TOPR: {
     name: "Top Rated",
     description:
@@ -12,7 +12,7 @@ const badgesInfo = {
       "Successfully pass a verification process for identity and credentials.",
     icon: "checkmark-circle-outline",
   },
-  //For Review
+  // For Review
   LOWP: {
     name: "Low Price",
     description:
@@ -35,41 +35,72 @@ const badgesInfo = {
     description: "Hold and maintain proper professional licensing.",
     icon: "ribbon-outline",
   },
-  //For Review
+  // For Review
   R1HR: {
     name: "Response Within 1 Hour",
     description: "Respond to customer inquiries consistently within one hour.",
     icon: "time-outline",
   },
-  //For Review
+  // For Review
   FAIR: {
     name: "Fair Business",
     description:
       "Demonstrate fairness and integrity in your business practices.",
     icon: "thumbs-up-outline",
   },
-  //For Review
+  // For Review
   PUNC: {
     name: "Punctuality Award",
     description: "Consistently deliver services on time.",
     icon: "alarm-outline",
   },
-
-  CEXR: {
-    name: "Certified Expert",
+  TPRO: {
+    name: "Top Professional of the Year",
     description:
-      "Possesses certifications that demonstrate expertise in a specific field.",
-    icon: "certificate",
+      "Recognized as the top professional in your field for outstanding service.",
+    icon: "trophy-outline",
   },
-  //For Review
-  COMC: {
-    name: "Community Contributor",
+  MBUS: {
+    name: "Most Busy in the Category",
     description:
-      "Actively contributes to local community events and charities.",
-    icon: "hands-helping",
+      "Achieve the highest level of activity in your service category.",
+    icon: "briefcase-outline",
   },
-
-  emergencyService: {
+  NEWB: {
+    name: "New Business",
+    description: "Recently established and ready to serve.",
+    icon: "business-outline",
+  },
+  CLTY: {
+    name: "Customer Loyalty",
+    description:
+      "Recognized for building a loyal customer base with repeat clients.",
+    icon: "heart-outline",
+  },
+  CSTF: {
+    name: "Customer Satisfaction",
+    description: "Delivering exceptional service that leaves customers happy.",
+    icon: "happy-outline",
+  },
+  SPDS: {
+    name: "Speedy Service",
+    description:
+      "Awarded for consistently delivering services quickly without compromising quality.",
+    icon: "flash-outline",
+  },
+  COMM: {
+    name: "Communication Pro",
+    description:
+      "Recognized for excellent communication with customers, keeping them informed and at ease throughout the service.",
+    icon: "chatbox-ellipses-outline",
+  },
+  CMKP: {
+    name: "Commitment Keeper",
+    description:
+      "Recognized for consistently honoring commitments by not canceling confirmed jobs.",
+    icon: "checkmark-done-outline",
+  },
+  EMRG: {
     name: "Emergency Service",
     description: "Available for emergency services.",
     icon: "warning-outline",

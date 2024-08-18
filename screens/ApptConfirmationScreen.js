@@ -8,29 +8,35 @@ import {
   Linking,
   ScrollView,
   SafeAreaView,
-  Platform,
-  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import AnimatedLottieView from "lottie-react-native";
-import loaderAnimation from "../assets/Animated/success.json";
 import moment from "moment";
-import getImageSource from "./CallFuncGlobal/getImageSource";
-import { theme3 } from "../assets/branding/themes";
 import * as Calendar from "expo-calendar";
-
+import ChatAnim from "./GlobalComponents/ChatAnim";
+import { theme3 } from "../assets/branding/themes";
+import { v4 as uuidv4 } from "uuid";
+import { getStoredUser } from "../api/ApiCall";
+import getImageSource from "./CallFuncGlobal/getImageSource";
 const ApptConfirmationScreen = ({ route }) => {
   const navigation = useNavigation();
   const { userData, businessDetails, slot, service_type } = route.params;
   const animation = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandDescription, setExpandDescription] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      const storedUserData = await getStoredUser();
+      setCurrentUser(storedUserData);
+    };
+
+    fetchUserData();
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 5000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -97,12 +103,36 @@ const ApptConfirmationScreen = ({ route }) => {
     navigation.navigate("DetailScreen", { business: businessDetails });
   };
 
+  const handleChatButtonPress = () => {
+    if (!currentUser) {
+      console.error("User data not available");
+      return;
+    }
+
+    const selectedChat = {
+      chat_id: uuidv4(),
+      project_name: "New Job",
+      user_id: currentUser.user_id,
+      username: currentUser.username,
+      business_id: businessDetails.yelpBusiness.id,
+      business_name: businessDetails.yelpBusiness.name,
+      chatMessages: [],
+    };
+
+    navigation.navigate("App", {
+      screen: "ChatScreen",
+      params: {
+        chatData: selectedChat,
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
         <AnimatedLottieView
           ref={animation}
-          source={loaderAnimation}
+          source={require("../assets/Animated/success.json")}
           autoPlay
           loop
           style={styles.lottieAnimation}
@@ -122,81 +152,160 @@ const ApptConfirmationScreen = ({ route }) => {
         </View>
       </SafeAreaView>
       <ScrollView style={styles.scrollView}>
-        <View style={styles.card}>
-          <Image
-            source={getImageSource(
-              businessDetails?.yelpBusiness?.name,
-              businessDetails?.yelpBusiness?.image_url
-            )}
-            style={styles.image}
-          />
-          <View style={styles.contentContainer}>
-            <View style={styles.headerContainer}>
-              <Text style={styles.title}>
-                {businessDetails?.yelpBusiness?.name}
+        <View style={styles.outerContainer}>
+          <View style={styles.card}>
+            <Image
+              source={getImageSource(
+                businessDetails?.yelpBusiness?.name,
+                businessDetails?.yelpBusiness?.image_url
+              )}
+              style={styles.image}
+            />
+            <View style={styles.contentContainer}>
+              <View style={styles.headerContent}>
+                <Text style={styles.title}>
+                  {businessDetails.yelpBusiness.name}
+                </Text>
+                <View style={styles.statusContainer}>
+                  <ChatAnim />
+                  <Text style={styles.statusText}>Booked</Text>
+                </View>
+              </View>
+              <Text style={styles.description}>
+                {expandDescription
+                  ? slot.job_description
+                  : `${slot.job_description.slice(0, 30)}...`}
+                <Text
+                  style={styles.readMoreText}
+                  onPress={() => setExpandDescription(!expandDescription)}
+                >
+                  {expandDescription ? " Read Less" : " Read More"}
+                </Text>
               </Text>
-              <View style={styles.reviewedContainer}>
-                <View style={styles.dot} />
-                <Text style={styles.reviewedText}>Reviewed</Text>
+              <View style={styles.infoContainer}>
+                <View style={styles.infoRow}>
+                  <View style={styles.infoItem}>
+                    <MaterialIcons
+                      name="location-city"
+                      size={18}
+                      color={theme3.primaryColor}
+                    />
+                    <Text style={styles.infoText}>
+                      {businessDetails.yelpBusinessLocation.city}
+                    </Text>
+                  </View>
+                  <View style={styles.infoItem}>
+                    <Ionicons
+                      name="cash-outline"
+                      size={18}
+                      color={theme3.primaryColor}
+                    />
+                    <Text style={styles.infoText}>
+                      {slot.amountDue
+                        ? `$${slot.amountDue}`
+                        : "Final Amount Pending"}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.infoItem}
+                    onPress={() => {
+                      const address = `${businessDetails.yelpBusinessLocation.address1}, ${businessDetails.yelpBusinessLocation.city}`;
+                      const mapQuery = encodeURIComponent(address);
+                      Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
+                    }}
+                  >
+                    <MaterialIcons
+                      name="directions"
+                      size={18}
+                      color={theme3.primaryColor}
+                    />
+                    <Text style={styles.infoText}>Directions</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.infoRow}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      Linking.openURL(
+                        `tel:${businessDetails.yelpBusiness.phone}`
+                      )
+                    }
+                    style={styles.infoItem}
+                  >
+                    <FontAwesome
+                      name="phone"
+                      size={18}
+                      color={theme3.secondaryColor}
+                    />
+                    <Text style={styles.infoText}>
+                      {businessDetails.yelpBusiness.phone}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.infoItem}
+                    onPress={handleChatButtonPress}
+                  >
+                    <ChatAnim />
+                    <Text style={styles.infoText}>Chat Now</Text>
+                  </TouchableOpacity>
+                  <View style={styles.infoItem}>
+                    <Ionicons
+                      name="alert-outline"
+                      size={18}
+                      color={theme3.primaryColor}
+                    />
+                    <Text style={styles.infoText}>Emergency</Text>
+                  </View>
+                </View>
+              </View>
+              <Text
+                style={[
+                  styles.mostPopularName,
+                  { fontSize: 14, marginLeft: 0 },
+                ]}
+              >
+                Booking Details
+              </Text>
+              <ScrollView
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              >
+                <View
+                  style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}
+                >
+                  <Text style={{ color: theme3.light, marginLeft: 5 }}>
+                    {formatDate(slot?.date)}
+                  </Text>
+                </View>
+                <View
+                  style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}
+                >
+                  <Text style={{ color: theme3.light, marginLeft: 5 }}>
+                    {formatTime(slot?.startTime)} - {formatTime(slot?.endTime)}
+                  </Text>
+                </View>
+                <View
+                  style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}
+                >
+                  <Text style={{ color: theme3.light, marginLeft: 5 }}>
+                    {slot.selectedServiceTypes.join(", ")}
+                  </Text>
+                </View>
+              </ScrollView>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={[styles.button, styles.primaryButton]}
+                  onPress={handleAddToCalendar}
+                >
+                  <Text style={styles.buttonText}>Add to Calendar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.secondaryButton]}
+                  onPress={handleNavigateHome}
+                >
+                  <Text style={styles.buttonText}>Back Home</Text>
+                </TouchableOpacity>
               </View>
             </View>
-            <Text style={styles.description}>
-              Need Grooming...{" "}
-              <Text
-                style={styles.readMoreText}
-                onPress={() => setExpandDescription(!expandDescription)}
-              >
-                {expandDescription ? "Read Less" : "Read More"}
-              </Text>
-            </Text>
-            {expandDescription && (
-              <Text style={styles.fullDescription}>{slot.job_description}</Text>
-            )}
-            <View style={styles.infoContainer}>
-              <InfoItem icon="building" text="Northlake" />
-              <InfoItem icon="dollar" text="$100" />
-              <InfoItem icon="map-marker" text="Directions" />
-              <InfoItem
-                icon="phone"
-                text={businessDetails.yelpBusiness.phone}
-              />
-              <InfoItem icon="comment" text="Chat Now" />
-              <InfoItem
-                icon="exclamation-triangle"
-                text="Emergency"
-                color="red"
-              />
-            </View>
-            <Text style={styles.bookingTitle}>Booking Details</Text>
-            <View style={styles.bookingDetails}>
-              <BookingItem text={formatDate(slot?.date)} />
-              <BookingItem
-                text={`${formatTime(slot?.startTime)} - ${formatTime(
-                  slot?.endTime
-                )}`}
-              />
-              <BookingItem text={service_type} />
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleAddToCalendar}
-              >
-                <Text style={styles.buttonText}>Add to Calendar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleNavigateHome}
-              >
-                <Text style={styles.buttonText}>Back Home</Text>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity
-              style={styles.bookAgainButton}
-              onPress={handleBookAgain}
-            >
-              <Text style={styles.bookAgainText}>Book Again</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -204,23 +313,10 @@ const ApptConfirmationScreen = ({ route }) => {
   );
 };
 
-const InfoItem = ({ icon, text, color }) => (
-  <View style={styles.infoItem}>
-    <FontAwesome name={icon} size={16} color={color || theme3.primaryColor} />
-    <Text style={[styles.infoText, color && { color }]}>{text}</Text>
-  </View>
-);
-
-const BookingItem = ({ text }) => (
-  <View style={styles.bookingItem}>
-    <Text style={styles.bookingItemText}>{text}</Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme3.primaryColor,
+    backgroundColor: "white",
   },
   safeArea: {
     backgroundColor: theme3.primaryColor,
@@ -239,38 +335,28 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    backgroundColor: "white",
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-  },
-  lottieAnimation: {
-    width: 200,
-    height: 200,
   },
   card: {
     backgroundColor: "white",
     borderRadius: 10,
     margin: 16,
-    overflow: "hidden",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
     height: 200,
+    borderRadius: 10,
     resizeMode: "cover",
   },
   contentContainer: {
-    padding: 16,
+    paddingTop: 16,
   },
-  headerContainer: {
+  headerContent: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -281,67 +367,81 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: theme3.fontColor,
   },
-  reviewedContainer: {
+  statusContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "green",
-    marginRight: 4,
-  },
-  reviewedText: {
-    color: "purple",
+  statusText: {
+    marginLeft: 4,
+    color: theme3.primaryColor,
     fontWeight: "bold",
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     color: theme3.fontColorI,
-    marginBottom: 8,
+    marginBottom: 16,
   },
   readMoreText: {
     color: theme3.primaryColor,
   },
-  fullDescription: {
-    fontSize: 14,
-    color: theme3.fontColorI,
-    marginBottom: 8,
-  },
   infoContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
     marginBottom: 16,
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
   },
   infoItem: {
     flexDirection: "row",
     alignItems: "center",
-    width: "48%",
-    marginBottom: 8,
   },
   infoText: {
     marginLeft: 8,
     fontSize: 14,
     color: theme3.fontColorI,
   },
-  bookingTitle: {
+  sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: theme3.fontColor,
     marginBottom: 8,
   },
+  mostPopularName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: theme3.fontColor,
+  },
+  CatList: {
+    padding: 15,
+    borderRadius: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: theme3.primaryColor,
+    paddingBottom: 5,
+    paddingTop: 5,
+    margin: 5,
+  },
+  bookingDetailsScroll: {
+    marginBottom: 16,
+  },
   bookingDetails: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
+  },
+  outerContainer: {
+    marginTop: 16,
+    borderRadius: 10,
+    backgroundColor: theme3.GlobalBg,
+    shadowColor: "rgba(0,0,0,0.2)",
+    shadowOpacity: 1,
+    elevation: 1,
   },
   bookingItem: {
     backgroundColor: theme3.primaryColor,
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 12,
+    marginRight: 8,
   },
   bookingItemText: {
     color: "white",
@@ -350,33 +450,51 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    marginTop: 16,
   },
   button: {
-    backgroundColor: theme3.primaryColor,
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
     flex: 1,
-    marginHorizontal: 5,
+    paddingVertical: 12,
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  primaryButton: {
+    backgroundColor: theme3.primaryColor,
+    marginRight: 8,
+  },
+  secondaryButton: {
+    backgroundColor: theme3.secondaryColor,
+    marginLeft: 8,
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
-    textAlign: "center",
   },
   bookAgainButton: {
-    backgroundColor: theme3.secondaryColor,
+    backgroundColor: theme3.se,
     borderRadius: 5,
     paddingVertical: 12,
-    alignItems: "center",
-    marginTop: 10,
+    paddingHorizontal: 16,
+    flex: 1,
+    marginHorizontal: 4,
   },
+
   bookAgainText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  lottieAnimation: {
+    width: 200,
+    height: 200,
   },
 });
 

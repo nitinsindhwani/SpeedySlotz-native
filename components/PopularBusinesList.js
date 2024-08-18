@@ -265,6 +265,32 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       }
     }
 
+    const getTierLevel = (score) => {
+      if (score < 100)
+        return { name: "Trailblazer", color: "#B8860B", icon: "trail-sign" };
+      if (score >= 100 && score <= 249)
+        return { name: "Rookie", color: "#32CD32", icon: "fitness" };
+      if (score >= 250 && score <= 499)
+        return { name: "Ace", color: "#1E90FF", icon: "diamond" };
+      if (score >= 500 && score <= 749)
+        return { name: "Pro", color: "#9370DB", icon: "medal" };
+      if (score >= 750 && score <= 999)
+        return { name: "Elite", color: "#FF4500", icon: "star" };
+      if (score >= 1000)
+        return { name: "Champion", color: "#FFD700", icon: "trophy" };
+      return { name: "Unranked", color: "#808080", icon: "shield" };
+    };
+
+    const TierBadge = ({ score }) => {
+      const tier = getTierLevel(score);
+      return (
+        <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
+          <Ionicons name={tier.icon} size={14} color="white" />
+          <Text style={styles.tierBadgeText}>{tier.name}</Text>
+        </View>
+      );
+    };
+
     function SpecialityList({ item }) {
       return (
         <View style={styles.CatList}>
@@ -337,21 +363,25 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             justifyContent: "space-between",
           }}
         >
-          <Text style={[styles.mostPopularName, { width: "70%" }]}>
-            {item.yelpBusiness.name}
-          </Text>
-
-          {item?.slots?.length > 0 && (
-            <View style={Styles.OneRow}>
-              {/* <Octicons name="dot-fill" size={20} color={theme3.send} /> */}
-              <View style={{ marginLeft: -20 }}>
-                <ChatAnim />
-              </View>
-              <Text style={[styles.DescText, { marginLeft: 0 }]}>
-                Slots Available
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+            <View style={styles.businessNameContainer}>
+              <Text style={styles.mostPopularName} numberOfLines={1}>
+                {item.yelpBusiness.name}
               </Text>
+              <TierBadge score={item.yelpBusiness.ratingScore} />
             </View>
-          )}
+          </View>
+
+          <View style={styles.slotsAvailableContainer}>
+            {item?.slots?.length > 0 && (
+              <View style={Styles.OneRow}>
+                <View style={{ marginRight: 4 }}>
+                  <ChatAnim />
+                </View>
+                <Text style={styles.slotsAvailableText}>Slots Available</Text>
+              </View>
+            )}
+          </View>
         </View>
 
         {item.yelpBusiness.is_registered && (
@@ -621,6 +651,12 @@ const getStyles = (currentTheme) =>
       borderRadius: 10,
       backgroundColor: theme3.GlobalBg, // White background color
     },
+    businessNameContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 8,
+    },
     favoriteIconContainer: {
       position: "absolute",
       top: 20, // Changed this
@@ -637,10 +673,40 @@ const getStyles = (currentTheme) =>
       borderRadius: 10,
       resizeMode: "cover",
     },
+    businessNameContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 8,
+      flex: 1,
+    },
     mostPopularName: {
       fontSize: 16,
       fontWeight: "bold",
-      color: theme3.fontColor, // Blue text color
+      color: theme3.fontColor,
+      flex: 1,
+      marginRight: 8,
+    },
+    tierBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+      marginLeft: 8,
+    },
+    tierBadgeText: {
+      color: "white",
+      fontSize: 12,
+      fontWeight: "bold",
+      marginLeft: 4,
+    },
+    slotsAvailableContainer: {
+      marginLeft: "auto",
+    },
+    slotsAvailableText: {
+      fontSize: 12,
+      color: theme3.fontColorI,
     },
     mostPopularCity: {
       fontSize: 14,

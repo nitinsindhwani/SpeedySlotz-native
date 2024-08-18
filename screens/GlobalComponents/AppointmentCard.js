@@ -562,7 +562,24 @@ function AppointmentCard({
       },
     ];
 
-    if (localSingleSlot.cancelled || isReviewed) {
+    const now = new Date();
+    const appointmentTime = new Date(
+      `${localSingleSlot.date}T${localSingleSlot.startTime}`
+    );
+
+    const isPastAppointment = appointmentTime < now;
+
+    if (isPastAppointment) {
+      if (localSingleSlot.completed && !isReviewed) {
+        return (
+          <TouchableOpacity
+            onPress={handleReview}
+            style={buttonStyle(theme3.primaryColor, "100%")}
+          >
+            <Text style={Styles.LoginTxt}>Review</Text>
+          </TouchableOpacity>
+        );
+      }
       return (
         <TouchableOpacity
           onPress={handleBookAgain}
@@ -572,6 +589,18 @@ function AppointmentCard({
         </TouchableOpacity>
       );
     }
+
+    if (localSingleSlot.reviewed) {
+      return (
+        <TouchableOpacity
+          onPress={handleBookAgain}
+          style={buttonStyle(theme3.primaryColor, "100%")}
+        >
+          <Text style={Styles.LoginTxt}>Book Again</Text>
+        </TouchableOpacity>
+      );
+    }
+
     if (localSingleSlot.completed && !isReviewed) {
       return (
         <TouchableOpacity
@@ -628,8 +657,10 @@ function AppointmentCard({
         </View>
       );
     }
+
     return null;
   };
+
   return (
     <View style={styles.mostPopularItem}>
       <Image

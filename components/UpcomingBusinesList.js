@@ -28,6 +28,7 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
     "Reviewed",
     "Completed",
     "Booked",
+    "Confirmed",
     "Cancelled",
     "Accepted",
     "Rescheduled",
@@ -88,25 +89,39 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
               case "Booked":
                 return (
                   slot.booked &&
+                  !slot.confirmed &&
+                  !slot.accepted &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed &&
-                  !slot.rescheduled &&
-                  !slot.accepted
+                  !slot.rescheduled
                 );
-              case "Cancelled":
-                return slot.cancelled;
-              case "Accepted":
+              case "Confirmed":
                 return (
-                  slot.accepted &&
+                  slot.confirmed &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed
                 );
+              case "Accepted":
+                return (
+                  slot.accepted &&
+                  !slot.confirmed &&
+                  !slot.completed &&
+                  !slot.cancelled &&
+                  !slot.reviewed
+                );
+              case "Cancelled":
+                return slot.cancelled;
               case "Rescheduled":
-                return slot.rescheduled;
+                return (
+                  slot.rescheduled &&
+                  !slot.cancelled &&
+                  !slot.completed &&
+                  !slot.reviewed
+                );
               default:
-                return true;
+                return false;
             }
           })
         )
@@ -121,24 +136,39 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
               case "Booked":
                 return (
                   slot.booked &&
+                  !slot.confirmed &&
+                  !slot.accepted &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed &&
                   !slot.rescheduled
                 );
-              case "Cancelled":
-                return slot.cancelled;
-              case "Accepted":
+              case "Confirmed":
                 return (
-                  slot.accepted &&
+                  slot.confirmed &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed
                 );
+              case "Accepted":
+                return (
+                  slot.accepted &&
+                  !slot.confirmed &&
+                  !slot.completed &&
+                  !slot.cancelled &&
+                  !slot.reviewed
+                );
+              case "Cancelled":
+                return slot.cancelled;
               case "Rescheduled":
-                return slot.rescheduled;
+                return (
+                  slot.rescheduled &&
+                  !slot.cancelled &&
+                  !slot.completed &&
+                  !slot.reviewed
+                );
               default:
-                return true;
+                return false;
             }
           }),
         }));
