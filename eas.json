@@ -29,8 +29,7 @@
       },
       "ios": {
         "distribution": "store"
-      },
-      "beforeBuild": "npm run version-update"
+      }
     }
   },
   "submit": {
