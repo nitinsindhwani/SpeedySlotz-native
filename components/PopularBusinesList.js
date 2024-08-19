@@ -368,7 +368,9 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
               <Text style={styles.mostPopularName} numberOfLines={1}>
                 {item.yelpBusiness.name}
               </Text>
-              <TierBadge score={item.yelpBusiness.ratingScore} />
+              {item.yelpBusiness.is_registered && (
+                <TierBadge score={item.yelpBusiness.ratingScore} />
+              )}
             </View>
           </View>
 

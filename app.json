@@ -2,20 +2,21 @@
   "expo": {
     "name": "SpeedySlotz",
     "slug": "speedySlotzfinalapp",
-    "scheme": "speedyslotz",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": ["**/*"],
+    "scheme": "speedyslotz",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
-      "buildNumber": "6"
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,25 +24,9 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.speedyzslotznitinapp.app",
-      "versionCode": 11
+      "versionCode": 8
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-secure-store",
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/images/notification.png",
-          "color": "#ffffff",
-          "sounds": [
-            "./assets/sounds/tone1.wav",
-            "./assets/sounds/tone2.wav"
-          ]
-        }
-      ]
-    ],
+    "plugins": ["expo-secure-store", "expo-system-ui", "expo-notifications"],
     "extra": {
       "eas": {
         "projectId": "8cdc32df-1dfe-4ba1-b002-d69366d596e4"
