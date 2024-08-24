@@ -18,7 +18,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
-      "buildNumber": "6"
+      "buildNumber": "7"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +26,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.speedyzslotznitinapp.app",
-      "versionCode": 10
+      "versionCode": 12
     },
     "plugins": [
       "expo-secure-store",

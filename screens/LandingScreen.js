@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -253,7 +254,7 @@ const LandingScreen = ({ route }) => {
   }
 
   return (
-    <View style={{ flex: 1, flexDirection: "column" }}>
+    <SafeAreaView style={{ flex: 1, flexDirection: "column" }}>
       {loader === 3 ? (
         <View style={styles.container}>
           <ActivityIndicator size="large" color="#0000ff" />
@@ -406,7 +407,7 @@ const LandingScreen = ({ route }) => {
       />
       <LoadingModal show={isLoading} />
       <Image source={yelp} style={styles.yelpLogo} />
-    </View>
+    </SafeAreaView>
   );
 };
 
