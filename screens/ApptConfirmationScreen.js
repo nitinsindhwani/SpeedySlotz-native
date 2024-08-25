@@ -19,6 +19,7 @@ import { theme3 } from "../assets/branding/themes";
 import { v4 as uuidv4 } from "uuid";
 import { getStoredUser } from "../api/ApiCall";
 import getImageSource from "./CallFuncGlobal/getImageSource";
+import Header from "./GlobalComponents/Header";
 const ApptConfirmationScreen = ({ route }) => {
   const navigation = useNavigation();
   const { userData, businessDetails, slot, service_type } = route.params;
@@ -143,14 +144,17 @@ const ApptConfirmationScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      {/* <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Appointment Confirmation</Text>
         </View>
-      </SafeAreaView>
+      </SafeAreaView> */}
+      <Header
+      title={"Appointment Confirmation"}
+      />
       <ScrollView style={styles.scrollView}>
         <View style={styles.outerContainer}>
           <View style={styles.card}>
@@ -291,7 +295,7 @@ const ApptConfirmationScreen = ({ route }) => {
                   </Text>
                 </View>
               </ScrollView>
-              <View style={styles.buttonContainer}>
+              {/* <View style={styles.buttonContainer}>
                 <TouchableOpacity
                   style={[styles.button, styles.primaryButton]}
                   onPress={handleAddToCalendar}
@@ -304,7 +308,27 @@ const ApptConfirmationScreen = ({ route }) => {
                 >
                   <Text style={styles.buttonText}>Back Home</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
+
+              <View style={{ flexDirection: "row", justifyContent: "space-between",width:"90%" }}>
+          <TouchableOpacity
+            // onPress={handleReschedule}
+            onPress={handleAddToCalendar}
+
+            style={styles.BTn_2}
+          >
+            <Text style={styles.Btn_TTx}>Add to Calendar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            // onPress={handleCancel}
+            onPress={handleNavigateHome}
+
+            style={styles.BTn_2}
+
+>
+            <Text  style={styles.Btn_TTx}>Back Home</Text>
+          </TouchableOpacity>
+        </View>
             </View>
           </View>
         </View>
@@ -459,6 +483,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  BTn_2:{
+    backgroundColor: theme3.primaryColor,
+    padding: 10,
+    width: "47%",
+  },
+  Btn_TTx:    {color:'white',fontWeight:'bold',fontSize:16},
   primaryButton: {
     backgroundColor: theme3.primaryColor,
     marginRight: 8,

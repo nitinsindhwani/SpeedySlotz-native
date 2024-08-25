@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { Ionicons } from "@expo/vector-icons";
+import Header from "../GlobalComponents/Header";
 
 const { width, height } = Dimensions.get("window");
 
@@ -21,6 +22,9 @@ const ConfirmModal = ({ isVisible, onClose, onConfirm, amountDue }) => {
       onRequestClose={onClose}
     >
       <View style={styles.modalContainer}>
+        <Header 
+        title={"Confirmations"}
+        />
         <TouchableOpacity style={styles.closeIconContainer} onPress={onClose}>
           <Ionicons name="close-circle" size={30} color={theme3.danger} />
         </TouchableOpacity>

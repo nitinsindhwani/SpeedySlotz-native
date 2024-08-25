@@ -6,7 +6,7 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
 import CategoryModal from "./CaterogryModal";
 import { getIconName } from "./IconsData";
@@ -23,6 +23,9 @@ const CategoryList = ({
   const scrollViewRef = useRef();
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
   const [showCatModal, setCatModal] = useState(false); // Initially set to false
+  const [showSubCat,setShowSubCat]=useState(true)
+  const [showService,setSHowService]=useState(true)
+
 
   const uniqueCategories = Array.from(
     new Set(userCategoriesData?.map((item) => item.categoryName))
@@ -107,16 +110,20 @@ const CategoryList = ({
     setSelectedSubcategory("");
     setSelectedServiceTypeName("");
     setCatModal(false);
+    setShowSubCat(true)
   };
 
   const handleSubcategoryPress = (subcategoryName) => {
-    setSelectedSubcategory(subcategoryName);
+    setSelectedSubcategory(subcategoryName);    setShowSubCat()
     setSelectedServiceTypeName("");
+    setSHowService(true)
   };
 
   return (
     <View>
       <View style={styles.categories}>
+        <View style={{flexDirection:"row",alignItems:'center'}}>
+        
         <TouchableOpacity
           onPress={() => setCatModal(true)}
           style={{ flexDirection: "row", alignItems: "center" }}
@@ -124,12 +131,58 @@ const CategoryList = ({
           <Text style={{ color: theme3.secondaryColor, fontSize: 14 }}>
             {selectedCategory ? selectedCategory + " " : "Select Category"}
           </Text>
-          <FontAwesome
-            name="exchange"
+          {
+              !selectedSubcategory ?
+              <FontAwesome
+              name="exchange"
+              size={14}
+              color={theme3.secondaryColor}
+            />
+              :
+       
+            <MaterialIcons 
+            name="arrow-forward-ios" 
             size={14}
-            color={theme3.secondaryColor}
-          />
+            color={theme3.secondaryColor} 
+            />
+          }
+          
         </TouchableOpacity>
+        {
+          selectedSubcategory &&
+          <TouchableOpacity
+          onPress={() => setShowSubCat((P)=>!P)}
+          style={{ flexDirection: "row", alignItems: "center",marginHorizontal:5}}
+        >
+          <Text style={{ color: theme3.secondaryColor, fontSize: 14 }}>
+            {selectedSubcategory ? selectedSubcategory + " " : "Select Sub Category"}
+          </Text>
+        
+          
+          <MaterialIcons 
+            name="arrow-forward-ios" 
+            size={14}
+            color={theme3.secondaryColor} 
+            />
+        </TouchableOpacity>
+        }
+     {
+      selectedServiceTypeName &&
+      <TouchableOpacity
+      onPress={() => setSHowService((P)=>!P)}
+
+      style={{ flexDirection: "row", alignItems: "center" }}
+    >
+      <Text style={{ color: theme3.secondaryColor, fontSize: 14 }}>
+        {selectedServiceTypeName ? selectedServiceTypeName + " " : "Select Service"}
+      </Text>
+ 
+    </TouchableOpacity>                                           
+     }
+       
+
+        </View>
+        
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -178,7 +231,7 @@ const CategoryList = ({
           ))} */}
         </ScrollView>
       </View>
-      {selectedCategory && (
+      {selectedCategory && showSubCat &&(
         <View style={styles.subcategories}>
           <ScrollView
             horizontal
@@ -220,7 +273,7 @@ const CategoryList = ({
           </ScrollView>
         </View>
       )}
-      {selectedSubcategory && (
+      {selectedSubcategory && showService &&(
         <View style={styles.services}>
           <ScrollView
             horizontal
@@ -234,7 +287,9 @@ const CategoryList = ({
               <TouchableOpacity
                 key={serviceTypeName.id}
                 style={styles.serviceItem}
-                onPress={() => setSelectedServiceTypeName(serviceTypeName.name)}
+                onPress={() => {
+                  setSHowService((p)=>!p)
+                  setSelectedServiceTypeName(serviceTypeName.name)}}
               >
                 <View style={styles.serviceImageContainer}>
                   <Ionicons
