@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   Platform,
+  Dimensions
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -14,6 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import { ThemeContext, ThemeProvider } from "../components/ThemeContext";
 import { translation } from "../assets/translations/translations";
 import { Ionicons } from "@expo/vector-icons";
+const WindowWidth = Dimensions.get('window').width
+
 const Header = ({ user }) => {
   const navigation = useNavigation();
   const { currentTheme } = useContext(ThemeContext);
@@ -71,10 +74,12 @@ const Header = ({ user }) => {
 const getStyles = (currentTheme) =>
   StyleSheet.create({
     header: {
-      width: "100%",
+      // width: "100%",
+width:WindowWidth,
+
       height: 100,
       flexDirection: "row",
-      marginTop: Platform.OS === "ios" ? 0 : 30,
+      // marginTop: Platform.OS === "ios" ? 0 : 30,
 
       alignItems: "center",
       backgroundColor: currentTheme.primaryColor,

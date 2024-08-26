@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
@@ -16,6 +17,7 @@ import { baseApiUrl } from "../../api/Config"; // Assuming this contains your AP
 import { getStoredToken } from "../../api/ApiCall";
 import { v4 as uuidv4 } from "uuid";
 import { getBadgeDetails } from "../../components/BadgeInfo";
+import Header from "../GlobalComponents/Header";
 
 // Prepare the badges array dynamically from getBadgeDetails
 const badgeCodes = [
@@ -245,6 +247,12 @@ export default function RemarkModal({
   return (
     <View style={styles.container}>
       <Modal animationType="slide" transparent={false} visible={modalVisible}>
+       <Header 
+       title={"Leave Review"}
+       />
+       <ScrollView 
+       >
+
         <View style={styles.modalContainer}>
           <TouchableOpacity
             style={styles.closeIconContainer}
@@ -282,6 +290,8 @@ export default function RemarkModal({
             <Text style={styles.submitButtonText}>Submit Remarks</Text>
           </TouchableOpacity>
         </View>
+       </ScrollView>
+
       </Modal>
       <ErrorAlert
         show={showError}
@@ -311,7 +321,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#f6f6f6",
     paddingHorizontal: 20,
-    paddingTop: 60,
+    paddingTop: 20,
+    paddingBottom:40
   },
   closeIconContainer: {
     position: "absolute",

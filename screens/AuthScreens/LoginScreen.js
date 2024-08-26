@@ -133,9 +133,9 @@ const LoginScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <Image source={Logo} style={{ width: 160, height: 160 }} />
+      <Image source={Logo} style={{ width: 160, height: 160 ,marginTop:20}} />
 
-      <View style={[Styles.TopView, { marginTop: -20 }]}>
+      <View style={[Styles.TopView, { marginTop: 50 }]}>
         <Text style={styles.Text}>Username</Text>
 
         <View style={Styles.InputView}>
@@ -207,7 +207,7 @@ const LoginScreen = () => {
         <Text style={Styles.LoginTxt}>Login</Text>
       </TouchableOpacity>
 
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ flexDirection: "row", alignItems: "center",marginTop:100 }}>
         <Image source={Line} style={{ width: WindowWidth / 2.9, height: 2 }} />
         <Text style={{ color: "#4C4C4C", marginLeft: 10, marginRight: 10 }}>
           Or
@@ -215,7 +215,7 @@ const LoginScreen = () => {
         <Image source={Line} style={{ width: WindowWidth / 2.6, height: 2 }} />
       </View>
 
-      <Text style={{ color: theme3.LightTxtClr, marginTop: 20 }}>
+      <Text style={{ color: theme3.LightTxtClr,position:'absolute',bottom:50}}>
         Don{"'"}t have an account?{" "}
         <Text
           onPress={() => navigation.navigate("SignUpDecider")}

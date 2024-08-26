@@ -49,14 +49,14 @@ const SignUpDecider = () => {
     
       </View>
 
-      <Image source={Logo} style={{ width: 160, height: 160 }} />
+      <Image source={Logo} style={{ width: 160, height: 160, marginTop:20 }} />
      
       <Text
           style={{
             color: "#4C4C4C",
             fontSize: 24,
             // marginLeft: 5,
-            marginTop: 7,
+            marginTop: 30,
             fontWeight: "bold",
           }}
         >
@@ -102,14 +102,14 @@ const SignUpDecider = () => {
  
   
 
-      <View style={{ flexDirection: "row", alignItems: "center" ,marginTop:50}}>
+      {/* <View style={{ flexDirection: "row", alignItems: "center" ,marginTop:100}}>
         <Image source={Line} style={{ width: WindowWidth / 2.9, height: 2 }} />
         <Text style={{ color: "#4C4C4C", marginLeft: 10, marginRight: 10 }}>
           Or
         </Text>
         <Image source={Line} style={{ width: WindowWidth / 2.6, height: 2 }} />
-      </View>
-      <Text style={{ color: theme3.LightTxtClr, marginTop: 20 }}>
+      </View> */}
+      <Text style={{ color: theme3.LightTxtClr, position:'absolute',bottom:50 }}>
         Already Have An Account?{" "}
         <Text
           onPress={() => navigation.navigate("LoginScreen")}

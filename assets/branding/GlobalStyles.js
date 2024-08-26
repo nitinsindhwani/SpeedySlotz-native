@@ -20,12 +20,19 @@ const Styles = StyleSheet.create({
     },
     Header:{
 width:WindowWidth,
-height:WindowHeight/10,
+// height:WindowHeight/10,
+height: 100,
+
 backgroundColor:theme3.primaryColor,
-marginTop:Platform.OS === "ios"?0: 30,
+// marginTop:Platform.OS === "ios"?0: 30,
 flexDirection:'row',
 justifyContent:"space-between",
-alignItems:'center'
+alignItems:'center',
+
+
+// marginTop: Platform.OS === "ios" ? 0 : 30,
+
+paddingTop: 30,
     },
     HeaderI:{
       width:WindowWidth/1.18,

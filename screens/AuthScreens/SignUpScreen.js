@@ -283,9 +283,9 @@ const SignUpScreen = () => {
           />
         </View>
 
-        <Image source={Logo} style={{ width: 160, height: 160 }} />
+        <Image source={Logo} style={{ width: 160, height: 160,marginTop:20 }} />
 
-        <View style={[Styles.TopView, { marginTop: -30 }]}>
+        <View style={[Styles.TopView, { marginTop: 20 }]}>
           {index === 0 ? (
             <>
               <Text style={styles.Text}>First Name</Text>
@@ -460,10 +460,21 @@ const SignUpScreen = () => {
           </>
         )}
 
+        <ErrorAlert
+          show={errorModal}
+          onAction={onErrorAction}
+          title={AlertTitle}
+          body={AlertBody}
+        />
+      </ScrollView>
+      <View
+style={{position:"absolute",bottom:50,alignItems:'center'}}
+>
+
         <Text
           style={{
             color: "#8A8A8A",
-            marginTop: 20,
+            // marginTop: 20,
             textAlign: "center",
             paddingHorizontal: 20,
           }}
@@ -471,7 +482,7 @@ const SignUpScreen = () => {
           By signing up, you agree to our Terms and Privacy Policy.
         </Text>
 
-        <Text style={{ color: "#8A8A8A", marginTop: 20 }}>
+        <Text style={{ color: "#8A8A8A", marginTop: 0 }}>
           Already have an account?{" "}
           <Text
             onPress={() => navigation.navigate("LoginScreen")}
@@ -480,14 +491,8 @@ const SignUpScreen = () => {
             Login
           </Text>
         </Text>
+        </View>
 
-        <ErrorAlert
-          show={errorModal}
-          onAction={onErrorAction}
-          title={AlertTitle}
-          body={AlertBody}
-        />
-      </ScrollView>
     </ImageBackground>
   );
 };
