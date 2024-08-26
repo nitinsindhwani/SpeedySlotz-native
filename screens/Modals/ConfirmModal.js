@@ -17,17 +17,19 @@ const ConfirmModal = ({ isVisible, onClose, onConfirm, amountDue }) => {
   return (
     <Modal
       animationType="slide"
-      transparent={false}
+      transparent={true}
       visible={isVisible}
       onRequestClose={onClose}
     >
       <View style={styles.modalContainer}>
         <Header 
         title={"Confirmations"}
+        typeModal={true}
+        onPress={() => onClose()}
         />
-        <TouchableOpacity style={styles.closeIconContainer} onPress={onClose}>
+        {/* <TouchableOpacity style={styles.closeIconContainer} onPress={onClose}>
           <Ionicons name="close-circle" size={30} color={theme3.danger} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Text style={styles.title}>Confirm Appointment</Text>
 
         <View style={styles.contentContainer}>
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#f6f6f6",
     paddingHorizontal: 20,
-    paddingTop: 60,
+    // paddingTop: 60,
   },
   closeIconContainer: {
     position: "absolute",
@@ -148,13 +150,20 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     bottom: 40,
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
   },
   button: {
-    width: width * 0.4,
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: "center",
+    width: "47%",
+    // width:WindowWidth/1.2,
+    // height:WindowHeight/13,
+    paddingVertical:10,
+    paddingHorizontal:17,
+
+    backgroundColor:theme3.primaryColor,
+    borderRadius:10,
+    // marginTop:20,
+    justifyContent:'center',
+    alignItems:'center'
   },
   cancelButton: {
     backgroundColor: theme3.danger,

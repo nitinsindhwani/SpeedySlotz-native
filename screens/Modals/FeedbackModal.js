@@ -249,23 +249,25 @@ export default function RemarkModal({
       <Modal animationType="slide" transparent={false} visible={modalVisible}>
        <Header 
        title={"Leave Review"}
+       typeModal={true}
+       onPress={() => setModalVisible(false)}
        />
        <ScrollView 
        >
 
         <View style={styles.modalContainer}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.closeIconContainer}
             onPress={() => setModalVisible(false)}
           >
             <Ionicons name="close-circle" size={30} color={theme3.danger} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text style={styles.title}>Rate Your Experience</Text>
           <Text style={styles.instructionText}>
             Choose any number of positive or negative badges to best represent
             your experience.
           </Text>
-          <View style={{ height: "50%" }}>
+          <View style={{ height: "60%" }}>
             <FlatList
               data={badges}
               numColumns={3}
@@ -322,7 +324,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f6f6f6",
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom:40
+    paddingBottom:120
   },
   closeIconContainer: {
     position: "absolute",
@@ -388,7 +390,7 @@ const styles = StyleSheet.create({
   },
   ReviewContainer: {
     backgroundColor: theme3.light,
-    width: "90%",
+    width: "95%",
     height: "20%",
     borderRadius: 20,
     shadowColor: "rgba(0,0,0,0.1)",
@@ -398,8 +400,8 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: theme3.primaryColor,
-    width: "80%",
-    paddingVertical: 15,
+    width: "95%",
+    paddingVertical: 10,
     borderRadius: 10,
     marginVertical: 30,
   },
