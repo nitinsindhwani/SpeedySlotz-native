@@ -310,7 +310,7 @@ const ApptConfirmationScreen = ({ route }) => {
                 </TouchableOpacity>
               </View> */}
 
-              <View style={{ flexDirection: "row", justifyContent: "space-between",width:"90%" }}>
+              <View style={styles.BtnWrapper}>
           <TouchableOpacity
             // onPress={handleReschedule}
             onPress={handleAddToCalendar}
@@ -323,7 +323,7 @@ const ApptConfirmationScreen = ({ route }) => {
             // onPress={handleCancel}
             onPress={handleNavigateHome}
 
-            style={styles.BTn_2}
+            style={[styles.BTn_2,{backgroundColor:theme3.secondaryColor}]}
 
 >
             <Text  style={styles.Btn_TTx}>Back Home</Text>
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     color: theme3.primaryColor,
   },
   infoContainer: {
-    marginBottom: 16,
+    marginBottom: 0,
   },
   infoRow: {
     flexDirection: "row",
@@ -483,10 +483,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  BtnWrapper:
+  { flexDirection: "row", justifyContent: "space-between",width:"100%",marginTop:16}
+,
+
   BTn_2:{
-    backgroundColor: theme3.primaryColor,
-    padding: 10,
+    // padding: 10,
     width: "47%",
+    // width:WindowWidth/1.2,
+    // height:WindowHeight/13,
+    paddingVertical:10,
+    paddingHorizontal:17,
+
+    backgroundColor:theme3.primaryColor,
+    borderRadius:10,
+    // marginTop:20,
+    justifyContent:'center',
+    alignItems:'center'
   },
   Btn_TTx:    {color:'white',fontWeight:'bold',fontSize:16},
   primaryButton: {

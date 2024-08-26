@@ -4,13 +4,13 @@ import Styles from "../../assets/branding/GlobalStyles";
 import { Ionicons } from '@expo/vector-icons';
 import { theme3 } from "../../assets/branding/themes";
 import { useNavigation } from "@react-navigation/native";
-function Header({title}){
+function Header({title,typeModal,onPress}){
     const naviation = useNavigation()
 return(
     <View  style={Styles.Header}>
 
 <TouchableOpacity
-onPress={()=>naviation.goBack()}
+onPress={()=> typeModal? onPress(): naviation.goBack()}
 >
 
 <Ionicons name="chevron-back" size={24} color={theme3.light} style={{marginTop:15,marginLeft:10}}/>

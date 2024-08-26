@@ -582,7 +582,7 @@ function AppointmentCard({
       }
       return (
         <TouchableOpacity
-          onPress={handleBookAgain}
+          onPress={handleReview}
           style={buttonStyle(theme3.primaryColor, "100%")}
         >
           <Text style={Styles.LoginTxt}>Book Again</Text>
