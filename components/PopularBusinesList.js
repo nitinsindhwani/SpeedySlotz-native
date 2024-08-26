@@ -234,10 +234,10 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         headers,
       });
 
-      // setFavorites((prevFavorites) => ({
-      //   ...prevFavorites,
-      //   [itemId]: false,
-      // }));
+      setFavorites((prevFavorites) => ({
+        ...prevFavorites,
+        [itemId]: false,
+      }));
       changeTepFav(false);
       console.log("function remove");
     } catch (error) {
@@ -251,17 +251,21 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     const [ExpandCat, setExpandCat] = useState(false);
     const [showMore, setShowMore] = useState(false);
     const [isFav, setIsFav] = useState(item.favorite);
+    useEffect(() => {
+      setIsFav(item.favorite);
+    }, [item.favorite]);
+
     function changeTepFav(val) {
       setIsFav(val);
     }
 
     function handleFav(itemId) {
-      if (isFav === true) {
-        setIsFav(false);
-        removeFavorite(itemId, changeTepFav);
-      } else {
+      const newFavStatus = !isFav;
+      setIsFav(newFavStatus);
+      if (newFavStatus) {
         addFavorite(itemId, changeTepFav);
-        setIsFav(true);
+      } else {
+        removeFavorite(itemId, changeTepFav);
       }
     }
 
@@ -342,9 +346,9 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             }}
           >
             <HeartIcon
-              name={isFav === true ? "heart" : "hearto"}
+              name={isFav ? "heart" : "hearto"}
               size={25}
-              color={isFav === true ? "#FF0000" : "#FFA500"}
+              color={isFav ? "#FF0000" : "#FFA500"}
             />
           </TouchableOpacity>
         </View>
@@ -610,7 +614,11 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       <ScrollView>
         {fetchedBusinesses &&
           fetchedBusinesses.map((item, index) => (
-            <DetailCard key={item.yelpBusiness.id} item={item} index={index} />
+            <DetailCard
+              key={item.yelpBusiness.id}
+              item={{ ...item, favorite: favorites[item.yelpBusiness.id] }}
+              index={index}
+            />
           ))}
       </ScrollView>
       {fetchedBusinesses && fetchedBusinesses.length === 0 && (

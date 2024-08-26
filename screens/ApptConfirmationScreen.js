@@ -152,9 +152,7 @@ const ApptConfirmationScreen = ({ route }) => {
           <Text style={styles.headerTitle}>Appointment Confirmation</Text>
         </View>
       </SafeAreaView> */}
-      <Header
-      title={"Appointment Confirmation"}
-      />
+      <Header title={"Appointment Confirmation"} />
       <ScrollView style={styles.scrollView}>
         <View style={styles.outerContainer}>
           <View style={styles.card}>
@@ -310,25 +308,28 @@ const ApptConfirmationScreen = ({ route }) => {
                 </TouchableOpacity>
               </View> */}
 
-              <View style={styles.BtnWrapper}>
-          <TouchableOpacity
-            // onPress={handleReschedule}
-            onPress={handleAddToCalendar}
-
-            style={styles.BTn_2}
-          >
-            <Text style={styles.Btn_TTx}>Add to Calendar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            // onPress={handleCancel}
-            onPress={handleNavigateHome}
-
-            style={[styles.BTn_2,{backgroundColor:theme3.secondaryColor}]}
-
->
-            <Text  style={styles.Btn_TTx}>Back Home</Text>
-          </TouchableOpacity>
-        </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "90%",
+                }}
+              >
+                <TouchableOpacity
+                  // onPress={handleReschedule}
+                  onPress={handleAddToCalendar}
+                  style={styles.BTn_2}
+                >
+                  <Text style={styles.Btn_TTx}>Add to Calendar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  // onPress={handleCancel}
+                  onPress={handleNavigateHome}
+                  style={styles.BTn_2}
+                >
+                  <Text style={styles.Btn_TTx}>Back Home</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
@@ -409,7 +410,7 @@ const styles = StyleSheet.create({
     color: theme3.primaryColor,
   },
   infoContainer: {
-    marginBottom: 0,
+    marginBottom: 16,
   },
   infoRow: {
     flexDirection: "row",
@@ -483,25 +484,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  BtnWrapper:
-  { flexDirection: "row", justifyContent: "space-between",width:"100%",marginTop:16}
-,
-
-  BTn_2:{
-    // padding: 10,
+  BTn_2: {
+    backgroundColor: theme3.primaryColor,
+    padding: 10,
     width: "47%",
-    // width:WindowWidth/1.2,
-    // height:WindowHeight/13,
-    paddingVertical:10,
-    paddingHorizontal:17,
-
-    backgroundColor:theme3.primaryColor,
-    borderRadius:10,
-    // marginTop:20,
-    justifyContent:'center',
-    alignItems:'center'
   },
-  Btn_TTx:    {color:'white',fontWeight:'bold',fontSize:16},
+  Btn_TTx: { color: "white", fontWeight: "bold", fontSize: 16 },
   primaryButton: {
     backgroundColor: theme3.primaryColor,
     marginRight: 8,

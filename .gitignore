@@ -40,3 +40,4 @@ package-lock.json
 android/app/build.gradle
 package-lock.json
 android/app/build.gradle
+.vscode/settings.json

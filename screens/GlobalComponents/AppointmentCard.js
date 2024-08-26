@@ -876,7 +876,8 @@ function AppointmentCard({
         isVisible={isConfirmModalVisible}
         onClose={handleConfirmModalClose}
         onConfirm={handleConfirmModalConfirm}
-        amountDue={localSingleSlot.amountDue || 0}
+        slot={localSingleSlot }
+        business={businesss}
       />
       <RescheduleModal
         isVisible={isRescheduleModalVisible}

@@ -6,10 +6,9 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  ScrollView,
+  FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList } from "react-native-gesture-handler";
 import { theme3 } from "../../assets/branding/themes";
 import ErrorAlert from "../GlobalComponents/ErrorAlert";
 import axios from "axios";
@@ -247,53 +246,49 @@ export default function RemarkModal({
   return (
     <View style={styles.container}>
       <Modal animationType="slide" transparent={false} visible={modalVisible}>
-       <Header 
-       title={"Leave Review"}
-       typeModal={true}
-       onPress={() => setModalVisible(false)}
-       />
-       <ScrollView 
-       >
+        <Header
+          title={"Leave Review"}
+          typeModal={true}
+          onPress={() => setModalVisible(false)}
+        />
+        <FlatList
+          data={badges}
+          numColumns={3}
+          renderItem={renderBadge}
+          keyExtractor={(item) => item.code}
+          ListHeaderComponent={
+            <>
+              <Text style={styles.title}>Rate Your Experience</Text>
+              <Text style={styles.instructionText}>
+                Choose any number of positive or negative badges to best
+                represent your experience.
+              </Text>
+            </>
+          }
+          ListFooterComponent={
+            <>
+              <Text style={styles.reviewTitle}>Leave a review</Text>
+              <View style={styles.ReviewContainer}>
+                <TextInput
+                  value={review}
+                  onChangeText={(e) => setReview(e)}
+                  style={styles.textInput}
+                  placeholder="Write a review"
+                  placeholderTextColor={theme3.placeHolder}
+                  multiline={true}
+                />
+              </View>
 
-        <View style={styles.modalContainer}>
-          {/* <TouchableOpacity
-            style={styles.closeIconContainer}
-            onPress={() => setModalVisible(false)}
-          >
-            <Ionicons name="close-circle" size={30} color={theme3.danger} />
-          </TouchableOpacity> */}
-          <Text style={styles.title}>Rate Your Experience</Text>
-          <Text style={styles.instructionText}>
-            Choose any number of positive or negative badges to best represent
-            your experience.
-          </Text>
-          <View style={{ height: "60%" }}>
-            <FlatList
-              data={badges}
-              numColumns={3}
-              renderItem={renderBadge}
-              keyExtractor={(item) => item.code}
-              style={{ paddingTop: 40 }}
-            />
-          </View>
-          <Text style={styles.reviewTitle}>Leave a review</Text>
-          <View style={styles.ReviewContainer}>
-            <TextInput
-              value={review}
-              onChangeText={(e) => setReview(e)}
-              style={{ flex: 1 }}
-              placeholder="Write a review"
-              placeholderTextColor={theme3.placeHolder}
-              multiline={true}
-            />
-          </View>
-
-          <TouchableOpacity style={styles.submitButton} onPress={submitRemarks}>
-            <Text style={styles.submitButtonText}>Submit Remarks</Text>
-          </TouchableOpacity>
-        </View>
-       </ScrollView>
-
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={submitRemarks}
+              >
+                <Text style={styles.submitButtonText}>Submit Remarks</Text>
+              </TouchableOpacity>
+            </>
+          }
+          contentContainerStyle={styles.contentContainerStyle}
+        />
       </Modal>
       <ErrorAlert
         show={showError}
@@ -324,7 +319,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f6f6f6",
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom:120
+    paddingBottom: 120,
   },
   closeIconContainer: {
     position: "absolute",
@@ -391,12 +386,18 @@ const styles = StyleSheet.create({
   ReviewContainer: {
     backgroundColor: theme3.light,
     width: "95%",
-    height: "20%",
+    height: "25%", // Increased height
     borderRadius: 20,
     shadowColor: "rgba(0,0,0,0.1)",
     shadowOpacity: 1,
     elevation: 1,
     padding: 10,
+  },
+  textInput: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    textAlignVertical: "top", // Ensures text starts from the top of the text area
   },
   submitButton: {
     backgroundColor: theme3.primaryColor,
@@ -409,5 +410,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#fff",
     fontSize: 18,
+  },
+  contentContainerStyle: {
+    paddingHorizontal: 15, // Ensures padding on both left and right
   },
 });
