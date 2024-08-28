@@ -7,9 +7,9 @@ import {
   TouchableOpacity,
   Linking,
   ScrollView,
-  SafeAreaView,
+  BackHandler,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import AnimatedLottieView from "lottie-react-native";
 import moment from "moment";
@@ -20,6 +20,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getStoredUser } from "../api/ApiCall";
 import getImageSource from "./CallFuncGlobal/getImageSource";
 import Header from "./GlobalComponents/Header";
+import ErrorAlert from "./GlobalComponents/ErrorAlert";
+
 const ApptConfirmationScreen = ({ route }) => {
   const navigation = useNavigation();
   const { userData, businessDetails, slot, service_type } = route.params;
@@ -27,6 +29,27 @@ const ApptConfirmationScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [expandDescription, setExpandDescription] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [confirmationShown, setConfirmationShown] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (confirmationShown) {
+          handleNavigateHome();
+          return true;
+        }
+        return false;
+      };
+
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [confirmationShown])
+  );
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,6 +68,21 @@ const ApptConfirmationScreen = ({ route }) => {
     return moment(dateString).format("LL");
   };
 
+  const showSuccessAlert = (title, message) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setShowAlert(true);
+  };
+
+  const showErrorAlert = (title, message) => {
+    setAlertTitle(title);
+    setAlertMessage(message);
+    setShowAlert(true);
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+  };
   const formatTime = (timeString) => {
     if (!timeString) return "";
     const [hours, minutes] = timeString.split(":");
@@ -74,11 +112,15 @@ const ApptConfirmationScreen = ({ route }) => {
       const deviceTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       const eventDetails = {
-        title: `Appointment with ${businessDetails.yelpBusiness.name}`,
+        title: businessDetails
+          ? `Appointment with ${businessDetails.yelpBusiness.name}`
+          : "New Appointment",
         startDate: new Date(slot.date + "T" + slot.startTime),
         endDate: new Date(slot.date + "T" + slot.endTime),
         timeZone: deviceTimeZone,
-        location: `${businessDetails.yelpBusinessLocation.address1}, ${businessDetails.yelpBusinessLocation.city}`,
+        location: businessDetails
+          ? `${businessDetails.yelpBusinessLocation.address1}, ${businessDetails.yelpBusinessLocation.city}`
+          : "To be determined",
         notes: `Service Type: ${service_type}\nJob Description: ${slot.job_description}`,
       };
 
@@ -97,16 +139,15 @@ const ApptConfirmationScreen = ({ route }) => {
   };
 
   const handleNavigateHome = () => {
-    navigation.navigate("BottomNavigation", { user: userData });
-  };
-
-  const handleBookAgain = () => {
-    navigation.navigate("DetailScreen", { business: businessDetails });
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "BottomNavigation", params: { user: userData } }],
+    });
   };
 
   const handleChatButtonPress = () => {
-    if (!currentUser) {
-      console.error("User data not available");
+    if (!currentUser || !businessDetails) {
+      console.error("User data or business details not available");
       return;
     }
 
@@ -144,29 +185,31 @@ const ApptConfirmationScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      {/* <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Appointment Confirmation</Text>
-        </View>
-      </SafeAreaView> */}
       <Header title={"Appointment Confirmation"} />
       <ScrollView style={styles.scrollView}>
         <View style={styles.outerContainer}>
           <View style={styles.card}>
-            <Image
-              source={getImageSource(
-                businessDetails?.yelpBusiness?.name,
-                businessDetails?.yelpBusiness?.image_url
-              )}
-              style={styles.image}
-            />
+            {businessDetails ? (
+              <Image
+                source={getImageSource(
+                  businessDetails.yelpBusiness.name,
+                  businessDetails.yelpBusiness.image_url
+                )}
+                style={styles.image}
+              />
+            ) : (
+              <View style={styles.placeholderImage}>
+                <Text style={styles.placeholderText}>
+                  Awaiting Service Provider
+                </Text>
+              </View>
+            )}
             <View style={styles.contentContainer}>
               <View style={styles.headerContent}>
                 <Text style={styles.title}>
-                  {businessDetails.yelpBusiness.name}
+                  {businessDetails
+                    ? businessDetails.yelpBusiness.name
+                    : "Service Provider to be Assigned"}
                 </Text>
                 <View style={styles.statusContainer}>
                   <ChatAnim />
@@ -184,81 +227,90 @@ const ApptConfirmationScreen = ({ route }) => {
                   {expandDescription ? " Read Less" : " Read More"}
                 </Text>
               </Text>
-              <View style={styles.infoContainer}>
-                <View style={styles.infoRow}>
-                  <View style={styles.infoItem}>
-                    <MaterialIcons
-                      name="location-city"
-                      size={18}
-                      color={theme3.primaryColor}
-                    />
-                    <Text style={styles.infoText}>
-                      {businessDetails.yelpBusinessLocation.city}
-                    </Text>
+              {businessDetails ? (
+                <View style={styles.infoContainer}>
+                  <View style={styles.infoRow}>
+                    <View style={styles.infoItem}>
+                      <MaterialIcons
+                        name="location-city"
+                        size={18}
+                        color={theme3.primaryColor}
+                      />
+                      <Text style={styles.infoText}>
+                        {businessDetails.yelpBusinessLocation.city}
+                      </Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                      <Ionicons
+                        name="cash-outline"
+                        size={18}
+                        color={theme3.primaryColor}
+                      />
+                      <Text style={styles.infoText}>
+                        {slot.amountDue
+                          ? `$${slot.amountDue}`
+                          : "Final Amount Pending"}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.infoItem}
+                      onPress={() => {
+                        const address = `${businessDetails.yelpBusinessLocation.address1}, ${businessDetails.yelpBusinessLocation.city}`;
+                        const mapQuery = encodeURIComponent(address);
+                        Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
+                      }}
+                    >
+                      <MaterialIcons
+                        name="directions"
+                        size={18}
+                        color={theme3.primaryColor}
+                      />
+                      <Text style={styles.infoText}>Directions</Text>
+                    </TouchableOpacity>
                   </View>
-                  <View style={styles.infoItem}>
-                    <Ionicons
-                      name="cash-outline"
-                      size={18}
-                      color={theme3.primaryColor}
-                    />
-                    <Text style={styles.infoText}>
-                      {slot.amountDue
-                        ? `$${slot.amountDue}`
-                        : "Final Amount Pending"}
-                    </Text>
+                  <View style={styles.infoRow}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        Linking.openURL(
+                          `tel:${businessDetails.yelpBusiness.phone}`
+                        )
+                      }
+                      style={styles.infoItem}
+                    >
+                      <FontAwesome
+                        name="phone"
+                        size={18}
+                        color={theme3.secondaryColor}
+                      />
+                      <Text style={styles.infoText}>
+                        {businessDetails.yelpBusiness.phone}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.infoItem}
+                      onPress={handleChatButtonPress}
+                    >
+                      <ChatAnim />
+                      <Text style={styles.infoText}>Chat Now</Text>
+                    </TouchableOpacity>
+                    <View style={styles.infoItem}>
+                      <Ionicons
+                        name="alert-outline"
+                        size={18}
+                        color={theme3.primaryColor}
+                      />
+                      <Text style={styles.infoText}>Emergency</Text>
+                    </View>
                   </View>
-                  <TouchableOpacity
-                    style={styles.infoItem}
-                    onPress={() => {
-                      const address = `${businessDetails.yelpBusinessLocation.address1}, ${businessDetails.yelpBusinessLocation.city}`;
-                      const mapQuery = encodeURIComponent(address);
-                      Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
-                    }}
-                  >
-                    <MaterialIcons
-                      name="directions"
-                      size={18}
-                      color={theme3.primaryColor}
-                    />
-                    <Text style={styles.infoText}>Directions</Text>
-                  </TouchableOpacity>
                 </View>
-                <View style={styles.infoRow}>
-                  <TouchableOpacity
-                    onPress={() =>
-                      Linking.openURL(
-                        `tel:${businessDetails.yelpBusiness.phone}`
-                      )
-                    }
-                    style={styles.infoItem}
-                  >
-                    <FontAwesome
-                      name="phone"
-                      size={18}
-                      color={theme3.secondaryColor}
-                    />
-                    <Text style={styles.infoText}>
-                      {businessDetails.yelpBusiness.phone}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.infoItem}
-                    onPress={handleChatButtonPress}
-                  >
-                    <ChatAnim />
-                    <Text style={styles.infoText}>Chat Now</Text>
-                  </TouchableOpacity>
-                  <View style={styles.infoItem}>
-                    <Ionicons
-                      name="alert-outline"
-                      size={18}
-                      color={theme3.primaryColor}
-                    />
-                    <Text style={styles.infoText}>Emergency</Text>
-                  </View>
+              ) : (
+                <View style={styles.awaitingProviderContainer}>
+                  <Text style={styles.awaitingProviderText}>
+                    We're currently matching you with the best service provider.
+                    You'll be notified once a provider accepts your job.
+                  </Text>
                 </View>
-              </View>
+              )}
               <Text
                 style={[
                   styles.mostPopularName,
@@ -289,43 +341,25 @@ const ApptConfirmationScreen = ({ route }) => {
                   style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}
                 >
                   <Text style={{ color: theme3.light, marginLeft: 5 }}>
-                    {slot.selectedServiceTypes.join(", ")}
+                    {Array.isArray(slot.selectedServiceTypes)
+                      ? slot.selectedServiceTypes.join(", ")
+                      : service_type}
                   </Text>
                 </View>
               </ScrollView>
-              {/* <View style={styles.buttonContainer}>
+              <View style={styles.BtnWrapper}>
                 <TouchableOpacity
-                  style={[styles.button, styles.primaryButton]}
-                  onPress={handleAddToCalendar}
-                >
-                  <Text style={styles.buttonText}>Add to Calendar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, styles.secondaryButton]}
-                  onPress={handleNavigateHome}
-                >
-                  <Text style={styles.buttonText}>Back Home</Text>
-                </TouchableOpacity>
-              </View> */}
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  width: "90%",
-                }}
-              >
-                <TouchableOpacity
-                  // onPress={handleReschedule}
                   onPress={handleAddToCalendar}
                   style={styles.BTn_2}
                 >
                   <Text style={styles.Btn_TTx}>Add to Calendar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  // onPress={handleCancel}
                   onPress={handleNavigateHome}
-                  style={styles.BTn_2}
+                  style={[
+                    styles.BTn_2,
+                    { backgroundColor: theme3.secondaryColor },
+                  ]}
                 >
                   <Text style={styles.Btn_TTx}>Back Home</Text>
                 </TouchableOpacity>
@@ -334,6 +368,12 @@ const ApptConfirmationScreen = ({ route }) => {
           </View>
         </View>
       </ScrollView>
+      <ErrorAlert
+        show={showAlert}
+        onAction={handleCloseAlert}
+        title={alertTitle}
+        body={alertMessage}
+      />
     </View>
   );
 };
@@ -342,21 +382,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-  },
-  safeArea: {
-    backgroundColor: theme3.primaryColor,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
-    backgroundColor: theme3.primaryColor,
-  },
-  headerTitle: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
-    marginLeft: 16,
   },
   scrollView: {
     flex: 1,
@@ -378,8 +403,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     resizeMode: "cover",
   },
+  placeholderImage: {
+    width: "100%",
+    height: 200,
+    backgroundColor: theme3.GlobalBg,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   contentContainer: {
     paddingTop: 16,
+    paddingHorizontal: 16,
   },
   headerContent: {
     flexDirection: "row",
@@ -426,16 +459,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme3.fontColorI,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+  awaitingProviderContainer: {
+    backgroundColor: theme3.GlobalBg,
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  awaitingProviderText: {
     color: theme3.fontColor,
-    marginBottom: 8,
+    fontSize: 14,
+    textAlign: "center",
   },
   mostPopularName: {
     fontSize: 16,
     fontWeight: "bold",
     color: theme3.fontColor,
+    marginBottom: 8,
   },
   CatList: {
     padding: 15,
@@ -443,15 +482,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: theme3.primaryColor,
-    paddingBottom: 5,
-    paddingTop: 5,
-    margin: 5,
-  },
-  bookingDetailsScroll: {
-    marginBottom: 16,
-  },
-  bookingDetails: {
-    flexDirection: "row",
+    paddingVertical: 5,
+    marginRight: 5,
   },
   outerContainer: {
     marginTop: 16,
@@ -461,61 +493,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     elevation: 1,
   },
-  bookingItem: {
-    backgroundColor: theme3.primaryColor,
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginRight: 8,
-  },
-  bookingItemText: {
-    color: "white",
-    fontSize: 14,
-  },
-  buttonContainer: {
+  BtnWrapper: {
     flexDirection: "row",
     justifyContent: "space-between",
+    width: "100%",
     marginTop: 16,
   },
-  button: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   BTn_2: {
-    backgroundColor: theme3.primaryColor,
-    padding: 10,
     width: "47%",
-  },
-  Btn_TTx: { color: "white", fontWeight: "bold", fontSize: 16 },
-  primaryButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 17,
     backgroundColor: theme3.primaryColor,
-    marginRight: 8,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  secondaryButton: {
-    backgroundColor: theme3.secondaryColor,
-    marginLeft: 8,
-  },
-  buttonText: {
+  Btn_TTx: {
     color: "white",
-    fontSize: 16,
     fontWeight: "bold",
-  },
-  bookAgainButton: {
-    backgroundColor: theme3.se,
-    borderRadius: 5,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    flex: 1,
-    marginHorizontal: 4,
-  },
-
-  bookAgainText: {
-    color: "white",
     fontSize: 16,
-    fontWeight: "bold",
   },
   loaderContainer: {
     flex: 1,
@@ -526,6 +522,29 @@ const styles = StyleSheet.create({
   lottieAnimation: {
     width: 200,
     height: 200,
+  },
+  awaitingProviderContainer: {
+    backgroundColor: theme3.GlobalBg,
+    padding: 16,
+    borderRadius: 8,
+    marginVertical: 16,
+  },
+  awaitingProviderText: {
+    color: theme3.fontColor,
+    fontSize: 14,
+    textAlign: "center",
+  },
+  placeholderImage: {
+    width: "100%",
+    height: 200,
+    backgroundColor: theme3.primaryColor,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  placeholderText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 

@@ -115,15 +115,16 @@ export const fetchBusinessesBySubcategory = async (
     params,
     headers,
   });
-  if (response.data && response.data.businesses) {
-    return response.data.businesses;
+
+  if (response.payload && response.payload.businesses) {
+    return response.payload.businesses;
   } else {
     throw new Error("Businesses not found in response data");
   }
 };
 
 export const fetchBusinessesByServiceName = async (
-  term,
+  serviceType,
   location,
   latitude,
   longitude,
@@ -134,7 +135,7 @@ export const fetchBusinessesByServiceName = async (
   const intRadius = parseInt(radius, 10);
 
   const params = {
-    term: term, // Updated to use term instead of subcategory
+    term: serviceType?.name, // Updated to use term instead of subcategory
     location: location,
     latitude: latitude,
     longitude: longitude,
@@ -164,6 +165,7 @@ export const fetchBusinessesByServiceName = async (
     params,
     headers,
   });
+
   if (response.data && response.data.businesses) {
     return response.data.businesses;
   } else {
@@ -246,7 +248,7 @@ export const loginUser = async (username, password) => {
           },
         }
       );
-      console.log("response login", apiResponse.data.payload);
+
       const userData = JSON.stringify(apiResponse.data.payload);
       await SecureStore.setItemAsync("userData", userData);
 
@@ -501,7 +503,7 @@ export const fetchProfiles = async () => {
         },
       }
     );
-    console.log("response", response);
+
     // Check for HTTP errors
     if (!response.ok) {
       // Extract error message from response body if possible
@@ -710,8 +712,6 @@ export const fetchBusinessDetailsById = async (businessId) => {
       },
     });
 
-    console.log("Response:", response);
-
     if (!response.ok) {
       const errorResponse = await response.json();
       throw new Error(`Server Error: ${errorResponse.detail}`);
@@ -726,5 +726,95 @@ export const fetchBusinessDetailsById = async (businessId) => {
     throw new Error(
       "Fetching business details failed. Please check your data and try again."
     );
+  }
+};
+
+export const updateUserLanguage = async (userId, preferredLanguage) => {
+  try {
+    console.log(
+      "userId, preferredLanguage",
+      userId + " : " + preferredLanguage
+    );
+    const secureToken = await getStoredToken();
+    if (!secureToken) {
+      throw new Error("No authorization token available");
+    }
+
+    const requestUrl = `${baseApiUrl}/api/v1/users/updateLanguage?userId=${userId}&preferredLanguage=${preferredLanguage}`;
+
+    const response = await fetch(requestUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${secureToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log("Parsed response data:", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user language:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+    }
+    throw error;
+  }
+};
+
+export const logoutUser = async () => {
+  try {
+    // Get the current access token
+    const token = await SecureStore.getItemAsync("userToken");
+
+    if (token) {
+      // Call the Keycloak logout endpoint
+      const logoutUrl = baseApiUrl + "/api/v1/users/logout";
+
+      const apiResponse = await axios.post(
+        logoutUrl,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            accessToken: token,
+          },
+        }
+      );
+    }
+
+    // Clear SecureStore
+    await SecureStore.deleteItemAsync("userToken");
+    await SecureStore.deleteItemAsync("userData");
+
+    return true; // Indicate successful logout
+  } catch (error) {
+    console.error("Error logging out:", error);
+    return false; // Indicate failed logout
+  }
+};
+
+export const updatePushToken = async (username, pushToken) => {
+  try {
+    const token = await SecureStore.getItemAsync("userToken");
+    const response = await axios.post(
+      `${baseApiUrl}/api/v1/users/updatePushToken`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          username,
+          pushToken,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error updating push token:", error);
+    throw error;
   }
 };

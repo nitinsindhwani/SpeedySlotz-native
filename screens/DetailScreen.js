@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   TouchableOpacity,
@@ -6,53 +6,41 @@ import {
   TextInput,
   StyleSheet,
   ScrollView,
-  Modal,
-  Button,
   Image,
   FlatList,
   Dimensions,
-  Alert,
+  Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { baseApiUrl } from "../api/Config";
 import { getStoredToken, getStoredUser } from "../api/ApiCall";
-import * as FileSystem from "expo-file-system";
 import qs from "qs";
 import MapIcon from "react-native-vector-icons/FontAwesome5";
-import HeartIcon from "react-native-vector-icons/AntDesign";
-import { Picker } from "@react-native-picker/picker";
-import { Calendar } from "react-native-calendars";
-import { AntDesign } from "@expo/vector-icons";
-import moment from "moment";
 import {
-  FontAwesome,
-  Octicons,
+  AntDesign,
   MaterialIcons,
+  FontAwesome,
   Ionicons,
 } from "@expo/vector-icons";
-import { baseApiUrl } from "../api/Config";
-import "react-native-get-random-values";
+import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import getImageSource from "./CallFuncGlobal/getImageSource";
 import { theme3 } from "../assets/branding/themes";
 import Styles from "../assets/branding/GlobalStyles";
-import TimeSlots from "../assets/data/TimeSlots";
 import metersToMiles from "./CallFuncGlobal/metersoMiles";
-import AvailableSlots from "../assets/data/Availableslots";
-import Specialieites from "../assets/data/SpecialitiesData";
 import CalenderCustom from "./Filters/CalenderCustom";
 import SuccessModal from "./GlobalComponents/SuccessModal";
 import { getBadgeDetails } from "../components/BadgeInfo";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DealModal from "../components/DealModal";
 import AttachProfileModal from "../components/AttachProfileModal";
 import DealIcons from "./GlobalComponents/DealIcons";
-import { Linking } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import CategoryDetailsModal from "../components/CategoryDetailsModal";
 import ChatAnim from "./GlobalComponents/ChatAnim";
 import { SwipeButton } from "react-native-expo-swipe-button";
 import Header from "./GlobalComponents/Header";
+import { LanguageContext } from "../api/LanguageContext";
 
 const defaultImageUrl = require("../assets/images/defaultImage.png");
 const WindowWidth = Dimensions.get("window").width;
@@ -60,9 +48,9 @@ const WindowHeight = Dimensions.get("screen").height;
 
 function DetailScreen({ route }) {
   const navigation = useNavigation();
+  const { translations } = useContext(LanguageContext); // Get translations from context
   const [slots, setSlots] = useState([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [initialDate, setInitialDate] = useState(new Date());
   const [isModalVisible, setModalVisible] = useState(false);
   const [serviceTypes, setServiceTypes] = useState([]);
   const [selectedSlotId, setSelectedSlotId] = useState(null);
@@ -83,13 +71,8 @@ function DetailScreen({ route }) {
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
   const [modalCategory, setModalCategory] = useState(null);
   const [priorityStatus, setPriorityStatus] = useState(null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null); // New state for selected category ID
-
-  const MAX_NUMBER_OF_IMAGES = 5;
-  const MAX_NUMBER_OF_VIDEOS = 3;
-  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
-  const IMAGE_TYPES = ["image/jpeg", "image/png"];
-  const VIDEO_TYPES = ["video/mp4"];
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [showMore, setShowMore] = useState(false); // State for toggling description
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -124,17 +107,16 @@ function DetailScreen({ route }) {
       if (matchedCategory) {
         setModalCategory(matchedCategory);
         setCategoryModalVisible(true);
-        await updateSelectedCategoryId(matchedCategory.category_id); // Update the selected category ID
+        await updateSelectedCategoryId(matchedCategory.category_id);
       }
     } else {
       setSelectedServiceType(item);
-      await updateSelectedCategoryId(matchedCategory.category_id); // Update the selected category ID
+      await updateSelectedCategoryId(matchedCategory.category_id);
     }
     lastPress = time;
   };
 
   const updateSelectedCategoryId = async (categoryId) => {
-    console.log("categoryId", categoryId);
     setSelectedCategoryId(categoryId);
   };
 
@@ -245,7 +227,7 @@ function DetailScreen({ route }) {
   };
 
   const renderBadge = ({ item }) => {
-    const badge = getBadgeDetails(item);
+    const badge = getBadgeDetails(item, translations); // Pass translations to getBadgeDetails
     if (!badge) return null;
 
     return (
@@ -298,7 +280,6 @@ function DetailScreen({ route }) {
   const handleBookNow = async () => {
     setShowSuccess(false);
     const formData = new FormData();
-    console.log("selectedCategoryId", selectedCategoryId);
     const selectedSlot = slots.find(
       (slot) => slot.key.slotId === selectedSlotId
     );
@@ -351,9 +332,7 @@ function DetailScreen({ route }) {
           },
         }
       );
-      console.log("Booking confirmation response", response);
       if (response.status === 201) {
-        console.log("Booking successful");
         setShowSuccess(false);
         const selectedServiceTypes =
           response.data.payload.selectedServiceTypes || [];
@@ -371,7 +350,7 @@ function DetailScreen({ route }) {
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: "Business Details",
+      headerTitle: translations.BusinessDetails,
       headerTitleStyle: {
         fontWeight: "bold",
         fontSize: 24,
@@ -390,7 +369,7 @@ function DetailScreen({ route }) {
         />
       ),
     });
-  }, [navigation]);
+  }, [navigation, translations]);
 
   const onDayPress = (day) => {
     fetchSlots(day);
@@ -462,7 +441,7 @@ function DetailScreen({ route }) {
   const imageUrls = prepareImageUrls();
   return (
     <View style={styles.container}>
-      <Header title={"Business Details"} />
+      <Header title={translations.businessDetails} />
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{ alignItems: "center" }}
@@ -497,11 +476,34 @@ function DetailScreen({ route }) {
             </Text>
           </View>
 
-          <Text style={styles.DescText}>{business.yelpBusiness.details}</Text>
+          {showMore ? (
+            <Text style={styles.DescText}>
+              {business.yelpBusiness.details}
+              <Text
+                style={{ color: theme3.primaryColor }}
+                onPress={() => setShowMore(false)}
+              >
+                {" "}
+                {translations.readLess} {/* Use translation for "Read Less" */}
+              </Text>
+            </Text>
+          ) : (
+            <Text style={styles.DescText}>
+              {`${business.yelpBusiness.details.slice(0, 100)}...`}
+              <Text
+                style={{ color: theme3.primaryColor }}
+                onPress={() => setShowMore(true)}
+              >
+                {" "}
+                {translations.readMore} {/* Use translation for "Read More" */}
+              </Text>
+            </Text>
+          )}
+
           <Text
             style={[styles.mostPopularName, { fontSize: 14, marginLeft: 0 }]}
           >
-            Achievements
+            {translations.Achievements}
           </Text>
           {business.yelpBusiness.badges &&
           business.yelpBusiness.badges.length > 0 ? (
@@ -513,7 +515,9 @@ function DetailScreen({ route }) {
               showsHorizontalScrollIndicator={false}
             />
           ) : (
-            <Text style={styles.noSlotsText}>No badges available.</Text>
+            <Text style={styles.noSlotsText}>
+              {translations.noBadgesAvailable}
+            </Text>
           )}
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
@@ -557,7 +561,8 @@ function DetailScreen({ route }) {
                   color={theme3.primaryColor}
                 />
                 <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                  {metersToMiles(business.yelpBusiness.distance)} miles
+                  {metersToMiles(business.yelpBusiness.distance)}{" "}
+                  {translations.miles}
                 </Text>
               </View>
 
@@ -570,7 +575,7 @@ function DetailScreen({ route }) {
                     onPress={() => handleChatButtonPress(business.yelpBusiness)}
                   >
                     <Text style={[styles.DescText, { marginLeft: 0 }]}>
-                      Chat Now
+                      {translations.chatNow}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -598,7 +603,7 @@ function DetailScreen({ route }) {
                   color={theme3.primaryColor}
                 />
                 <Text style={[styles.mostPopularCity, { marginTop: 0 }]}>
-                  Directions
+                  {translations.directions}
                 </Text>
               </TouchableOpacity>
               {business.yelpBusinessDeal && (
@@ -610,7 +615,7 @@ function DetailScreen({ route }) {
                 >
                   <DealIcons />
                   <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                    Deals
+                    {translations.deals}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -629,12 +634,11 @@ function DetailScreen({ route }) {
           <Text
             style={[styles.mostPopularName, { fontSize: 14, marginLeft: 0 }]}
           >
-            Categories
+            {translations.categories}
           </Text>
           {slots.length === 0 || selectedSlotId === null ? (
             <Text style={styles.noSlotsText}>
-              No categories available. Please select a slot or wait until slots
-              are available.
+              {translations.noCategoriesAvailable}
             </Text>
           ) : (
             <FlatList
@@ -656,35 +660,38 @@ function DetailScreen({ route }) {
 
         <View style={styles.inputContainer}>
           <View style={styles.input}>
-            <Text style={styles.label}>Job Description:</Text>
+            <Text style={styles.label}>{translations.jobDescription}</Text>
             <TextInput
               style={{ flex: 1, textAlignVertical: "top" }}
               onChangeText={setJobDescription}
               value={jobDescription}
               numberOfLines={4}
-              placeholder="Enter job description"
+              placeholder={translations.enterJobDescription}
               multiline
             />
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>Priority Status:</Text>
+          <Text style={styles.label}>{translations.priorityStatus}</Text>
           <View style={styles.radioButtonRow}>
-            {["Routine", "Flexible", "Urgent", "Emergency"].map(
-              (priority, index) => (
-                <RadioButton
-                  key={index}
-                  label={priority}
-                  value={index}
-                  onPress={() => setPriorityStatus(index)}
-                  selectedValue={priorityStatus}
-                />
-              )
-            )}
+            {[
+              translations.Routine,
+              translations.Flexible,
+              translations.Urgent,
+              translations.Emergency,
+            ].map((priority, index) => (
+              <RadioButton
+                key={index}
+                label={priority}
+                value={index}
+                onPress={() => setPriorityStatus(index)}
+                selectedValue={priorityStatus}
+              />
+            ))}
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>Attach Profiles:</Text>
+          <Text style={styles.label}>{translations.attachProfiles}</Text>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
               onPress={() => setAttachProfileModalVisible(true)}
@@ -706,7 +713,7 @@ function DetailScreen({ route }) {
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>Add Images:</Text>
+          <Text style={styles.label}>{translations.addImages}</Text>
           <View style={styles.mediaListContainer}>
             <TouchableOpacity onPress={() => pickMedia("image")}>
               <MaterialIcons
@@ -729,7 +736,7 @@ function DetailScreen({ route }) {
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>Add Videos:</Text>
+          <Text style={styles.label}>{translations.addVideos}</Text>
           <View style={styles.mediaListContainer}>
             <TouchableOpacity onPress={() => pickMedia("video")}>
               <MaterialIcons
@@ -768,7 +775,7 @@ function DetailScreen({ route }) {
             width={320}
             height={55}
             onComplete={() => handleBookNow()}
-            title="Swipe to complete"
+            title={translations.swipeToComplete}
             borderRadius={1000}
             circleBackgroundColor={theme3.secondaryColor}
             underlayContainerGradientProps={{
@@ -778,7 +785,7 @@ function DetailScreen({ route }) {
             }}
             titleStyle={{ color: "white" }}
             containerStyle={{ backgroundColor: "gray" }}
-            underlayTitle="Release to complete"
+            underlayTitle={translations.releaseToComplete}
             underlayTitleStyle={{ color: theme3.light }}
           />
         ) : (
@@ -791,7 +798,7 @@ function DetailScreen({ route }) {
               !jobDescription ||
               priorityStatus === null ||
               !profileAttached
-                ? "Complete selections to submit"
+                ? translations.completeSelections
                 : ""}
             </Text>
           </TouchableOpacity>
@@ -813,7 +820,7 @@ function DetailScreen({ route }) {
       <SuccessModal
         show={showSuccess}
         onBack={setShowSuccess}
-        title={"Booked Successfully"}
+        title={translations.bookedSuccessfully}
       />
       <CategoryDetailsModal
         visible={categoryModalVisible}

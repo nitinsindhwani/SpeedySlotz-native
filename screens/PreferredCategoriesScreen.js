@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
   Switch,
   StyleSheet,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { theme3 } from "../assets/branding/themes";
 import Header from "./GlobalComponents/Header";
@@ -17,21 +17,25 @@ import {
   deleteUserCategory,
   deleteUserCategoriesBatch,
 } from "../api/ApiCall";
-
+import { LanguageContext } from "../api/LanguageContext";
 const transformData = (flatData) => {
   const categoriesMap = {};
 
   flatData.forEach(
     ({
       categoryName,
+      categoryNameEs,
       key: { categoryId, subcategoryId, serviceTypeId },
       serviceTypeName,
+      serviceTypeNameEs,
       subcategoryName,
+      subcategoryNameEs,
     }) => {
       if (!categoriesMap[categoryName]) {
         categoriesMap[categoryName] = {
           categoryId,
           categoryName,
+          categoryNameEs,
           subcategories: {},
         };
       }
@@ -40,16 +44,17 @@ const transformData = (flatData) => {
         categoriesMap[categoryName].subcategories[subcategoryName] = {
           subcategoryId,
           subcategoryName,
+          subcategoryNameEs,
           services: [],
         };
       }
 
-      // Ensure categoryId and subcategoryId are included for each service
       categoriesMap[categoryName].subcategories[subcategoryName].services.push({
         serviceTypeId,
         serviceTypeName,
-        categoryId, // Include categoryId
-        subcategoryId, // Include subcategoryId
+        serviceTypeNameEs,
+        categoryId,
+        subcategoryId,
       });
     }
   );
@@ -62,48 +67,53 @@ const transformData = (flatData) => {
 
 const fetchCategoriesData = async () => {
   try {
-    const allCategories = await fetchCategories(); // Fetch all available categories
-
-    const transformedAllCategories = transformData(allCategories);
-
-    // Transform the determined dataset
-    return transformedAllCategories;
+    const allCategories = await fetchCategories();
+    return transformData(allCategories);
   } catch (error) {
     console.error("Failed to fetch categories:", error);
-    return []; // Return an empty array in case of any error
+    return [];
   }
 };
 
 const PreferredCategoriesScreen = () => {
   const [categories, setCategories] = useState([]);
   const [toggleStates, setToggleStates] = useState({});
+  const [userData, setUserData] = useState(null);
+  const languageContext = useContext(LanguageContext);
+  console.log("Language context in LoginScreen:", languageContext);
 
+  // Check if context is available
+  if (!languageContext) {
+    console.log("LanguageContext not available");
+    return <Text>Loading...</Text>;
+  }
+
+  const { language, translations } = languageContext;
   useEffect(() => {
     const loadData = async () => {
+      const storedUser = await getStoredUser();
+      setUserData(storedUser);
+
       const allCategoriesData = await fetchCategoriesData();
       const userCategoriesData = await fetchUserCategories();
       const transformedUserCategories = transformData(userCategoriesData);
 
       setCategories(allCategoriesData);
 
-      // Sets to track toggled names
       const toggledCategoryNames = new Set();
       const toggledSubcategoryNames = new Set();
       const toggledServiceTypeIds = new Set();
 
-      // Populate the sets based on user preferences
       transformedUserCategories.forEach((category) => {
         toggledCategoryNames.add(category.categoryName);
         category.subcategories.forEach((subcategory) => {
           toggledSubcategoryNames.add(subcategory.subcategoryName);
           subcategory.services.forEach((service) => {
-            // Now also tracking serviceTypeId for toggling
             toggledServiceTypeIds.add(service.serviceTypeId);
           });
         });
       });
 
-      // Initialize toggle states based on these sets
       const initialToggleStates = {};
       allCategoriesData.forEach((category) => {
         const categoryToggle = toggledCategoryNames.has(category.categoryName);
@@ -117,7 +127,6 @@ const PreferredCategoriesScreen = () => {
             subcategoryToggle;
 
           subcategory.services.forEach((service) => {
-            // Service toggle is based on its specific presence in the user's preferences
             const serviceToggle = toggledServiceTypeIds.has(
               service.serviceTypeId
             );
@@ -134,35 +143,61 @@ const PreferredCategoriesScreen = () => {
   }, []);
 
   const toggleItem = async (itemId, isOn, details) => {
-    const userData = await getStoredUser(); // Simulate retrieving stored user data.
+    if (!userData) {
+      console.error("User data not available");
+      return;
+    }
 
-    // Update the state for the current item.
     setToggleStates((prevState) => ({ ...prevState, [itemId]: isOn }));
 
-    if (
-      !isOn &&
-      (details.type === "category" || details.type === "subcategory")
-    ) {
-      // If a category or subcategory is turned off, gather all active services for batch deletion.
-      let servicesToDelete = [];
+    const commonData = {
+      userId: userData.user_id,
+      categoryId: details.categoryId,
+      categoryName: details.categoryName,
+      categoryNameEs: details.categoryNameEs,
+      subcategoryId: details.subcategoryId,
+      subcategoryName: details.subcategoryName,
+      subcategoryNameEs: details.subcategoryNameEs,
+      serviceTypeId: details.serviceTypeId,
+      serviceTypeName: details.serviceTypeName,
+      serviceTypeNameEs: details.serviceTypeNameEs,
+    };
 
-      if (details.type === "category") {
-        // Turn off all subcategories and their services.
-        details.subcategories.forEach((subcategory) => {
-          setToggleStates((prevState) => ({
-            ...prevState,
-            [`subcategory-${subcategory.subcategoryId}`]: false,
-          }));
-          subcategory.services.forEach((service) => {
+    if (!isOn) {
+      if (details.type === "category" || details.type === "subcategory") {
+        let servicesToDelete = [];
+        if (details.type === "category") {
+          details.subcategories.forEach((subcategory) => {
+            setToggleStates((prevState) => ({
+              ...prevState,
+              [`subcategory-${subcategory.subcategoryId}`]: false,
+            }));
+            subcategory.services.forEach((service) => {
+              if (toggleStates[`service-${service.serviceTypeId}`]) {
+                servicesToDelete.push({
+                  ...commonData,
+                  subcategoryId: subcategory.subcategoryId,
+                  subcategoryName: subcategory.subcategoryName,
+                  subcategoryNameEs: subcategory.subcategoryNameEs,
+                  serviceTypeId: service.serviceTypeId,
+                  serviceTypeName: service.serviceTypeName,
+                  serviceTypeNameEs: service.serviceTypeNameEs,
+                });
+                setToggleStates((prevState) => ({
+                  ...prevState,
+                  [`service-${service.serviceTypeId}`]: false,
+                }));
+              }
+            });
+          });
+        } else if (details.type === "subcategory") {
+          details.services.forEach((service) => {
             if (toggleStates[`service-${service.serviceTypeId}`]) {
               servicesToDelete.push({
-                userId: userData.user_id,
-                categoryId: service.categoryId, // Correct category ID for each service.
-                subcategoryId: service.subcategoryId,
+                ...commonData,
                 serviceTypeId: service.serviceTypeId,
-                categoryName: service.categoryName,
                 serviceTypeName: service.serviceTypeName,
-                subcategoryName: service.subcategoryName,
+                serviceTypeNameEs: service.serviceTypeNameEs,
               });
               setToggleStates((prevState) => ({
                 ...prevState,
@@ -170,68 +205,46 @@ const PreferredCategoriesScreen = () => {
               }));
             }
           });
-        });
-      } else if (details.type === "subcategory") {
-        // Turn off all services under the subcategory.
-        details.services.forEach((service) => {
-          if (toggleStates[`service-${service.serviceTypeId}`]) {
-            servicesToDelete.push({
-              userId: userData.user_id,
-              categoryId: service.categoryId, // Correct category ID for each service.
-              subcategoryId: service.subcategoryId,
-              serviceTypeId: service.serviceTypeId,
-              categoryName: service.categoryName,
-              serviceTypeName: service.serviceTypeName,
-              subcategoryName: service.subcategoryName,
-            });
-            setToggleStates((prevState) => ({
-              ...prevState,
-              [`service-${service.serviceTypeId}`]: false,
-            }));
-          }
-        });
+        }
+        if (servicesToDelete.length > 0) {
+          await deleteUserCategoriesBatch(servicesToDelete);
+        }
+      } else if (details.type === "service") {
+        await deleteUserCategory(commonData);
       }
-
-      // Perform batch deletion if there are services to delete.
-      if (servicesToDelete.length > 0) {
-        await deleteUserCategoriesBatch(servicesToDelete);
-      }
-    } else if (!isOn && details.type === "service") {
-      // If a single service is turned off, delete it directly.
-      const serviceToDelete = {
-        userId: userData.user_id,
-        categoryId: details.categoryId, // Ensure this references exist and are correctly passed
-        subcategoryId: details.subcategoryId,
-        serviceTypeId: details.serviceTypeId,
-        categoryName: details.categoryName,
-        serviceTypeName: details.serviceTypeName,
-        subcategoryName: details.subcategoryName,
-      };
-      await deleteUserCategory(serviceToDelete);
     } else if (isOn && details.type === "service") {
-      // If a single service is turned on, enable it.
-      const serviceToEnable = {
-        userId: userData.user_id,
-        categoryId: details.categoryId,
-        subcategoryId: details.subcategoryId,
-        serviceTypeId: details.serviceTypeId,
-        categoryName: details.categoryName,
-        serviceTypeName: details.serviceTypeName,
-        subcategoryName: details.subcategoryName,
-      };
-      await updateUserPreference(serviceToEnable);
+      await updateUserPreference(commonData);
+    }
+  };
+
+  const getDisplayName = (item, type) => {
+    switch (type) {
+      case "category":
+        return language === "es" ? item.categoryNameEs : item.categoryName;
+      case "subcategory":
+        return language === "es"
+          ? item.subcategoryNameEs
+          : item.subcategoryName;
+      case "service":
+        return language === "es"
+          ? item.serviceTypeNameEs
+          : item.serviceTypeName;
+      default:
+        return "Unknown";
     }
   };
 
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Header title="Categories" />
+        <Header title={language === "es" ? "Categorías" : "Categories"} />
         <ScrollView>
           {categories.map((category) => (
             <View key={category.categoryId} style={styles.cardWrapper}>
               <View style={styles.headingContainer}>
-                <Text style={styles.heading}>{category.categoryName}</Text>
+                <Text style={styles.heading}>
+                  {getDisplayName(category, "category")}
+                </Text>
                 <Switch
                   onValueChange={(newValue) =>
                     toggleItem(`category-${category.categoryId}`, newValue, {
@@ -250,7 +263,7 @@ const PreferredCategoriesScreen = () => {
                   >
                     <View style={styles.subcategoryHeader}>
                       <Text style={styles.subcategoryText}>
-                        {subcategory.subcategoryName}
+                        {getDisplayName(subcategory, "subcategory")}
                       </Text>
                       <Switch
                         onValueChange={(newValue) =>
@@ -260,7 +273,9 @@ const PreferredCategoriesScreen = () => {
                             {
                               type: "subcategory",
                               ...subcategory,
+                              categoryId: category.categoryId,
                               categoryName: category.categoryName,
+                              categoryNameEs: category.categoryNameEs,
                             }
                           )
                         }
@@ -278,7 +293,7 @@ const PreferredCategoriesScreen = () => {
                           style={styles.serviceWrapper}
                         >
                           <Text style={styles.serviceText}>
-                            {service.serviceTypeName}
+                            {getDisplayName(service, "service")}
                           </Text>
                           <Switch
                             onValueChange={(newValue) =>
@@ -288,8 +303,13 @@ const PreferredCategoriesScreen = () => {
                                 {
                                   type: "service",
                                   ...service,
+                                  categoryId: category.categoryId,
                                   categoryName: category.categoryName,
+                                  categoryNameEs: category.categoryNameEs,
+                                  subcategoryId: subcategory.subcategoryId,
                                   subcategoryName: subcategory.subcategoryName,
+                                  subcategoryNameEs:
+                                    subcategory.subcategoryNameEs,
                                 }
                               )
                             }

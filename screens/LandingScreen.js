@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import {
   View,
   FlatList,
@@ -18,7 +18,7 @@ import CategoryList from "../components/CategoryList";
 import BottomMenu from "../components/BottomMenu";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
-
+import { LanguageContext } from "../api/LanguageContext";
 import {
   getLocationAndCityState,
   fetchBusinessesByServiceName,
@@ -61,6 +61,7 @@ const LandingScreen = ({ route }) => {
     zipcode: "",
   });
   const [userCategories, setUserCategories] = useState([]);
+  const { translations, language } = useContext(LanguageContext);
   const [uniqueBadgeFilters, setUniqueBadgeFilters] = useState([]);
   const { user } = route.params;
   const [selectedDate, setSelectedDate] = useState(
@@ -280,7 +281,9 @@ const LandingScreen = ({ route }) => {
                 setSelectedSubcategory={setSelectedSubcategory}
                 selectedServiceTypeName={selectedServiceTypeName}
                 setSelectedServiceTypeName={setSelectedServiceTypeName}
-                rows={3} // Ensure CategoryList is updated to handle 3 rows
+                rows={3}
+                language={language}
+                translations={translations}
               />
             )}
             {ExpandCat === true && (

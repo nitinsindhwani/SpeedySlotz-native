@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import Styles from "../../assets/branding/GlobalStyles";
 import { resendVerifyEmail } from "../../api/ApiCall"; // Ensure this API function is correctly defined to handle the request
+import { LanguageContext } from "../../api/LanguageContext"; // Import LanguageContext
 
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Logo from "../../assets/newimage/Logo1.png";
@@ -25,6 +26,7 @@ const ResendEmailScreen = ({ route }) => {
   const navigation = useNavigation();
   const [message, setMessage] = useState("");
   const [messageColor, setMessageColor] = useState("red");
+  const { translations } = useContext(LanguageContext); // Use LanguageContext
 
   const handleResendEmail = async () => {
     if (!user) {
@@ -34,18 +36,14 @@ const ResendEmailScreen = ({ route }) => {
     try {
       const response = await resendVerifyEmail(user);
       if (response.status === 200 && response.data === "EMAIL_SENT") {
-        setMessage(
-          "Verification email has been resent successfully. Please check your inbox."
-        );
+        setMessage(translations.emailSentSuccess);
         setMessageColor("green");
       } else {
-        setMessage(
-          "Failed to resend verification email. Please try again later."
-        );
+        setMessage(translations.emailSentFailed);
         setMessageColor("red");
       }
     } catch (error) {
-      setMessage("An unexpected error occurred. Please try again later.");
+      setMessage(translations.unexpectedError);
       setMessageColor("red");
     }
   };
@@ -61,13 +59,12 @@ const ResendEmailScreen = ({ route }) => {
       <Image source={Logo} style={styles.logo} />
 
       <View style={styles.content}>
-        <Text style={styles.heading}>Verify Your Email</Text>
+        <Text style={styles.heading}>{translations.verifyEmail}</Text>
         <Text style={styles.description}>
-          Please check your email for a link to verify your email address. Once
-          verified, you will be able to continue.
+          {translations.verifyEmailDescription}
         </Text>
         <TouchableOpacity onPress={handleResendEmail} style={styles.button}>
-          <Text style={styles.buttonText}>Resend Email</Text>
+          <Text style={styles.buttonText}>{translations.resendEmail}</Text>
         </TouchableOpacity>
         {message ? (
           <Text style={{ color: messageColor, marginTop: 20 }}>{message}</Text>
@@ -82,11 +79,11 @@ const ResendEmailScreen = ({ route }) => {
           paddingHorizontal: 20,
         }}
       >
-        By resending, you agree to our Terms and Privacy Policy.
+        {translations.resendAgreement}
       </Text>
 
       <Text style={{ color: theme3.LightTxtClr, marginTop: 20 }}>
-        Already verified?{" "}
+        {translations.alreadyVerified}{" "}
         <Text
           onPress={() => navigation.navigate("LoginScreen")}
           style={{
@@ -95,12 +92,12 @@ const ResendEmailScreen = ({ route }) => {
             marginLeft: 10,
           }}
         >
-          Login
+          {translations.login}
         </Text>
       </Text>
 
       <Text style={{ color: theme3.LightTxtClr, marginTop: 10 }}>
-        Don't have an account?{" "}
+        {translations.noAccount}{" "}
         <Text
           onPress={() => navigation.navigate("SignUpScreen")}
           style={{
@@ -109,7 +106,7 @@ const ResendEmailScreen = ({ route }) => {
             marginLeft: 10,
           }}
         >
-          Sign up
+          {translations.signUp}
         </Text>
       </Text>
     </ImageBackground>
@@ -126,8 +123,8 @@ const styles = StyleSheet.create({
   },
   topView: {
     position: "absolute",
-    top: 40, // Adjust this value as needed to position correctly on the screen
-    left: 20, // Adjust this value to position the back button
+    top: 40,
+    left: 20,
   },
   logo: {
     width: 160,

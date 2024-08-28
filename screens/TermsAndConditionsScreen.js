@@ -1,67 +1,46 @@
-// TermsAndConditionsScreen.js
 import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView,View } from "react-native";
+import { ScrollView, Text, StyleSheet, SafeAreaView, View } from "react-native";
 import Header from "./GlobalComponents/Header";
+import { useContext } from "react";
+import { LanguageContext } from "../api/LanguageContext";
 
 const TermsAndConditionsScreen = () => {
+  const { translations } = useContext(LanguageContext);
+
   return (
     <View style={styles.safeArea}>
-      <Header title={"Terms and Conditions"} />
+      <Header title={translations.termsAndConditionsTitle} />
       <ScrollView style={styles.container}>
-        <Text style={styles.heading}>Terms and Conditions</Text>
+        <Text style={styles.heading}>
+          {translations.termsAndConditionsTitle}
+        </Text>
 
-        <Section title="Introduction">
-          Welcome to www.speedyslotz.com. This app and website are provided to
-          offer a scheduling platform, allowing users across the US to discover
-          and book available slots with a variety of service providers. By
-          accessing and using our services, users agree to abide by the
-          following terms and conditions.
+        <Section title={translations.introductionTitle}>
+          {translations.introductionText}
         </Section>
 
-        <Section title="Data Collection and Use">
-          We retrieve data from Yelp to provide our users with accurate and
-          up-to-date information on various service providers. This data is
-          stored in our own database for efficient access and retrieval. We
-          respect the intellectual property rights of Yelp and other third
-          parties, and we only use this data for legitimate purposes related to
-          our services.
+        <Section title={translations.dataCollectionTitle}>
+          {translations.dataCollectionText}
         </Section>
 
-        <Section title="Booking">
-          Users can search for various service categories. Based on their
-          preferences, our system will offer available service providers and
-          their respective time slots. When a user selects a slot, they are
-          required to provide specific profile details. This information helps
-          the provider gain a better understanding of the booking and allows
-          them to confirm it accordingly.
+        <Section title={translations.bookingTitle}>
+          {translations.bookingText}
         </Section>
 
-        <Section title="Provider Slot Management">
-          Service providers are responsible for opening up slots for end-users.
-          We encourage providers to ensure the accuracy and availability of
-          these slots. Once a slot is booked, it's the provider's responsibility
-          to honor that booking or communicate any changes directly to the user.
+        <Section title={translations.providerSlotManagementTitle}>
+          {translations.providerSlotManagementText}
         </Section>
 
-        <Section title="Authentication">
-          We use the Keycloak server to provide authentication and authorization
-          for our services. This ensures that user data is secured and only
-          accessible by authorized individuals. Users are responsible for
-          keeping their login credentials confidential.
+        <Section title={translations.authenticationTitle}>
+          {translations.authenticationText}
         </Section>
 
-        <Section title="Changes to Terms">
-          We may update our Terms and Conditions from time to time to reflect
-          changes in our services, legal and regulatory requirements, or for
-          other reasons. We encourage users to regularly review our terms to
-          stay informed. Continued use of our services after changes have been
-          made implies acceptance of those changes.
+        <Section title={translations.changesToTermsTitle}>
+          {translations.changesToTermsText}
         </Section>
 
-        <Section title="Contact Us">
-          If you have any questions or concerns about these Terms, please
-          contact us at info@speedyslotz.com. We are always available to address
-          your concerns and provide clarity where needed.
+        <Section title={translations.contactUsTitle}>
+          {translations.contactUsText}
         </Section>
       </ScrollView>
     </View>

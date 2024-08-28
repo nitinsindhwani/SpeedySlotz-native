@@ -13,31 +13,28 @@ import { AirbnbRating } from "react-native-ratings";
 import { Linking } from "react-native";
 import MapIcon from "react-native-vector-icons/FontAwesome5";
 import DealIcon from "react-native-vector-icons/FontAwesome5";
-import HeartIcon from "react-native-vector-icons/AntDesign"; // Add this import for the heart icon
-import { ThemeContext, ThemeProvider } from "./ThemeContext";
-import { translation } from "../assets/translations/translations";
+import HeartIcon from "react-native-vector-icons/AntDesign";
+import { ThemeContext } from "./ThemeContext";
+import { LanguageContext } from "../api/LanguageContext";
 import { getStoredToken } from "../api/ApiCall";
 import { baseApiUrl } from "../api/Config";
 import MainCardDesign from "../screens/GlobalComponents/MainCardDesign";
-import { theme1, theme3 } from "../assets/branding/themes";
 import NoDataFound from "../screens/GlobalComponents/NoDataFound";
 import InLineLoader from "../screens/GlobalComponents/InLineLoader";
+
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
-const defaultImageUrl = require("../assets/images/defaultImage.png");
-const metersToMiles = (meters) => {
-  const miles = meters * 0.000621371;
-  return miles.toFixed(2);
-};
 
 const FavoriteBusinesList = ({ fetchedBusinesses, navigation }) => {
+  const { currentTheme } = useContext(ThemeContext);
+  const { translations } = useContext(LanguageContext);
 
   const initialFavorites = fetchedBusinesses.reduce((acc, business) => {
-    acc[business?.yelpBusiness?.id] = business.favorite || false; // Default to false if 'favorite' is not provided
+    acc[business?.yelpBusiness?.id] = business.favorite || false;
     return acc;
   }, {});
+
   const [favorites, setFavorites] = useState(initialFavorites);
-  const { currentTheme } = useContext(ThemeContext);
   const [loader, setLoader] = useState(true);
   const styles = getStyles(currentTheme);
 
@@ -52,13 +49,12 @@ const FavoriteBusinesList = ({ fetchedBusinesses, navigation }) => {
   const addFavorite = async (itemId) => {
     try {
       const secureToken = await getStoredToken();
-
       const headers = {
         Authorization: `Bearer ${secureToken}`,
       };
 
       await axios.post(
-        baseApiUrl + "/api/v1/favorites",
+        `${baseApiUrl}/api/v1/favorites`,
         { businessId: itemId },
         { headers }
       );
@@ -68,9 +64,10 @@ const FavoriteBusinesList = ({ fetchedBusinesses, navigation }) => {
         [itemId]: true,
       }));
     } catch (error) {
-      console.error("Failed to add favorite:", error);
+      console.error(`${translations.failedToAddFavorite} ${error}`);
     }
   };
+
   useEffect(() => {
     setLoader(false);
   }, [favorites]);
@@ -82,7 +79,7 @@ const FavoriteBusinesList = ({ fetchedBusinesses, navigation }) => {
         Authorization: `Bearer ${secureToken}`,
       };
 
-      await axios.delete(baseApiUrl + "/api/v1/favorites", {
+      await axios.delete(`${baseApiUrl}/api/v1/favorites`, {
         data: { businessId: itemId },
         headers,
       });
@@ -92,26 +89,23 @@ const FavoriteBusinesList = ({ fetchedBusinesses, navigation }) => {
         [itemId]: false,
       }));
     } catch (error) {
-      console.error("Failed to remove favorite:", error);
+      console.error(`${translations.failedToRemoveFavorite} ${error}`);
     }
   };
 
   return (
     <View style={styles.mostPopular}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {fetchedBusinesses && fetchedBusinesses?.length === 0 ? (
+        {fetchedBusinesses && fetchedBusinesses.length === 0 ? (
           loader === false ? (
-            <NoDataFound />
+            <NoDataFound message={translations.noDataFound} />
           ) : (
-            <InLineLoader />
+            <InLineLoader message={translations.loading} />
           )
         ) : (
           fetchedBusinesses &&
           fetchedBusinesses.map((item) => (
-            <MainCardDesign
-              key={item?.yelpBusiness?.id} // Ensure uniqueness
-              business={item}
-            />
+            <MainCardDesign key={item?.yelpBusiness?.id} business={item} />
           ))
         )}
       </ScrollView>
@@ -124,13 +118,13 @@ const getStyles = (currentTheme) =>
     mostPopular: {
       flex: 1,
       padding: 10,
-      backgroundColor: "#f4f4f4", // Blue background color
+      backgroundColor: "#f4f4f4",
     },
     sectionHeading: {
       fontSize: 20,
       fontWeight: "bold",
       marginBottom: 16,
-      color: currentTheme.whiteColor, // White text color
+      color: currentTheme.whiteColor,
     },
     mostPopularItem: {
       marginBottom: 16,
@@ -140,16 +134,16 @@ const getStyles = (currentTheme) =>
       elevation: 4,
       shadowOpacity: 4,
       borderRadius: 10,
-      backgroundColor: theme3.GlobalBg, // White background color
+      backgroundColor: currentTheme.GlobalBg,
     },
     favoriteIconContainer: {
       position: "absolute",
-      top: 20, // Changed this
-      right: 20, // Changed this
+      top: 20,
+      right: 20,
       zIndex: 2,
-      padding: 5, // Added this to make it touch-friendly
-      borderRadius: 20, // Added this for a rounded touch area
-      backgroundColor: "rgba(255, 255, 255, 0.5)", // Added a light background for visibility
+      padding: 5,
+      borderRadius: 20,
+      backgroundColor: "rgba(255, 255, 255, 0.5)",
     },
     mostPopularImage: {
       width: "100%",
@@ -161,19 +155,19 @@ const getStyles = (currentTheme) =>
     mostPopularName: {
       fontSize: 16,
       fontWeight: "bold",
-      color: currentTheme.primaryColor, // Blue text color
+      color: currentTheme.primaryColor,
     },
     mostPopularCity: {
       fontSize: 14,
-      color: currentTheme.primaryColor, // Gray text color
+      color: currentTheme.primaryColor,
     },
     mostPopularDistance: {
       fontSize: 12,
-      color: currentTheme.primaryColor, // Gray text color
+      color: currentTheme.primaryColor,
     },
     mostPopularPhone: {
       fontSize: 12,
-      color: currentTheme.primaryColor, // Gray text color
+      color: currentTheme.primaryColor,
     },
     ratingContainer: {
       flex: 1,
@@ -187,19 +181,19 @@ const getStyles = (currentTheme) =>
     bookButton: {
       flex: 1,
       paddingVertical: 8,
-      marginLeft: 5, // Added this
+      marginLeft: 5,
       borderRadius: 5,
       backgroundColor: currentTheme.primaryColor,
       alignItems: "center",
-      elevation: 3, // Added shadow for Android
-      shadowOffset: { width: 0, height: 1 }, // Shadow for iOS
+      elevation: 3,
+      shadowOffset: { width: 0, height: 1 },
       shadowRadius: 2,
       shadowOpacity: 0.2,
     },
     bookButtonText: {
       fontSize: 16,
       fontWeight: "bold",
-      color: currentTheme.whiteColor, // White text color
+      color: currentTheme.whiteColor,
     },
     extraInfoContainer: {
       flexDirection: "row",
@@ -212,7 +206,7 @@ const getStyles = (currentTheme) =>
     },
     dealText: {
       marginLeft: 5,
-      color: currentTheme.primaryColor, // Gray text color
+      color: currentTheme.primaryColor,
     },
     mapIconContainer: {
       flexDirection: "row",
@@ -220,27 +214,26 @@ const getStyles = (currentTheme) =>
     },
     mapText: {
       marginLeft: 5,
-      color: currentTheme.primaryColor, // Gray text color
+      color: currentTheme.primaryColor,
     },
     callButton: {
       flex: 1,
       paddingVertical: 8,
-      marginRight: 5, // Added this
+      marginRight: 5,
       borderRadius: 5,
       backgroundColor: "#FF0000",
       alignItems: "center",
-      elevation: 3, // Added shadow for Android
-      shadowOffset: { width: 0, height: 1 }, // Shadow for iOS
+      elevation: 3,
+      shadowOffset: { width: 0, height: 1 },
       shadowRadius: 2,
       shadowOpacity: 0.2,
     },
     callButtonText: {
       fontSize: 16,
       fontWeight: "bold",
-      color: "#FFFFFF", // Change this to the color you want
+      color: "#FFFFFF",
     },
     buttonsContainer: {
-      // New style for the button container
       flexDirection: "row",
       justifyContent: "space-between",
       marginTop: 10,
@@ -251,7 +244,7 @@ const getStyles = (currentTheme) =>
       alignItems: "center",
       padding: 50,
       borderRadius: 10,
-      backgroundColor: "rgba(255, 165, 0, 0.1)", // Light orange background
+      backgroundColor: "rgba(255, 165, 0, 0.1)",
       marginVertical: 20,
       marginHorizontal: 5,
       shadowColor: "#000",

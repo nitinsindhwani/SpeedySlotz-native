@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../../assets/branding/themes";
 import AvailableSlots from "../../assets/data/Availableslots";
 import formatTime from "../CallFuncGlobal/formatTime";
+import { LanguageContext } from "../../api/LanguageContext"; // Import your translation context
 
 const WindowWidth = Dimensions.get("window").width;
 
@@ -19,11 +20,12 @@ function CalenderCustom({
   SlotAvailable,
   selectedSlotId,
   handleSlotPress,
-  customContainerStyle, // New prop for custom styling
+  customContainerStyle,
 }) {
+  const { translations } = useContext(LanguageContext); // Use translation context
   const [selectedDate, setSelectedDate] = useState(null);
   const [dates, setDates] = useState([]);
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth()); // Initial month index
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
   const sortedSlots = SlotAvailable.sort((a, b) => {
     const timeA = a.startTime.split(":");
@@ -35,20 +37,19 @@ function CalenderCustom({
     return minutesA - minutesB;
   });
 
-  function SpecialityListII({ item }) {
-    return (
-      <View style={styles.CatList}>
-        <Text style={{ color: theme3.light, marginLeft: 5 }}>{item.title}</Text>
-      </View>
-    );
-  }
-
   useEffect(() => {
     const currentDate = new Date();
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const days = [
+      translations.sunday,
+      translations.monday,
+      translations.tuesday,
+      translations.wednesday,
+      translations.thursday,
+      translations.friday,
+      translations.saturday,
+    ];
     const currentDayIndex = currentDate.getDay();
 
-    // Highlight current date by default if no date is already selected
     if (!selectedDate) {
       setSelectedDate(currentDate);
     }
@@ -63,14 +64,13 @@ function CalenderCustom({
       });
     }
     setDates(nextSevenDays);
-  }, [currentMonth, selectedDate]);
+  }, [currentMonth, selectedDate, translations]);
 
   const toggleDate = (date) => {
     setSelectedDate(date);
     const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
       .toString()
       .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-    // console.log("Selected Date:", formattedDate);
     setSelectedDay(formattedDate);
   };
 
@@ -109,7 +109,10 @@ function CalenderCustom({
         <TouchableOpacity onPress={switchToPreviousMonth}>
           <Ionicons name="arrow-back" size={24} color={theme3.secondaryColor} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 18 }}>{getMonthName(currentMonth)}</Text>
+        <Text style={{ fontSize: 18 }}>
+          {translations[getMonthName(currentMonth)]}
+          {/* Translate the month name */}
+        </Text>
         <TouchableOpacity onPress={switchToNextMonth}>
           <Ionicons
             name="arrow-forward"
@@ -163,7 +166,7 @@ function CalenderCustom({
           <Text
             style={[styles.mostPopularName, { fontSize: 14, marginLeft: 0 }]}
           >
-            Availability
+            {translations.availability}
           </Text>
           <FlatList
             data={sortedSlots}
@@ -177,7 +180,7 @@ function CalenderCustom({
         </>
       ) : (
         <Text style={[styles.mostPopularName, { fontSize: 14, marginLeft: 0 }]}>
-          No Slots Available Try With Another Date
+          {translations.noSlotsAvailable}
         </Text>
       )}
     </View>
@@ -186,18 +189,18 @@ function CalenderCustom({
 
 const getMonthName = (monthIndex) => {
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
   ];
   return monthNames[monthIndex];
 };

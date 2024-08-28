@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -11,25 +11,30 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Styles from "../../assets/branding/GlobalStyles";
+import { LanguageContext } from "../../api/LanguageContext"; // Import LanguageContext
+import { Ionicons } from "@expo/vector-icons";
+import Logo from "../../assets/newimage/Logo1.png";
+
 const ResetPasswordScreen = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigation = useNavigation();
+  const { translations } = useContext(LanguageContext); // Use LanguageContext
 
   const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
-      setMessage("Passwords do not match.");
+      setMessage(translations.passwordsDoNotMatch);
       return;
     }
 
     try {
       // Here you would typically call your API to reset the password
-  
+
       navigation.navigate("Login"); // Navigate to login upon success
-      setMessage("Your password has been successfully reset.");
+      setMessage(translations.passwordResetSuccess);
     } catch (error) {
-      setMessage("Failed to reset password. Please try again.");
+      setMessage(translations.passwordResetFailed);
     }
   };
 
@@ -47,26 +52,24 @@ const ResetPasswordScreen = () => {
       </View>
       <View style={styles.content}>
         <Image source={Logo} style={styles.logo} />
-        <Text style={styles.heading}>Reset Your Password</Text>
-        <Text style={styles.description}>
-          Please enter your new password and confirm it.
-        </Text>
+        <Text style={styles.heading}>{translations.resetYourPassword}</Text>
+        <Text style={styles.description}>{translations.enterNewPassword}</Text>
         <TextInput
           style={styles.input}
           onChangeText={setNewPassword}
           value={newPassword}
-          placeholder="New Password"
+          placeholder={translations.newPassword}
           secureTextEntry
         />
         <TextInput
           style={styles.input}
           onChangeText={setConfirmPassword}
           value={confirmPassword}
-          placeholder="Confirm Password"
+          placeholder={translations.confirmPassword}
           secureTextEntry
         />
         <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-          <Text style={styles.buttonText}>Reset Password</Text>
+          <Text style={styles.buttonText}>{translations.resetPassword}</Text>
         </TouchableOpacity>
         {message && <Text style={styles.message}>{message}</Text>}
       </View>
@@ -86,9 +89,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  banner: {
-    width: 300,
-    height: 200,
+  logo: {
+    width: 160,
+    height: 160,
     marginBottom: 20,
   },
   heading: {

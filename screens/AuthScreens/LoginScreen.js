@@ -12,24 +12,23 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
-import { loginUser } from "../../api/ApiCall";
+import { loginUser, updatePushToken } from "../../api/ApiCall";
+import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
-
-import FbLogin from "../../assets/newimage/fbLogin.png";
-import Line from "../../assets/newimage/Line.png";
-import googleIcon from "../../assets/newimage/googlIcon.png";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Styles from "../../assets/branding/GlobalStyles";
+import { theme3 } from "../../assets/branding/themes";
+import { PushNotification } from "../../api/PushNotification";
+import LoadingModal from "../GlobalComponents/LoadingModal";
+import ErrorAlert from "../GlobalComponents/ErrorAlert";
+import { LanguageContext } from "../../api/LanguageContext"; // Import LanguageContext
+import * as Notifications from "expo-notifications"; // Import Notifications from expo-notifications
 
 const WindowWidth = Dimensions.get("window").width;
 import eye from "../../assets/newimage/eye.png";
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Logo from "../../assets/newimage/Logo1.png";
-
-import { theme3 } from "../../assets/branding/themes";
-import { PushNotification } from "../../api/PushNotification";
-import LoadingModal from "../GlobalComponents/LoadingModal";
-import ErrorAlert from "../GlobalComponents/ErrorAlert";
+import Line from "../../assets/newimage/Line.png";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -44,17 +43,18 @@ const LoginScreen = () => {
     "Invalid username or password. Please check your credentials and try again."
   );
   const navigation = useNavigation();
+  const { language, translations } = useContext(LanguageContext); // Use LanguageContext
 
   useEffect(() => {
     PushNotification();
-  }, []);
+  }, [language, translations]);
 
   const passwordPolicy = [
-    "At least 8 characters long",
-    "One uppercase letter",
-    "One lowercase letter",
-    "One number",
-    "One special character (@, $, !, %, *, ?, &)",
+    translations.passwordPolicyLength,
+    translations.passwordPolicyUppercase,
+    translations.passwordPolicyLowercase,
+    translations.passwordPolicyNumber,
+    translations.passwordPolicySpecial,
   ];
 
   const passwordRegex =
@@ -64,23 +64,56 @@ const LoginScreen = () => {
     let hasError = false;
 
     if (!username) {
-      setUsernameError("Username is required.");
+      setUsernameError(translations.usernameRequired);
       hasError = true;
     } else {
       setUsernameError("");
     }
 
     if (!password) {
-      setPasswordError("Password is required.");
+      setPasswordError(translations.passwordRequired);
       hasError = true;
     } else if (!passwordRegex.test(password)) {
-      setPasswordError("Password does not meet the required criteria.");
+      setPasswordError(translations.passwordCriteria);
       hasError = true;
     } else {
       setPasswordError("");
     }
 
     return !hasError;
+  };
+
+  const checkAndUpdatePushToken = async (user) => {
+    try {
+      const currentPushToken = await PushNotification();
+      const storedPushToken = await SecureStore.getItemAsync(
+        "push_notification"
+      );
+
+      if (
+        currentPushToken &&
+        (!user.push_notification || user.push_notification !== currentPushToken)
+      ) {
+        const updateResponse = await updatePushToken(
+          user.username,
+          currentPushToken
+        );
+        if (updateResponse.status === 200) {
+          console.log("Push token updated successfully");
+          // Update the stored token if it's different
+          if (storedPushToken !== currentPushToken) {
+            await SecureStore.setItemAsync(
+              "push_notification",
+              currentPushToken
+            );
+          }
+        } else {
+          console.error("Failed to update push token");
+        }
+      }
+    } catch (error) {
+      console.error("Error checking/updating push token:", error);
+    }
   };
 
   const handleLogin = async () => {
@@ -93,6 +126,7 @@ const LoginScreen = () => {
       const response = await loginUser(username, password);
       console.log(response);
       if (response.success) {
+        await checkAndUpdatePushToken(response.payload);
         if (response.payload.email_verified) {
           navigation.navigate("BottomNavigation", { user: response.payload });
         } else {
@@ -102,7 +136,7 @@ const LoginScreen = () => {
         }
       } else {
         setErrorModal(true);
-        setAlertBody("An error occurred. Please try again.");
+        setAlertBody(translations.loginError);
       }
     } catch (error) {
       console.error("Login error:", error.message);
@@ -135,13 +169,13 @@ const LoginScreen = () => {
 
       <Image source={Logo} style={{ width: 160, height: 160 ,marginTop:20}} />
 
-      <View style={[Styles.TopView, { marginTop: 50 }]}>
-        <Text style={styles.Text}>Username</Text>
+      <View style={[Styles.TopView, { marginTop: -20 }]}>
+        <Text style={styles.Text}>{translations.username}</Text>
 
         <View style={Styles.InputView}>
           <TextInput
             style={{ marginLeft: 13, flex: 1 }}
-            placeholder="Username"
+            placeholder={translations.username}
             value={username}
             onChangeText={(e) => setUsername(e)}
             autoCapitalize="none"
@@ -154,20 +188,20 @@ const LoginScreen = () => {
         )}
 
         <View style={styles.PasswordTextView}>
-          <Text style={[styles.Text]}>Password</Text>
+          <Text style={[styles.Text]}>{translations.password}</Text>
 
           <Text
             onPress={() => handleForgotPassword()}
             style={[styles.Text, { color: theme3.primaryColor }]}
           >
-            Forgot Password?
+            {translations.forgotPassword}
           </Text>
         </View>
 
         <View style={[Styles.InputView]}>
           <TextInput
             style={{ marginLeft: 13, flex: 1 }}
-            placeholder="Password"
+            placeholder={translations.password}
             value={password}
             onChangeText={(e) => setPassword(e)}
             secureTextEntry={securetext}
@@ -204,19 +238,19 @@ const LoginScreen = () => {
       </View>
 
       <TouchableOpacity onPress={handleLogin} style={Styles.LoginBtn}>
-        <Text style={Styles.LoginTxt}>Login</Text>
+        <Text style={Styles.LoginTxt}>{translations.loginButton}</Text>
       </TouchableOpacity>
 
       <View style={{ flexDirection: "row", alignItems: "center",marginTop:100 }}>
         <Image source={Line} style={{ width: WindowWidth / 2.9, height: 2 }} />
         <Text style={{ color: "#4C4C4C", marginLeft: 10, marginRight: 10 }}>
-          Or
+          {translations.or}
         </Text>
         <Image source={Line} style={{ width: WindowWidth / 2.6, height: 2 }} />
       </View>
 
-      <Text style={{ color: theme3.LightTxtClr,position:'absolute',bottom:50}}>
-        Don{"'"}t have an account?{" "}
+      <Text style={{ color: theme3.LightTxtClr, marginTop: 20 }}>
+        {translations.dontHaveAccount}{" "}
         <Text
           onPress={() => navigation.navigate("SignUpDecider")}
           style={{
@@ -225,7 +259,7 @@ const LoginScreen = () => {
             marginLeft: 10,
           }}
         >
-          Sign up
+          {translations.signUp}
         </Text>
       </Text>
 
@@ -233,8 +267,8 @@ const LoginScreen = () => {
       <ErrorAlert
         show={errorModal}
         onAction={onErrorAction}
-        title={AlertTitle}
-        body={AlertBody}
+        title={translations.errorLoginTitle}
+        body={translations.errorLoginBody}
       />
     </ImageBackground>
   );

@@ -1,53 +1,34 @@
 // AboutUsScreen.js
-import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView, View } from "react-native";
+import React, { useContext } from "react";
+import { ScrollView, Text, StyleSheet, View } from "react-native";
 import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
+import { LanguageContext } from "../api/LanguageContext"; // Import LanguageContext
 
 const AboutUsScreen = () => {
+  const { translations } = useContext(LanguageContext); // Use LanguageContext
+
   return (
     <View style={styles.safeArea}>
-      <Header title={"About SpeedySlotz"} />
+      <Header title={translations.aboutSpeedySlotz} />
 
       <ScrollView style={styles.container}>
-        <Text style={styles.heading}>About Us</Text>
+        <Text style={styles.heading}>{translations.aboutUsHeading}</Text>
 
-        <Section title="Our Beginning">
-          It all began with a simple, personal frustration. As a software
-          developer, technology has always been a part of my life. But when it
-          came to finding a last-minute grooming appointment for Elmo, our
-          6-month-old mini Golden Doodle, technology felt distant. Despite being
-          newly vaccinated against rabies and desperately needing a trim, I
-          found myself on a seemingly endless call loop with various groomers,
-          only to be met with constant rejections. With hair covering his eyes
-          and affecting his comfort, it was clear Elmo couldn't wait. It struck
-          me: there should be a better way. A platform that not only benefits
-          people like me, looking for quick appointments but also addresses a
-          pressing issue faced by service providers - the problem of same-day
-          cancellations and the ensuing loss of business.
+        <Section title={translations.ourBeginningTitle}>
+          {translations.ourBeginningText}
         </Section>
 
-        <Section title="A Solution For All">
-          Cancellations, especially last minute, are detrimental to businesses.
-          Filling those slots becomes another challenge, often involving frantic
-          calls to existing clients who might not always be available or
-          interested in such short notice. This is where SpeedySlotz bridges the
-          gap. Our platform provides a hassle-free solution where service
-          providers can open specific slots, and users can instantly book them.
-          A win-win for everyone involved.
+        <Section title={translations.solutionForAllTitle}>
+          {translations.solutionForAllText}
         </Section>
 
-        <Section title="Our Vision">
-          At SpeedySlotz, we aim to streamline and simplify the booking process
-          for both customers and service providers. We envision a world where
-          getting an appointment is just a click away, saving time, energy, and
-          reducing lost opportunities for businesses. Our journey with Elmo was
-          just the beginning, and we're excited to be part of yours.
+        <Section title={translations.ourVisionTitle}>
+          {translations.ourVisionText}
         </Section>
 
-        <Section title="Contact Us">
-          To learn more or for any queries, feel free to reach out to us at
-          info@speedyslotz.com. We'd love to hear from you!
+        <Section title={translations.contactUsTitle}>
+          {translations.contactUsText}
         </Section>
       </ScrollView>
     </View>

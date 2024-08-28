@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -12,29 +12,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../../assets/branding/themes";
 import ErrorAlert from "../GlobalComponents/ErrorAlert";
 import axios from "axios";
-import { baseApiUrl } from "../../api/Config"; // Assuming this contains your API base URL
+import { baseApiUrl } from "../../api/Config";
 import { getStoredToken } from "../../api/ApiCall";
 import { v4 as uuidv4 } from "uuid";
 import { getBadgeDetails } from "../../components/BadgeInfo";
 import Header from "../GlobalComponents/Header";
-
-// Prepare the badges array dynamically from getBadgeDetails
-const badgeCodes = [
-  "TOPR",
-  "LOWP",
-  "PUNC",
-  "FAIR",
-  "CSTF",
-  "SPDS",
-  "COMM",
-  "CMKP",
-  "EMRG",
-];
-
-const badges = badgeCodes.map((code) => ({
-  ...getBadgeDetails(code),
-  code,
-}));
+import { LanguageContext } from "../../api/LanguageContext"; // Import LanguageContext
 
 export default function RemarkModal({
   modalVisible,
@@ -44,6 +27,26 @@ export default function RemarkModal({
   businessId,
   onReviewSubmit,
 }) {
+  const { translations } = useContext(LanguageContext); // Access translations from context
+
+  // Prepare the badges array dynamically from getBadgeDetails
+  const badgeCodes = [
+    "TOPR",
+    "LOWP",
+    "PUNC",
+    "FAIR",
+    "CSTF",
+    "SPDS",
+    "COMM",
+    "CMKP",
+    "EMRG",
+  ];
+
+  const badges = badgeCodes.map((code) => ({
+    ...getBadgeDetails(code, translations),
+    code,
+  }));
+
   const [selectedBadge, setSelectedBadge] = useState(null);
   const [positiveRatedBadges, setPositiveRatedBadges] = useState([]);
   const [negativeRatedBadges, setNegativeRatedBadges] = useState([]);
@@ -68,20 +71,16 @@ export default function RemarkModal({
     if (rating) {
       // Thumbs Up
       if (positiveRatedBadges.includes(badgeCode)) {
-        // If already in positive, remove it (toggle off)
         updatedPositive = updatedPositive.filter((b) => b !== badgeCode);
       } else {
-        // Add to positive and remove from negative if present
         updatedPositive.push(badgeCode);
         updatedNegative = updatedNegative.filter((b) => b !== badgeCode);
       }
     } else {
       // Thumbs Down
       if (negativeRatedBadges.includes(badgeCode)) {
-        // If already in negative, remove it (toggle off)
         updatedNegative = updatedNegative.filter((b) => b !== badgeCode);
       } else {
-        // Add to negative and remove from positive if present
         updatedNegative.push(badgeCode);
         updatedPositive = updatedPositive.filter((b) => b !== badgeCode);
       }
@@ -93,9 +92,6 @@ export default function RemarkModal({
   };
 
   const submitRemarks = async () => {
-    console.log(
-      "slotId " + slotId + " userId " + userId + " businessId " + businessId
-    );
     try {
       const userToken = await getStoredToken();
       if (!userToken) {
@@ -107,7 +103,7 @@ export default function RemarkModal({
       const reviewData = {
         key: {
           slotId: slotId,
-          reviewId: uuidv4(), // Generate a new UUID for the review
+          reviewId: uuidv4(),
         },
         userId: userId,
         businessId: businessId,
@@ -118,8 +114,6 @@ export default function RemarkModal({
         completed: true,
         createdAt: new Date().toISOString(),
       };
-
-      console.log("Sending review data:", reviewData);
 
       const response = await axios.post(
         `${baseApiUrl}/api/v1/reviews`,
@@ -132,15 +126,11 @@ export default function RemarkModal({
         }
       );
 
-      console.log("Response:", response.data);
-
       if (response.data.success) {
         if (response.data.warnings && response.data.warnings.length > 0) {
-          // Handle warnings as errors
           setErrorMessage(response.data.warnings.join("\n"));
           setShowError(true);
         } else {
-          // Handle success
           setSuccessMessage("Review submitted successfully!");
           setShowSuccess(true);
           setTimeout(() => {
@@ -149,31 +139,23 @@ export default function RemarkModal({
             if (onReviewSubmit) {
               onReviewSubmit();
             }
-          }, 2000); // Close modal after 2 seconds
+          }, 2000);
         }
       } else {
-        // Handle error
         setErrorMessage("Failed to submit review. Please try again.");
         setShowError(true);
       }
       setModalVisible(false);
     } catch (error) {
-      console.error("Error submitting review:", error);
       let errorMsg = "An unexpected error occurred. Please try again.";
 
       if (error.response) {
-        console.error("Error data:", error.response.data);
-        console.error("Error status:", error.response.status);
-        console.error("Error headers:", error.response.headers);
-
         errorMsg = `Error: ${error.response.status} - ${JSON.stringify(
           error.response.data
         )}`;
       } else if (error.request) {
-        console.error("Error request:", error.request);
         errorMsg = "No response received from server";
       } else {
-        console.error("Error message:", error.message);
         errorMsg = `Error: ${error.message}`;
       }
 
@@ -228,16 +210,11 @@ export default function RemarkModal({
     const totalBadges = positiveCount + negativeCount;
 
     if (totalBadges === 0) {
-      return 0; // No rating if no badges selected
+      return 0;
     }
 
-    // Calculate the percentage of positive badges
     const positivePercentage = (positiveCount / totalBadges) * 100;
-
-    // Convert percentage to a 5-star scale
     let rating = (positivePercentage / 100) * 5;
-
-    // Round to nearest half star
     rating = Math.round(rating * 2) / 2;
 
     return rating;
@@ -386,7 +363,7 @@ const styles = StyleSheet.create({
   ReviewContainer: {
     backgroundColor: theme3.light,
     width: "95%",
-    height: "25%", // Increased height
+    height: "25%",
     borderRadius: 20,
     shadowColor: "rgba(0,0,0,0.1)",
     shadowOpacity: 1,
@@ -397,7 +374,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     paddingRight: 10,
-    textAlignVertical: "top", // Ensures text starts from the top of the text area
+    textAlignVertical: "top",
   },
   submitButton: {
     backgroundColor: theme3.primaryColor,
@@ -412,6 +389,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   contentContainerStyle: {
-    paddingHorizontal: 15, // Ensures padding on both left and right
+    paddingHorizontal: 15,
   },
 });

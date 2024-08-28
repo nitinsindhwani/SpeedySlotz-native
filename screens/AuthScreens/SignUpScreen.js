@@ -220,7 +220,6 @@ const SignUpScreen = () => {
     try {
       setLoading(true);
       const response = await signupUser(userData);
-      console.log("response", response);
 
       if (
         response.success &&

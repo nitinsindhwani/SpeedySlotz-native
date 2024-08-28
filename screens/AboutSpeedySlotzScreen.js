@@ -1,51 +1,34 @@
-// AboutSpeedySlotzScreen.js
-import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView,View } from "react-native";
+import React, { useContext } from "react";
+import { ScrollView, Text, StyleSheet, SafeAreaView, View } from "react-native";
 import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
+import { LanguageContext } from "../api/LanguageContext"; // Import LanguageContext
 
 const AboutSpeedySlotzScreen = () => {
+  const { translations } = useContext(LanguageContext); // Use LanguageContext
+
   return (
     <View style={styles.safeArea}>
-        <Header title={"About SpeedySlotz"}/>
+      <Header title={translations.aboutSpeedySlotzTitle} />
       <ScrollView style={styles.container}>
-        {/* <Text style={styles.heading}>About SpeedySlotz</Text> */}
-
         <Text style={styles.text}>
-          SpeedySlotz revolutionizes how users book services across various
-          industries by providing a seamless, efficient, and user-friendly
-          online booking platform. Born out of the necessity to simplify the
-          appointment booking process, SpeedySlotz aims to bridge the gap
-          between service providers and customers seeking immediate bookings.
+          {translations.aboutSpeedySlotzParagraph1}
         </Text>
 
         <Text style={styles.text}>
-          Our journey began when we noticed a recurring problem: last-minute
-          cancellations leaving service providers with unfilled slots and
-          potential customers scrambling to find available bookings. SpeedySlotz
-          addresses this issue head-on, enabling service providers to list their
-          available slots in real-time and customers to book those slots
-          instantly.
+          {translations.aboutSpeedySlotzParagraph2}
         </Text>
 
         <Text style={styles.text}>
-          Beyond mere convenience, SpeedySlotz is committed to enriching the
-          community it serves. By optimizing the booking process, we not only
-          enhance the customer experience but also support local businesses in
-          maximizing their operational efficiency and revenue potential.
+          {translations.aboutSpeedySlotzParagraph3}
         </Text>
 
         <Text style={styles.text}>
-          At SpeedySlotz, we envision a world where booking an appointment is as
-          easy and straightforward as making a purchase online. We are
-          continuously working to expand our service categories and reach,
-          ensuring that more people can experience the convenience of
-          SpeedySlotz.
+          {translations.aboutSpeedySlotzParagraph4}
         </Text>
 
         <Text style={styles.text}>
-          Thank you for choosing SpeedySlotz. We're excited to be a part of your
-          journey and look forward to serving you.
+          {translations.aboutSpeedySlotzParagraph5}
         </Text>
       </ScrollView>
     </View>
@@ -64,7 +47,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
     fontWeight: "600",
-    color:  theme3.fontColor,
+    color: theme3.fontColor,
     marginBottom: 20,
   },
   text: {

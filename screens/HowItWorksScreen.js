@@ -1,45 +1,35 @@
-// HowItWorksScreen.js
-import React from "react";
-import { ScrollView, Text, StyleSheet, SafeAreaView ,View} from "react-native";
+import React, { useContext } from "react";
+import { ScrollView, Text, StyleSheet, SafeAreaView, View } from "react-native";
 import { theme3 } from "../assets/branding/themes";
 import Header from "./GlobalComponents/Header";
+import { LanguageContext } from "../api/LanguageContext"; // Import LanguageContext
 
 const HowItWorksScreen = () => {
+  const { translations } = useContext(LanguageContext); // Use LanguageContext
+
   return (
     <View style={styles.safeArea}>
-      <Header title={'How it works'}/>
+      <Header title={translations.howItWorksTitle} />
       <ScrollView style={styles.container}>
-        <Text style={styles.heading}>How It Works</Text>
+        <Text style={styles.heading}>{translations.howItWorksTitle}</Text>
 
-        <Step number="1" title="Browse Services">
-          Start by browsing through the various service categories available on
-          our platform. Whether you need grooming, healthcare, or any other
-          service, SpeedySlotz makes finding the right provider a breeze.
+        <Step number="1" title={translations.browseServicesTitle}>
+          {translations.browseServicesText}
         </Step>
 
-        <Step number="2" title="Choose a Slot">
-          Once you've found your desired service, view the available slots. Our
-          system updates in real-time, ensuring you see the most current
-          availability. Select a slot that fits your schedule.
+        <Step number="2" title={translations.chooseSlotTitle}>
+          {translations.chooseSlotText}
         </Step>
 
-        <Step number="3" title="Book Instantly">
-          With just a few taps, you can book your chosen slot. You’ll receive
-          instant confirmation, and your service provider will be notified
-          immediately. It’s that simple - no more phone calls or waiting.
+        <Step number="3" title={translations.bookInstantlyTitle}>
+          {translations.bookInstantlyText}
         </Step>
 
-        <Step number="4" title="Enjoy Your Service">
-          Show up at the scheduled time and enjoy your service. SpeedySlotz
-          streamlines the entire booking process, making it efficient for both
-          users and service providers.
+        <Step number="4" title={translations.enjoyServiceTitle}>
+          {translations.enjoyServiceText}
         </Step>
 
-        <Text style={styles.finalNote}>
-          At SpeedySlotz, our goal is to make scheduling appointments as
-          straightforward as possible. Say goodbye to the hassle of last-minute
-          bookings. Welcome to the future of service scheduling.
-        </Text>
+        <Text style={styles.finalNote}>{translations.finalNote}</Text>
       </ScrollView>
     </View>
   );
@@ -55,7 +45,6 @@ const Step = ({ number, title, children }) => (
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    // backgroundColor: "#f5f5f5",
   },
   container: {
     paddingHorizontal: 20,
@@ -64,7 +53,7 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 24,
     fontWeight: "600",
-    color:  theme3.fontColor,
+    color: theme3.fontColor,
     marginBottom: 24,
   },
   stepTitle: {
@@ -78,7 +67,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
     lineHeight: 24,
-    color:  theme3.fontColor,
+    color: theme3.fontColor,
   },
   finalNote: {
     fontSize: 16,

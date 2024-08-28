@@ -1,113 +1,107 @@
+import { useContext } from "react";
+import { LanguageContext } from "../api/LanguageContext"; // Ensure this is imported correctly
+
 const badgesInfo = {
-  // For Review
   TOPR: {
-    name: "Top Rated",
-    description:
-      "Consistently receive top ratings from customers for outstanding service.",
+    nameKey: "topRated",
+    descriptionKey: "topRatedDescription",
     icon: "star-outline",
   },
   VERI: {
-    name: "Verified",
-    description:
-      "Successfully pass a verification process for identity and credentials.",
+    nameKey: "verified",
+    descriptionKey: "verifiedDescription",
     icon: "checkmark-circle-outline",
   },
-  // For Review
   LOWP: {
-    name: "Low Price",
-    description:
-      "Offer competitive pricing and excellent value for your services.",
+    nameKey: "lowPrice",
+    descriptionKey: "lowPriceDescription",
     icon: "pricetags-outline",
   },
   INSU: {
-    name: "Insurance",
-    description: "Maintain proper insurance for liability and damages.",
+    nameKey: "insurance",
+    descriptionKey: "insuranceDescription",
     icon: "shield-outline",
   },
   O5YB: {
-    name: "Over 5 Years In Business",
-    description:
-      "Operate a business with a proven track record of over five years.",
+    nameKey: "over5Years",
+    descriptionKey: "over5YearsDescription",
     icon: "calendar-outline",
   },
   LICE: {
-    name: "Licensed",
-    description: "Hold and maintain proper professional licensing.",
+    nameKey: "licensed",
+    descriptionKey: "licensedDescription",
     icon: "ribbon-outline",
   },
-  // For Review
   R1HR: {
-    name: "Response Within 1 Hour",
-    description: "Respond to customer inquiries consistently within one hour.",
+    nameKey: "responseWithin1Hour",
+    descriptionKey: "responseWithin1HourDescription",
     icon: "time-outline",
   },
-  // For Review
   FAIR: {
-    name: "Fair Business",
-    description:
-      "Demonstrate fairness and integrity in your business practices.",
+    nameKey: "fairBusiness",
+    descriptionKey: "fairBusinessDescription",
     icon: "thumbs-up-outline",
   },
-  // For Review
   PUNC: {
-    name: "Punctuality Award",
-    description: "Consistently deliver services on time.",
+    nameKey: "punctualityAward",
+    descriptionKey: "punctualityAwardDescription",
     icon: "alarm-outline",
   },
   TPRO: {
-    name: "Top Professional of the Year",
-    description:
-      "Recognized as the top professional in your field for outstanding service.",
+    nameKey: "topProfessionalOfTheYear",
+    descriptionKey: "topProfessionalOfTheYearDescription",
     icon: "trophy-outline",
   },
   MBUS: {
-    name: "Most Busy in the Category",
-    description:
-      "Achieve the highest level of activity in your service category.",
+    nameKey: "mostBusyInCategory",
+    descriptionKey: "mostBusyInCategoryDescription",
     icon: "briefcase-outline",
   },
   NEWB: {
-    name: "New Business",
-    description: "Recently established and ready to serve.",
+    nameKey: "newBusiness",
+    descriptionKey: "newBusinessDescription",
     icon: "business-outline",
   },
   CLTY: {
-    name: "Customer Loyalty",
-    description:
-      "Recognized for building a loyal customer base with repeat clients.",
+    nameKey: "customerLoyalty",
+    descriptionKey: "customerLoyaltyDescription",
     icon: "heart-outline",
   },
   CSTF: {
-    name: "Customer Satisfaction",
-    description: "Delivering exceptional service that leaves customers happy.",
+    nameKey: "customerSatisfaction",
+    descriptionKey: "customerSatisfactionDescription",
     icon: "happy-outline",
   },
   SPDS: {
-    name: "Speedy Service",
-    description:
-      "Awarded for consistently delivering services quickly without compromising quality.",
+    nameKey: "speedyService",
+    descriptionKey: "speedyServiceDescription",
     icon: "flash-outline",
   },
   COMM: {
-    name: "Communication Pro",
-    description:
-      "Recognized for excellent communication with customers, keeping them informed and at ease throughout the service.",
+    nameKey: "communicationPro",
+    descriptionKey: "communicationProDescription",
     icon: "chatbox-ellipses-outline",
   },
   CMKP: {
-    name: "Commitment Keeper",
-    description:
-      "Recognized for consistently honoring commitments by not canceling confirmed jobs.",
+    nameKey: "commitmentKeeper",
+    descriptionKey: "commitmentKeeperDescription",
     icon: "checkmark-done-outline",
   },
   EMRG: {
-    name: "Emergency Service",
-    description: "Available for emergency services.",
+    nameKey: "emergencyService",
+    descriptionKey: "emergencyServiceDescription",
     icon: "warning-outline",
   },
 };
 
-// Function to get badge details by code
-export function getBadgeDetails(code) {
-  return badgesInfo[code] || null;
+// Function to get badge details by code with translations
+export function getBadgeDetails(code, translations) {
+  const badge = badgesInfo[code] || null;
+  if (!badge) return null;
+
+  return {
+    ...badge,
+    name: translations[badge.nameKey],
+    description: translations[badge.descriptionKey],
+  };
 }

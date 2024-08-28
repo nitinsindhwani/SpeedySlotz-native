@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
-  Button,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import Collapsible from "react-native-collapsible";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -16,15 +14,16 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { saveProfiles, fetchProfiles } from "../api/ApiCall";
 import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
-import { useNavigation } from "@react-navigation/native"; // Newly added
+import { useNavigation } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
-
-
 import { Platform } from "react-native";
+import { LanguageContext } from "../api/LanguageContext"; // Import LanguageContext
 
 const ManageAccountScreen = ({ route }) => {
   const { user } = route.params;
+  const { language, translations } = useContext(LanguageContext); // Get translations
+
   const [profile, setProfile] = useState({
     firstName: user.first_name || "",
     lastName: user.last_name || "",
@@ -32,7 +31,6 @@ const ManageAccountScreen = ({ route }) => {
     phoneNumber: user.phoneNumber || "",
     gender: user.gender || "",
     dateOfBirth: user.dateOfBirth || "",
-    // Extend this initial state with other properties as needed
   });
   const [address, setAddress] = useState(user.address || "");
   const [dateOfBirth, setDateOfBirth] = useState(
@@ -78,18 +76,18 @@ const ManageAccountScreen = ({ route }) => {
   const [otherDentalInfo, setOtherDentalInfo] = useState("");
 
   // State variables for Home Information
-  const [homeType, setHomeType] = useState(user.homeType || ""); // e.g., Apartment, House, Condo
-  const [homeSize, setHomeSize] = useState(user.homeSize || ""); // e.g., in square feet or square meters
+  const [homeType, setHomeType] = useState(user.homeType || "");
+  const [homeSize, setHomeSize] = useState(user.homeSize || "");
   const [numberOfRooms, setNumberOfRooms] = useState(user.numberOfRooms || "");
   const [numberOfFloors, setNumberOfFloors] = useState(
     user.numberOfFloors || ""
   );
   const [floorCount, setFloorCount] = useState(user.floorCount || "");
   const [windowCount, setWindowCount] = useState(user.windowCount || "");
-  const [yardSize, setYardSize] = useState(user.yardSize || ""); // Useful for mowing and landscaping
+  const [yardSize, setYardSize] = useState(user.yardSize || "");
   const [lastHvacServiceDate, setLastHvacServiceDate] = useState(
     user.hvacType || ""
-  ); // e.g., Central, Window Units
+  );
   const [specialInstructions, setSpecialInstructions] = useState(
     user.specialInstructions || ""
   );
@@ -153,43 +151,27 @@ const ManageAccountScreen = ({ route }) => {
   );
   const [errors, setErrors] = useState({});
   const navigation = useNavigation();
+
   const validate = () => {
-    // let newErrors = {};
-    // if (!firstName.trim()) newErrors.firstName = "First Name is required";
-    // if (!lastName.trim()) newErrors.lastName = "Last Name is required";
-    // const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-    // if (!email.trim()) newErrors.email = "Email is required";
-    // else if (!emailRegex.test(email)) newErrors.email = "Invalid email format";
-    // if (!phoneNumber.trim()) newErrors.phoneNumber = "Phone Number is required";
-    // else if (isNaN(phoneNumber))
-    //   newErrors.phoneNumber = "Phone Number should contain only numbers";
-    // if (!address.trim()) newErrors.address = "Address is required";
-    // const dobRegex = /^(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])-\d{4}$/;
-    // if (!dateOfBirth.trim())
-    //   newErrors.dateOfBirth = "Date of Birth is required";
-    // else if (!dobRegex.test(dateOfBirth))
-    //   newErrors.dateOfBirth = "Invalid date format (MM-DD-YYYY)";
-    // setErrors(newErrors);
-    // return Object.keys(newErrors).length === 0; // If no errors, validation passed.
+    // Validation logic here
   };
 
   const onChange = (event, selectedDate) => {
-    // Close the picker immediately
-    setShowDatePicker(Platform.OS === "ios"); // This line is specifically for iOS, adjust if needed
-
-    // Update the state with the new date, or keep the old if cancelled
+    setShowDatePicker(Platform.OS === "ios");
     if (selectedDate) {
       setDateOfBirth(selectedDate);
     }
   };
+
   useEffect(() => {
-    // Format dateOfBirth to the desired string format before setting it in the profile
     const formattedDate = moment(dateOfBirth).format("YYYY-MM-DD");
     handleInputChange("dateOfBirth", formattedDate);
-  }, [dateOfBirth]); // This effect runs every time dateOfBirth changes
+  }, [dateOfBirth]);
+
   const showMode = () => {
     setShowDatePicker(true);
   };
+
   const handleInputChange = (name, value) => {
     setProfile((prevState) => ({
       ...prevState,
@@ -199,7 +181,7 @@ const ManageAccountScreen = ({ route }) => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: "Manage Profiles",
+      headerTitle: translations.manageProfiles,
       headerTitleStyle: {
         fontWeight: "bold",
         fontSize: 24,
@@ -218,14 +200,13 @@ const ManageAccountScreen = ({ route }) => {
         />
       ),
     });
-  }, [navigation]);
+  }, [navigation, translations]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const profileData = await fetchProfiles(); // fetchProfiles needs to be implemented to fetch data from your backend
+        const profileData = await fetchProfiles();
 
-        // Check and update userProfile information
         if (profileData?.userProfile) {
           setProfile((prevState) => ({
             ...prevState,
@@ -233,7 +214,6 @@ const ManageAccountScreen = ({ route }) => {
           }));
         }
 
-        // Check and update userAddress
         if (profileData?.userAddress) {
           setStreet(profileData.userAddress.street || "");
           setCity(profileData.userAddress.city || "");
@@ -241,7 +221,6 @@ const ManageAccountScreen = ({ route }) => {
           setZip(profileData.userAddress.zip || "");
         }
 
-        // Check and update userPreferredPharmacy
         if (profileData?.userPreferredPharmacy) {
           setPharmacyName(profileData.userPreferredPharmacy.pharmacyName || "");
           setPharmacyAddress(
@@ -252,7 +231,6 @@ const ManageAccountScreen = ({ route }) => {
           );
         }
 
-        // Check and update userMedicalHistory
         if (profileData?.userMedicalHistory) {
           setAllergies(profileData.userMedicalHistory.allergies || "");
           setCurrentMedications(
@@ -287,7 +265,6 @@ const ManageAccountScreen = ({ route }) => {
           );
         }
 
-        // Check and update userDentalInformation
         if (profileData?.userDentalInformation) {
           setLastDentalVisit(
             profileData.userDentalInformation.lastDentalVisit || ""
@@ -318,7 +295,6 @@ const ManageAccountScreen = ({ route }) => {
           );
         }
 
-        // Check and update userPersonalInsurance
         if (profileData?.userPersonalInsurance) {
           setPersonalInsuranceProvider(
             profileData.userPersonalInsurance.provider || ""
@@ -340,7 +316,6 @@ const ManageAccountScreen = ({ route }) => {
           );
         }
 
-        // Check and update userDentalInsurance
         if (profileData?.userDentalInsurance) {
           setDentalInsuranceProvider(
             profileData.userDentalInsurance.provider || ""
@@ -362,7 +337,6 @@ const ManageAccountScreen = ({ route }) => {
           );
         }
 
-        // Check and update userHomeInformation
         if (profileData?.userHomeInformation) {
           setHomeType(profileData.userHomeInformation.homeType || "");
           setHomeSize(profileData.userHomeInformation.homeSize || "");
@@ -370,7 +344,7 @@ const ManageAccountScreen = ({ route }) => {
           setNumberOfFloors(
             profileData.userHomeInformation.numberOfFloors || ""
           );
-          setFloorCount(profileData.userHomeInformation.floorCount || ""); // This seems to be duplicate with numberOfFloors, adjust as needed
+          setFloorCount(profileData.userHomeInformation.floorCount || "");
           setWindowCount(profileData.userHomeInformation.windowCount || "");
           setYardSize(profileData.userHomeInformation.yardSize || "");
           setLastHvacServiceDate(
@@ -394,7 +368,6 @@ const ManageAccountScreen = ({ route }) => {
           );
         }
 
-        // Check and update userPetInformation
         if (profileData?.userPetInformation) {
           setPetName(profileData.userPetInformation.petName || "");
           setPetType(profileData.userPetInformation.petType || "");
@@ -413,7 +386,6 @@ const ManageAccountScreen = ({ route }) => {
           setPetBehavior(profileData.userPetInformation.petBehavior || "");
         }
 
-        // Check and update userPetInsurance
         if (profileData?.userPetInsurance) {
           setProvider(profileData.userPetInsurance.provider || "");
           setPolicyNumber(profileData.userPetInsurance.policyNumber || "");
@@ -425,13 +397,12 @@ const ManageAccountScreen = ({ route }) => {
           setExclusions(profileData.userPetInsurance.exclusions || "");
         }
       } catch (error) {
-        console.error("Failed to fetch profiles:", error);
-        // Optionally, handle error (e.g., show an error message)
+        console.error(translations.fetchProfilesError, error);
       }
     };
 
     loadData();
-  }, []); // The empty dependency array ensures this effect runs only once after the component mounts
+  }, []);
 
   const handleSaveChanges = () => {
     const profileData = {
@@ -524,27 +495,21 @@ const ManageAccountScreen = ({ route }) => {
       },
     };
     const response = saveProfiles(profileData);
-    console.log("Response in ManageAccount", response);
-    // if (validate()) {
-    //   alert("Changes saved successfully!");
-    // } else {
-    //   alert("Please fix the errors before saving.");
-    // }
   };
 
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={styles.scrollContainer}>
-        <Header title={"Manage Profiles"} />
+        <Header title={translations.manageProfiles} />
         <View style={styles.container}>
-          <Text style={styles.heading}>Manage Account</Text>
+          <Text style={styles.heading}>{translations.manageAccount}</Text>
 
           {/* First Name */}
           <View style={styles.iconInputContainer}>
             <FontAwesome5 name="user" size={20} color={theme3.fontColor} />
             <TextInput
               style={[styles.input, errors.firstName && styles.errorInput]}
-              placeholder="First Name"
+              placeholder={translations.firstName}
               value={profile.firstName}
               onChangeText={(value) => handleInputChange("firstName", value)}
             />
@@ -558,7 +523,7 @@ const ManageAccountScreen = ({ route }) => {
             <FontAwesome5 name="user" size={20} color={theme3.fontColor} />
             <TextInput
               style={[styles.input, errors.lastName && styles.errorInput]}
-              placeholder="Last Name"
+              placeholder={translations.lastName}
               value={profile.lastName}
               onChangeText={(value) => handleInputChange("lastName", value)}
             />
@@ -572,7 +537,7 @@ const ManageAccountScreen = ({ route }) => {
             <FontAwesome5 name="envelope" size={20} color={theme3.fontColor} />
             <TextInput
               style={[styles.input, errors.email && styles.errorInput]}
-              placeholder="Email"
+              placeholder={translations.email}
               value={profile.email}
               onChangeText={(value) => handleInputChange("email", value)}
             />
@@ -584,7 +549,7 @@ const ManageAccountScreen = ({ route }) => {
             <FontAwesome5 name="phone" size={20} color={theme3.fontColor} />
             <TextInput
               style={[styles.input, errors.phoneNumber && styles.errorInput]}
-              placeholder="Phone Number"
+              placeholder={translations.phoneNumber}
               value={profile.phoneNumber}
               onChangeText={(value) => handleInputChange("phoneNumber", value)}
             />
@@ -598,7 +563,7 @@ const ManageAccountScreen = ({ route }) => {
             <FontAwesome name="intersex" size={20} color={theme3.fontColor} />
             <TextInput
               style={styles.input}
-              placeholder="Gender (e.g., Male, Female, Other)"
+              placeholder={translations.gender}
               value={profile.gender}
               onChangeText={(value) => handleInputChange("gender", value)}
             />
@@ -613,30 +578,27 @@ const ManageAccountScreen = ({ route }) => {
             />
             <View style={styles.datePickerContainer}>
               <Text
-              style={{marginLeft:10,alignSelf:'center'}}
-              onPress={showMode}
+                style={{ marginLeft: 10, alignSelf: "center" }}
+                onPress={showMode}
               >
-                Select Date
+                {translations.selectDate}
               </Text>
-              {/* <Button onPress={showMode} title="Select Date" /> */}
               <Text style={styles.dateText}>
-                {moment(dateOfBirth).format("MM-DD-YYYY")}
+                {moment(dateOfBirth).format(translations.dateFormat)}
               </Text>
             </View>
-            
-            {showDatePicker && (
-              <View style={{fontSize:10,alignSelf:'flex-start'}}>
-              <DateTimePicker
-              
-                testID="dateTimePicker"
-                value={dateOfBirth}
-                mode="date"
-                is24Hour={true}
-                display="default"
-                onChange={onChange}
-              />
-                </View>
 
+            {showDatePicker && (
+              <View style={{ fontSize: 10, alignSelf: "flex-start" }}>
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={dateOfBirth}
+                  mode="date"
+                  is24Hour={true}
+                  display="default"
+                  onChange={onChange}
+                />
+              </View>
             )}
           </View>
           {errors.dateOfBirth && (
@@ -646,7 +608,7 @@ const ManageAccountScreen = ({ route }) => {
             onPress={() => setAddressCollapsed(!isAddressCollapsed)}
           >
             <View style={styles.collapsibleHeader}>
-              <Text style={styles.subHeading}>Address</Text>
+              <Text style={styles.subHeading}>{translations.address}</Text>
               <Icon
                 name={
                   isAddressCollapsed
@@ -664,7 +626,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="road" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Street"
+                placeholder={translations.street}
                 value={street}
                 onChangeText={setStreet}
               />
@@ -679,7 +641,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="City"
+                placeholder={translations.city}
                 value={city}
                 onChangeText={setCity}
               />
@@ -690,7 +652,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="flag" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="State"
+                placeholder={translations.state}
                 value={state}
                 onChangeText={setState}
               />
@@ -701,7 +663,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="map-pin" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Zipcode"
+                placeholder={translations.zipcode}
                 value={zip}
                 onChangeText={setZip}
               />
@@ -712,7 +674,7 @@ const ManageAccountScreen = ({ route }) => {
             onPress={() => setPharmacyCollapsed(!isPharmacyCollapsed)}
           >
             <View style={styles.collapsibleHeader}>
-              <Text style={styles.subHeading}>Preferred Pharmacy</Text>
+              <Text style={styles.subHeading}>{translations.pharmacy}</Text>
               <Icon
                 name={
                   isPharmacyCollapsed
@@ -734,7 +696,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Pharmacy Name"
+                placeholder={translations.pharmacyName}
                 value={pharmacyName}
                 onChangeText={setPharmacyName}
               />
@@ -745,7 +707,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="home" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Pharmacy Address"
+                placeholder={translations.pharmacyAddress}
                 value={pharmacyAddress}
                 onChangeText={setPharmacyAddress}
               />
@@ -754,7 +716,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="home" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Pharmacy Phone"
+                placeholder={translations.pharmacyPhone}
                 value={pharmacyPhone}
                 onChangeText={setPharmacyPhone}
               />
@@ -767,7 +729,9 @@ const ManageAccountScreen = ({ route }) => {
             }
           >
             <View style={styles.collapsibleHeader}>
-              <Text style={styles.subHeading}>Medical History</Text>
+              <Text style={styles.subHeading}>
+                {translations.medicalHistory}
+              </Text>
               <Icon
                 name={
                   isMedicalHistoryCollapsed
@@ -790,7 +754,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Known Allergies (e.g., medication, food)"
+                placeholder={translations.allergies}
                 value={allergies}
                 onChangeText={setAllergies}
               />
@@ -801,7 +765,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="pills" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Current Medications"
+                placeholder={translations.currentMedications}
                 value={currentMedications}
                 onChangeText={setCurrentMedications}
               />
@@ -812,7 +776,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="history" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Past Medications"
+                placeholder={translations.pastMedications}
                 value={pastMedications}
                 onChangeText={setPastMedications}
               />
@@ -823,7 +787,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome name="scissors" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Previous Surgeries and Dates"
+                placeholder={translations.surgicalHistory}
                 value={surgicalHistory}
                 onChangeText={setSurgicalHistory}
               />
@@ -838,7 +802,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Do you smoke or consume alcohol? Frequency?"
+                placeholder={translations.smokeAlcoholHistory}
                 value={smokeAlcoholHistory}
                 onChangeText={setSmokeAlcoholHistory}
               />
@@ -853,7 +817,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Diagnosed Chronic Illnesses (e.g., Diabetes, Hypertension)"
+                placeholder={translations.chronicIllnesses}
                 value={chronicIllnesses}
                 onChangeText={setChronicIllnesses}
               />
@@ -864,7 +828,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="users" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Family History of Illnesses (e.g., Heart Disease, Cancer)"
+                placeholder={translations.familyMedicalHistory}
                 value={familyMedicalHistory}
                 onChangeText={setFamilyMedicalHistory}
               />
@@ -879,7 +843,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Recent Hospitalizations or Emergency Visits"
+                placeholder={translations.recentHospitalVisits}
                 value={recentHospitalVisits}
                 onChangeText={setRecentHospitalVisits}
               />
@@ -890,7 +854,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="syringe" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Immunization History"
+                placeholder={translations.immunizationHistory}
                 value={immunizationHistory}
                 onChangeText={setImmunizationHistory}
               />
@@ -901,7 +865,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="baby" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Women: Pregnancy and Childbirth History"
+                placeholder={translations.pregnancyChildbirthHistory}
                 value={pregnancyChildbirthHistory}
                 onChangeText={setPregnancyChildbirthHistory}
               />
@@ -916,7 +880,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Any other relevant medical information?"
+                placeholder={translations.otherMedicalInfo}
                 value={otherMedicalInfo}
                 onChangeText={setOtherMedicalInfo}
                 multiline
@@ -928,7 +892,9 @@ const ManageAccountScreen = ({ route }) => {
             onPress={() => setDentalHistoryCollapsed(!isDentalHistoryCollapsed)}
           >
             <View style={styles.collapsibleHeader}>
-              <Text style={styles.subHeading}>Dental History</Text>
+              <Text style={styles.subHeading}>
+                {translations.dentalHistory}
+              </Text>
               <Icon
                 name={
                   isDentalHistoryCollapsed
@@ -950,7 +916,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Last Dental Visit"
+                placeholder={translations.lastDentalVisit}
                 value={lastDentalVisit}
                 onChangeText={setLastDentalVisit}
               />
@@ -961,7 +927,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="x-ray" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Last Dental X-ray"
+                placeholder={translations.lastDentalXray}
                 value={lastDentalXray}
                 onChangeText={setLastDentalXray}
               />
@@ -976,7 +942,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Dental Allergies"
+                placeholder={translations.dentalAllergies}
                 value={dentalAllergies}
                 onChangeText={setDentalAllergies}
               />
@@ -987,7 +953,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="tooth" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Dental Complaints"
+                placeholder={translations.dentalComplaints}
                 value={dentalComplaints}
                 onChangeText={setDentalComplaints}
               />
@@ -1002,7 +968,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Orthodontic History"
+                placeholder={translations.orthodonticHistory}
                 value={orthodonticHistory}
                 onChangeText={setOrthodonticHistory}
               />
@@ -1017,7 +983,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Gum Disease History"
+                placeholder={translations.gumDiseaseHistory}
                 value={gumDiseaseHistory}
                 onChangeText={setGumDiseaseHistory}
               />
@@ -1028,7 +994,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="tooth" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Tooth Extraction History"
+                placeholder={translations.toothExtractionHistory}
                 value={toothExtractionHistory}
                 onChangeText={setToothExtractionHistory}
               />
@@ -1039,7 +1005,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="pills" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Dental Medications"
+                placeholder={translations.dentalMedications}
                 value={dentalMedications}
                 onChangeText={setDentalMedications}
               />
@@ -1054,7 +1020,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Other Dental Information"
+                placeholder={translations.otherDentalInfo}
                 value={otherDentalInfo}
                 onChangeText={setOtherDentalInfo}
                 multiline
@@ -1070,7 +1036,7 @@ const ManageAccountScreen = ({ route }) => {
           >
             <View style={styles.collapsibleHeader}>
               <Text style={styles.subHeading}>
-                Personal Insurance Information
+                {translations.personalInsurance}
               </Text>
               <Icon
                 name={
@@ -1093,7 +1059,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Insurance Provider Name"
+                placeholder={translations.insuranceProviderName}
                 value={personalInsuranceProvider}
                 onChangeText={setPersonalInsuranceProvider}
               />
@@ -1108,7 +1074,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Policy Number"
+                placeholder={translations.policyNumber}
                 value={personalPolicyNumber}
                 onChangeText={setPersonalPolicyNumber}
               />
@@ -1123,7 +1089,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Coverage Details"
+                placeholder={translations.coverageDetails}
                 value={personalCoverageDetails}
                 onChangeText={setPersonalCoverageDetails}
                 multiline
@@ -1136,7 +1102,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="phone" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Insurance Contact Number"
+                placeholder={translations.contactNumber}
                 value={personalInsuranceContact}
                 onChangeText={setPersonalInsuranceContact}
               />
@@ -1151,7 +1117,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Claim Process Details"
+                placeholder={translations.claimProcessDetails}
                 value={personalClaimDetails}
                 onChangeText={setPersonalClaimDetails}
                 multiline
@@ -1168,7 +1134,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Any Exclusions or Limitations?"
+                placeholder={translations.exclusions}
                 value={personalInsuranceExclusions}
                 onChangeText={setPersonalInsuranceExclusions}
                 multiline
@@ -1184,7 +1150,7 @@ const ManageAccountScreen = ({ route }) => {
           >
             <View style={styles.collapsibleHeader}>
               <Text style={styles.subHeading}>
-                Dental Insurance Information
+                {translations.dentalInsurance}
               </Text>
               <Icon
                 name={
@@ -1207,7 +1173,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Insurance Provider Name"
+                placeholder={translations.insuranceProviderName}
                 value={dentalInsuranceProvider}
                 onChangeText={setDentalInsuranceProvider}
               />
@@ -1222,7 +1188,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Policy Number"
+                placeholder={translations.policyNumber}
                 value={dentalPolicyNumber}
                 onChangeText={setDentalPolicyNumber}
               />
@@ -1233,7 +1199,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="tooth" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Coverage Details"
+                placeholder={translations.coverageDetails}
                 value={dentalCoverageDetails}
                 onChangeText={setDentalCoverageDetails}
                 multiline
@@ -1246,7 +1212,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="phone" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Insurance Contact Number"
+                placeholder={translations.contactNumber}
                 value={dentalInsuranceContact}
                 onChangeText={setDentalInsuranceContact}
               />
@@ -1261,7 +1227,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Claim Process Details"
+                placeholder={translations.claimProcessDetails}
                 value={dentalClaimDetails}
                 onChangeText={setDentalClaimDetails}
                 multiline
@@ -1278,7 +1244,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Any Exclusions or Limitations?"
+                placeholder={translations.exclusions}
                 value={dentalInsuranceExclusions}
                 onChangeText={setDentalInsuranceExclusions}
                 multiline
@@ -1291,7 +1257,9 @@ const ManageAccountScreen = ({ route }) => {
             onPress={() => setHomeInfoCollapsed(!isHomeInfoCollapsed)}
           >
             <View style={styles.collapsibleHeader}>
-              <Text style={styles.subHeading}>Home Information</Text>
+              <Text style={styles.subHeading}>
+                {translations.homeInformation}
+              </Text>
               <Icon
                 name={
                   isHomeInfoCollapsed
@@ -1309,7 +1277,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="home" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Type of Home (e.g., Single Family, Townhouse, Condo)"
+                placeholder={translations.homeType}
                 value={homeType}
                 onChangeText={setHomeType}
               />
@@ -1324,7 +1292,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Home Exterior Material (e.g., Brick, Vinyl Siding)"
+                placeholder={translations.homeExterior}
                 value={homeExterior}
                 onChangeText={setHomeExterior}
               />
@@ -1339,7 +1307,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Home Elevation (e.g., Single-story, Two-story)"
+                placeholder={translations.homeElevation}
                 value={homeElevation}
                 onChangeText={setHomeElevation}
               />
@@ -1354,7 +1322,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Presence of High Ceilings (e.g., Vaulted, Cathedral)"
+                placeholder={translations.ceilingType}
                 value={ceilingType}
                 onChangeText={setCeilingType}
               />
@@ -1365,7 +1333,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="ruler" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Home Size (in sq. ft.)"
+                placeholder={translations.homeSize}
                 value={homeSize}
                 onChangeText={setHomeSize}
               />
@@ -1380,7 +1348,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Number of Rooms"
+                placeholder={translations.numberOfRooms}
                 value={numberOfRooms}
                 onChangeText={setNumberOfRooms}
               />
@@ -1395,7 +1363,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Number of Floors"
+                placeholder={translations.numberOfFloors}
                 value={numberOfFloors}
                 onChangeText={setNumberOfFloors}
               />
@@ -1406,7 +1374,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="fan" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Last HVAC Service Date (MM-DD-YYYY)"
+                placeholder={translations.lastHvacServiceDate}
                 value={lastHvacServiceDate}
                 onChangeText={setLastHvacServiceDate}
               />
@@ -1417,7 +1385,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="leaf" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Frequency of Mowing Needed (e.g., Weekly, Monthly)"
+                placeholder={translations.mowingFrequency}
                 value={mowingFrequency}
                 onChangeText={setMowingFrequency}
               />
@@ -1432,7 +1400,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Last Window Cleaning Date (MM-DD-YYYY)"
+                placeholder={translations.lastWindowCleaningDate}
                 value={lastWindowCleaningDate}
                 onChangeText={setLastWindowCleaningDate}
               />
@@ -1443,7 +1411,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="tree" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Number of Trees in Yard (For tree lighting)"
+                placeholder={translations.treeCount}
                 value={treeCount}
                 onChangeText={setTreeCount}
               />
@@ -1458,7 +1426,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Any Special Requests or Preferences?"
+                placeholder={translations.lightingPreferences}
                 value={lightingPreferences}
                 onChangeText={setLightingPreferences}
                 multiline
@@ -1469,7 +1437,9 @@ const ManageAccountScreen = ({ route }) => {
 
           <TouchableOpacity onPress={() => setPetCollapsed(!isPetCollapsed)}>
             <View style={styles.collapsibleHeader}>
-              <Text style={styles.subHeading}>Pet Information</Text>
+              <Text style={styles.subHeading}>
+                {translations.petInformation}
+              </Text>
               <Icon
                 name={
                   isPetCollapsed ? "chevron-down-outline" : "chevron-up-outline"
@@ -1484,7 +1454,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="dog" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Pet Name"
+                placeholder={translations.petName}
                 value={petName}
                 onChangeText={setPetName}
               />
@@ -1494,7 +1464,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="paw" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Pet Type (e.g., Dog, Cat, Bird)"
+                placeholder={translations.petType}
                 value={petType}
                 onChangeText={setPetType}
               />
@@ -1504,7 +1474,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="dna" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Pet Breed"
+                placeholder={translations.petBreed}
                 value={petBreed}
                 onChangeText={setPetBreed}
               />
@@ -1518,7 +1488,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Pet Age"
+                placeholder={translations.petAge}
                 value={petAge}
                 onChangeText={setPetAge}
               />
@@ -1528,7 +1498,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="weight" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Pet Weight (in lbs)"
+                placeholder={translations.petWeight}
                 value={petWeight}
                 onChangeText={setPetWeight}
               />
@@ -1542,7 +1512,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Any Special Needs or Medications?"
+                placeholder={translations.petSpecialNeeds}
                 value={petSpecialNeeds}
                 onChangeText={setPetSpecialNeeds}
                 multiline
@@ -1554,7 +1524,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="bone" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Favorite Activities or Toys"
+                placeholder={translations.petFavorites}
                 value={petFavorites}
                 onChangeText={setPetFavorites}
               />
@@ -1568,7 +1538,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Known Allergies or Sensitivities"
+                placeholder={translations.petAllergies}
                 value={petAllergies}
                 onChangeText={setPetAllergies}
               />
@@ -1582,7 +1552,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Veterinarian Name & Contact"
+                placeholder={translations.vetDetails}
                 value={vetDetails}
                 onChangeText={setVetDetails}
               />
@@ -1596,7 +1566,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Is your pet microchipped? (Yes/No)"
+                placeholder={translations.petMicrochipped}
                 value={petMicrochipped}
                 onChangeText={setPetMicrochipped}
               />
@@ -1610,7 +1580,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Pet's Behavior with Strangers (Friendly/Shy/Aggressive)"
+                placeholder={translations.petBehavior}
                 value={petBehavior}
                 onChangeText={setPetBehavior}
               />
@@ -1620,7 +1590,7 @@ const ManageAccountScreen = ({ route }) => {
             onPress={() => setPetInsuranceCollapsed(!isPetInsuranceCollapsed)}
           >
             <View style={styles.collapsibleHeader}>
-              <Text style={styles.subHeading}>Pet Insurance Information</Text>
+              <Text style={styles.subHeading}>{translations.petInsurance}</Text>
               <Icon
                 name={
                   isPetInsuranceCollapsed
@@ -1641,7 +1611,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Insurance Provider Name"
+                placeholder={translations.insuranceProviderName}
                 value={provider}
                 onChangeText={setProvider}
               />
@@ -1655,7 +1625,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Policy Number"
+                placeholder={translations.policyNumber}
                 value={policyNumber}
                 onChangeText={setPolicyNumber}
               />
@@ -1669,7 +1639,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Coverage Details (e.g., accidents, illnesses)"
+                placeholder={translations.coverageDetails}
                 value={coverageDetails}
                 onChangeText={setCoverageDetails}
                 multiline
@@ -1681,7 +1651,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="phone" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder="Insurance Contact Number"
+                placeholder={translations.contactNumber}
                 value={contact}
                 onChangeText={setContact}
               />
@@ -1695,7 +1665,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Claim Process Details"
+                placeholder={translations.claimProcessDetails}
                 value={claimDetails}
                 onChangeText={setClaimDetails}
                 multiline
@@ -1711,7 +1681,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder="Any Exclusions or Limitations?"
+                placeholder={translations.exclusions}
                 value={exclusions}
                 onChangeText={setExclusions}
                 multiline
@@ -1724,7 +1694,7 @@ const ManageAccountScreen = ({ route }) => {
             style={styles.saveButton}
             onPress={handleSaveChanges}
           >
-            <Text style={styles.buttonText}>Submit</Text>
+            <Text style={styles.buttonText}>{translations.submit}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -1773,8 +1743,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     marginLeft: 10,
-    borderWidth: 0, // remove the border from the TextInput as it's now on the container
-    padding: 0, // adjust
+    borderWidth: 0,
+    padding: 0,
   },
   errorInput: {
     borderColor: "#f9ab55",
@@ -1798,15 +1768,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  container: {
-    padding: 20,
-    paddingTop: 50,
-  },
   datePickerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    // marginBottom: 20,
   },
   dateText: {
     marginLeft: 20,

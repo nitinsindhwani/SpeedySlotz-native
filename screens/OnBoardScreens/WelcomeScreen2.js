@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { LanguageContext } from "../../api/LanguageContext";
 import TopImg from "../../assets/newimage/Ellipse4.png";
 import Logo from "../../assets/images/welcome2.png";
 import OnBoard from "../../assets/newimage/onBoard2.png";
@@ -19,6 +20,7 @@ const WindowHeight = Dimensions.get("screen").height;
 
 const WelcomeScreen2 = ({ handleNextButtonPress }) => {
   const navigation = useNavigation();
+  const { translations } = useContext(LanguageContext);
 
   return (
     <ImageBackground
@@ -31,11 +33,9 @@ const WelcomeScreen2 = ({ handleNextButtonPress }) => {
       </View>
 
       <View style={styles.middleSection}>
-        <Text style={styles.title}>Effortless Decisions</Text>
+        <Text style={styles.title}>{translations.effortlessDecisions}</Text>
         <Text style={styles.paragraph}>
-          Dive deeper into our features. Experience real-time availability
-          updates, transparent pricing, and the ability to chat directly with
-          professionals. Making an informed decision has never been easier.
+          {translations.effortlessDecisionsMessage}
         </Text>
       </View>
 
@@ -44,13 +44,13 @@ const WelcomeScreen2 = ({ handleNextButtonPress }) => {
           onPress={() => handleNextButtonPress()}
           style={styles.loginBtn}
         >
-          <Text style={styles.loginTxt}>Next</Text>
+          <Text style={styles.loginTxt}>{translations.next}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("LoginScreen")}
           style={[styles.loginBtn, styles.skipBtn]}
         >
-          <Text style={styles.loginTxt}>Skip</Text>
+          <Text style={styles.loginTxt}>{translations.skip}</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>

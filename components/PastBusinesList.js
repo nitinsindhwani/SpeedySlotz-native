@@ -13,6 +13,7 @@ import AppointmentCard from "../screens/GlobalComponents/AppointmentCard";
 import NoDataFound from "../screens/GlobalComponents/NoDataFound";
 import ErrorAlert from "../screens/GlobalComponents/ErrorAlert";
 import { ThemeContext } from "./ThemeContext";
+import { LanguageContext } from "../api/LanguageContext"; // Import LanguageContext
 import { baseApiUrl } from "../api/Config";
 
 const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
@@ -20,17 +21,20 @@ const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { currentTheme } = useContext(ThemeContext);
-  const [selectedFilter, setSelectedFilter] = useState("All");
+  const { language, translations } = useContext(LanguageContext); // Use LanguageContext
+  const [selectedFilter, setSelectedFilter] = useState(translations.all); // Default filter using translation
+
   const styles = getStyles(currentTheme);
 
   const filterOptions = [
-    "All",
-    "Reviewed",
-    "Completed",
-    "Booked",
-    "Cancelled",
-    "Accepted",
-    "Rescheduled",
+    translations.all,
+    translations.reviewed,
+    translations.completed,
+    translations.booked,
+    translations.confirmed,
+    translations.cancelled,
+    translations.accepted,
+    translations.rescheduled,
   ];
 
   useEffect(() => {
@@ -75,35 +79,43 @@ const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
 
   const filterAppointments = useMemo(() => {
     return (appointments) => {
-      if (selectedFilter === "All") return appointments;
+      if (selectedFilter === translations.all) return appointments;
 
       return appointments
         .filter((business) =>
           business.slots.some((slot) => {
             switch (selectedFilter) {
-              case "Reviewed":
+              case translations.reviewed:
                 return slot.reviewed;
-              case "Completed":
+              case translations.completed:
                 return slot.completed && !slot.reviewed;
-              case "Booked":
+              case translations.booked:
                 return (
                   slot.booked &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed &&
                   !slot.rescheduled &&
-                  !slot.accepted
+                  !slot.accepted &&
+                  !slot.confirmed
                 );
-              case "Cancelled":
+              case translations.cancelled:
                 return slot.cancelled;
-              case "Accepted":
+              case translations.confirmed:
+                return (
+                  slot.confirmed &&
+                  !slot.completed &&
+                  !slot.cancelled &&
+                  !slot.reviewed
+                );
+              case translations.accepted:
                 return (
                   slot.accepted &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed
                 );
-              case "Rescheduled":
+              case translations.rescheduled:
                 return slot.rescheduled;
               default:
                 return true;
@@ -114,11 +126,11 @@ const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
           ...business,
           slots: business.slots.filter((slot) => {
             switch (selectedFilter) {
-              case "Reviewed":
+              case translations.reviewed:
                 return slot.reviewed;
-              case "Completed":
+              case translations.completed:
                 return slot.completed && !slot.reviewed;
-              case "Booked":
+              case translations.booked:
                 return (
                   slot.booked &&
                   !slot.completed &&
@@ -126,16 +138,16 @@ const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
                   !slot.reviewed &&
                   !slot.rescheduled
                 );
-              case "Cancelled":
+              case translations.cancelled:
                 return slot.cancelled;
-              case "Accepted":
+              case translations.accepted:
                 return (
                   slot.accepted &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed
                 );
-              case "Rescheduled":
+              case translations.rescheduled:
                 return slot.rescheduled;
               default:
                 return true;
@@ -143,7 +155,7 @@ const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
           }),
         }));
     };
-  }, [selectedFilter]);
+  }, [selectedFilter, translations]);
 
   const filteredBusinesses = useMemo(
     () => filterAppointments(sortedBusinesses),
@@ -200,7 +212,7 @@ const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
       <ErrorAlert
         show={showError}
         onAction={handleCloseError}
-        title="Action Error"
+        title={translations.actionErrorTitle}
         body={errorMessage}
       />
     </View>

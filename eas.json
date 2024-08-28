@@ -10,7 +10,11 @@
         "gradleCommand": ":app:assembleDebug"
       },
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      },
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_ENABLED": "true"
       }
     },
     "preview": {

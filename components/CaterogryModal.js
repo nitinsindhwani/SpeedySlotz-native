@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -19,34 +19,31 @@ const CategoryModal = ({
   handleCategoryPress,
   selectedCategory,
   showCatModal,
-  onClose, // Add an onClose prop for closing the modal
+  onClose,
+  language,
 }) => {
-  useEffect(() => {
-    console.log("Modal visibility changed:", showCatModal);
-  }, [showCatModal]);
-
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={[
         styles.categoryItem,
-        selectedCategory === item?.name && styles.selectedCategory,
+        selectedCategory === item.name && styles.selectedCategory,
       ]}
-      onPress={() => handleCategoryPress(item?.name)}
+      onPress={() => handleCategoryPress(item)}
     >
       <Ionicons
-        name={item?.iconName}
+        name={item.iconName}
         size={30}
         color={
-          selectedCategory === item?.name ? theme3.light : theme3.primaryColor
+          selectedCategory === item.name ? theme3.light : theme3.primaryColor
         }
       />
       <Text
         style={[
           styles.categoryName,
-          selectedCategory === item?.name && styles.selectedCategoryText,
+          selectedCategory === item.name && styles.selectedCategoryText,
         ]}
       >
-        {item?.name}
+        {item.displayName}
       </Text>
     </TouchableOpacity>
   );
@@ -55,8 +52,13 @@ const CategoryModal = ({
     <Modal visible={showCatModal} animationType="fade" transparent={true}>
       <View style={styles.overlay}>
         <View style={styles.modalContent}>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Ionicons name="close" size={24} color={theme3.fontColor} />
+          </TouchableOpacity>
           <Text style={styles.headerText}>
-            Dive into a World of Categories! 🌟
+            {language === "es"
+              ? "¡Sumérgete en un mundo de categorías! 🌟"
+              : "Dive into a World of Categories! 🌟"}
           </Text>
           <FlatList
             data={uniqueCategories}
@@ -70,7 +72,6 @@ const CategoryModal = ({
     </Modal>
   );
 };
-
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
@@ -83,14 +84,14 @@ const styles = StyleSheet.create({
     height: height,
     backgroundColor: theme3.light,
     borderRadius: 0,
-    paddingTop: 60, // Add padding to prevent overlap with the status bar
+    paddingTop: 60,
     paddingBottom: 20,
     paddingHorizontal: 15,
     alignItems: "center",
   },
   closeButton: {
     position: "absolute",
-    top: 40, // Adjusted to be below the status bar
+    top: 40,
     right: 20,
     zIndex: 10,
   },
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: theme3.fontColor,
-    marginBottom: 30, // Increased margin for better spacing
+    marginBottom: 30,
     textAlign: "center",
   },
   listContainer: {

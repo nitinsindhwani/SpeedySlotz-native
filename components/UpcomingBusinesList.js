@@ -6,13 +6,13 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
 import { getStoredToken } from "../api/ApiCall";
 import AppointmentCard from "../screens/GlobalComponents/AppointmentCard";
 import NoDataFound from "../screens/GlobalComponents/NoDataFound";
 import ErrorAlert from "../screens/GlobalComponents/ErrorAlert";
 import { ThemeContext } from "./ThemeContext";
+import { LanguageContext } from "../api/LanguageContext"; // Import LanguageContext
 import { baseApiUrl } from "../api/Config";
 
 const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
@@ -20,18 +20,20 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { currentTheme } = useContext(ThemeContext);
-  const [selectedFilter, setSelectedFilter] = useState("All");
+  const { language, translations } = useContext(LanguageContext); // Use LanguageContext
+  const [selectedFilter, setSelectedFilter] = useState(translations.all); // Default filter using translation
+
   const styles = getStyles(currentTheme);
 
   const filterOptions = [
-    "All",
-    "Reviewed",
-    "Completed",
-    "Booked",
-    "Confirmed",
-    "Cancelled",
-    "Accepted",
-    "Rescheduled",
+    translations.all,
+    translations.reviewed,
+    translations.completed,
+    translations.booked,
+    translations.confirmed,
+    translations.cancelled,
+    translations.accepted,
+    translations.rescheduled,
   ];
 
   useEffect(() => {
@@ -76,52 +78,46 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
 
   const filterAppointments = useMemo(() => {
     return (appointments) => {
-      if (selectedFilter === "All") return appointments;
+      if (selectedFilter === translations.all) return appointments;
 
       return appointments
         .filter((business) =>
           business.slots.some((slot) => {
             switch (selectedFilter) {
-              case "Reviewed":
+              case translations.reviewed:
                 return slot.reviewed;
-              case "Completed":
+              case translations.completed:
                 return slot.completed && !slot.reviewed;
-              case "Booked":
+              case translations.booked:
                 return (
                   slot.booked &&
-                  !slot.confirmed &&
-                  !slot.accepted &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed &&
-                  !slot.rescheduled
+                  !slot.rescheduled &&
+                  !slot.accepted &&
+                  !slot.confirmed
                 );
-              case "Confirmed":
+              case translations.cancelled:
+                return slot.cancelled;
+              case translations.confirmed:
                 return (
                   slot.confirmed &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed
                 );
-              case "Accepted":
+              case translations.accepted:
                 return (
                   slot.accepted &&
-                  !slot.confirmed &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed
                 );
-              case "Cancelled":
-                return slot.cancelled;
-              case "Rescheduled":
-                return (
-                  slot.rescheduled &&
-                  !slot.cancelled &&
-                  !slot.completed &&
-                  !slot.reviewed
-                );
+              case translations.rescheduled:
+                return slot.rescheduled;
               default:
-                return false;
+                return true;
             }
           })
         )
@@ -129,51 +125,36 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
           ...business,
           slots: business.slots.filter((slot) => {
             switch (selectedFilter) {
-              case "Reviewed":
+              case translations.reviewed:
                 return slot.reviewed;
-              case "Completed":
+              case translations.completed:
                 return slot.completed && !slot.reviewed;
-              case "Booked":
+              case translations.booked:
                 return (
                   slot.booked &&
-                  !slot.confirmed &&
-                  !slot.accepted &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed &&
                   !slot.rescheduled
                 );
-              case "Confirmed":
-                return (
-                  slot.confirmed &&
-                  !slot.completed &&
-                  !slot.cancelled &&
-                  !slot.reviewed
-                );
-              case "Accepted":
+              case translations.cancelled:
+                return slot.cancelled;
+              case translations.accepted:
                 return (
                   slot.accepted &&
-                  !slot.confirmed &&
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed
                 );
-              case "Cancelled":
-                return slot.cancelled;
-              case "Rescheduled":
-                return (
-                  slot.rescheduled &&
-                  !slot.cancelled &&
-                  !slot.completed &&
-                  !slot.reviewed
-                );
+              case translations.rescheduled:
+                return slot.rescheduled;
               default:
-                return false;
+                return true;
             }
           }),
         }));
     };
-  }, [selectedFilter]);
+  }, [selectedFilter, translations]);
 
   const filteredBusinesses = useMemo(
     () => filterAppointments(sortedBusinesses),
@@ -230,7 +211,7 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
       <ErrorAlert
         show={showError}
         onAction={handleCloseError}
-        title="Action Error"
+        title={translations.actionErrorTitle}
         body={errorMessage}
       />
     </View>

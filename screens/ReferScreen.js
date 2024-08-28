@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   ScrollView,
   Text,
@@ -12,13 +12,18 @@ import Header from "./GlobalComponents/Header";
 import { FontAwesome5 } from "@expo/vector-icons";
 import Styles from "../assets/branding/GlobalStyles";
 import { theme3 } from "../assets/branding/themes";
+import { LanguageContext } from "../api/LanguageContext";
 
 const ReferScreen = () => {
   const referralCode = "ABC123"; // This would be dynamically retrieved in a real app
+  const { translations } = useContext(LanguageContext); // Use LanguageContext
 
   const shareReferralCode = async () => {
     try {
-      const shareMessage = `Hey! Join me on SpeedySlotz, the easiest way to book your slots quickly. Use my referral code '${referralCode}' when you sign up, and we both get rewarded with SpeedyPoints! Let's enjoy the convenience together. Download the app now: [App Link]`;
+      const shareMessage = translations.shareMessage.replace(
+        "{referralCode}",
+        referralCode
+      );
 
       const result = await Share.share({
         message: shareMessage,
@@ -31,33 +36,25 @@ const ReferScreen = () => {
           console.log("Shared with activity type: ", result.activityType);
         } else {
           // Shared
-       
         }
       } else if (result.action === Share.dismissedAction) {
-  
+        // Dismissed
       }
     } catch (error) {
-      // It's generally better to show a user-friendly error and not the raw message
-      // Optionally you can log the error message: console.error(error.message);
-      alert("Unable to share at the moment. Please try again later.");
+      alert(translations.shareError);
     }
   };
 
   return (
     <View style={styles.safeArea}>
-      <Header title={"Refer & Earn"} />
+      <Header title={translations.referEarnTitle} />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
       >
         <View style={styles.section}>
-          <Text style={styles.heading}>Refer Your Friends</Text>
-          <Text style={styles.text}>
-            Invite your friends to join SpeedySlotz! For every friend who signs
-            up and completes their first booking, you'll both earn 500
-            SpeedyPoints. Accumulate points to unlock exclusive discounts,
-            priority booking, and more. Sharing is caring - and rewarding!
-          </Text>
+          <Text style={styles.heading}>{translations.referYourFriends}</Text>
+          <Text style={styles.text}>{translations.inviteFriendsText}</Text>
         </View>
 
         <View style={styles.referSection}>
@@ -67,13 +64,13 @@ const ReferScreen = () => {
             color="#084887"
             style={styles.icon}
           />
-          <Text style={styles.subHeading}>Your Referral Code</Text>
+          <Text style={styles.subHeading}>{translations.yourReferralCode}</Text>
           <Text style={styles.referralCode}>{referralCode}</Text>
           <TouchableOpacity
             style={styles.shareButton}
             onPress={shareReferralCode}
           >
-            <Text style={styles.shareButtonText}>Share Code</Text>
+            <Text style={styles.shareButtonText}>{translations.shareCode}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FontAwesome, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import getImageSource from "../CallFuncGlobal/getImageSource";
 import { theme3 } from "../../assets/branding/themes";
@@ -26,6 +26,8 @@ import ConfirmModal from "../Modals/ConfirmModal";
 import RemarkModal from "../Modals/FeedbackModal";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
+import { LanguageContext } from "../../api/LanguageContext";
+
 function AppointmentCard({
   businesss,
   formatDate,
@@ -33,7 +35,7 @@ function AppointmentCard({
   singleSlot,
   setBusinesses,
 }) {
-  // ... (other state declarations)
+  const { translations } = useContext(LanguageContext);
   const [isConfirmModalVisible, setConfirmModalVisible] = useState(false);
   const [isRemarkModalVisible, setRemarkModalVisible] = useState(false);
   const [isCancelModalVisible, setCancelModalVisible] = useState(false);
@@ -48,17 +50,22 @@ function AppointmentCard({
   const [userData, setUserData] = useState(null);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null); // State to manage selected date
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedServiceType, setSelectedServiceType] = useState(null);
   const navigation = useNavigation();
 
-  const priorityLabels = ["Flexible", "Routine", "Urgent", "Emergency"];
+  const priorityLabels = [
+    translations.priorityFlexible,
+    translations.priorityRoutine,
+    translations.priorityUrgent,
+    translations.priorityEmergency,
+  ];
   const priorityColor = ["#6EBD6A", "#FFD700", "#FFA500", "#FF4500"];
   const priorityIcons = [
-    "calendar-outline", // Flexible
-    "time-outline", // Routine
-    "warning-outline", // Urgent
-    "alert-outline", // Emergency
+    "calendar-outline",
+    "time-outline",
+    "warning-outline",
+    "alert-outline",
   ];
 
   useEffect(() => {
@@ -74,7 +81,6 @@ function AppointmentCard({
     try {
       const providerId = businesss?.yelpBusiness?.id;
       const userToken = await getStoredToken("userToken");
-      console.log("Fetching slots with:", providerId, selectedDate, userToken);
 
       if (!providerId || !selectedDate || !userToken) {
         console.error("Missing required parameters");
@@ -95,7 +101,6 @@ function AppointmentCard({
       );
 
       if (response.data) {
-        console.log("Slots fetched:", response.data);
         setSlots(response.data);
       } else {
         console.error("No slots data received.");
@@ -104,14 +109,13 @@ function AppointmentCard({
       console.error("There was an error fetching the slots", error);
     }
   };
+
   useEffect(() => {
     setIsReviewed(singleSlot?.reviewed || false);
     setLocalSingleSlot(singleSlot);
   }, [singleSlot]);
 
   const onDayPress = (day) => {
-    console.log("Selected day in AppointmentCard:", day);
-    // Check if day is a string (date) or an object with dateString
     const dateString = typeof day === "string" ? day : day.dateString;
     setSelectedDate(dateString);
     fetchSlots(dateString);
@@ -119,7 +123,7 @@ function AppointmentCard({
 
   const handleRescheduleSubmit = async () => {
     if (!selectedSlotId || !selectedServiceType || !selectedDate) {
-      setErrorMessage("Please select a new date, slot, and service type.");
+      setErrorMessage(translations.rescheduleFailed);
       setShowError(true);
       return;
     }
@@ -127,7 +131,6 @@ function AppointmentCard({
     try {
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
-        console.log("No token found");
         return;
       }
 
@@ -147,8 +150,6 @@ function AppointmentCard({
         }
       );
 
-      console.log("Reschedule response:", response.data);
-
       if (response.status === 200 && response.data.success) {
         const updatedSlot = {
           ...response.data.payload,
@@ -156,10 +157,8 @@ function AppointmentCard({
           booked: true,
         };
 
-        // Update local state
         setLocalSingleSlot(updatedSlot);
 
-        // Update parent component state
         setBusinesses((prevBusinesses) =>
           prevBusinesses.map((business) =>
             business.id === businesss.id
@@ -177,14 +176,12 @@ function AppointmentCard({
 
         setRescheduleModalVisible(false);
       } else {
-        setErrorMessage("Rescheduling failed. Please try again.");
+        setErrorMessage(translations.rescheduleFailed);
         setShowError(true);
       }
     } catch (error) {
       console.error("Error during rescheduling:", error);
-      setErrorMessage(
-        "An error occurred during rescheduling. Please try again."
-      );
+      setErrorMessage(translations.rescheduleFailed);
       setShowError(true);
     }
   };
@@ -196,9 +193,11 @@ function AppointmentCard({
   const handleServiceTypePress = (serviceType) => {
     setSelectedServiceType(serviceType);
   };
+
   const handleReview = () => {
     setRemarkModalVisible(true);
   };
+
   const handleReviewSubmit = () => {
     setIsReviewed(true);
     const updatedSlot = { ...localSingleSlot, reviewed: true };
@@ -206,6 +205,7 @@ function AppointmentCard({
     updateBusinessesState(updatedSlot);
     setRemarkModalVisible(false);
   };
+
   const handleConfirm = async () => {
     setConfirmModalVisible(true);
   };
@@ -218,7 +218,6 @@ function AppointmentCard({
     try {
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
-        console.log("No token found");
         return;
       }
 
@@ -236,23 +235,23 @@ function AppointmentCard({
         const updatedSlot = { ...localSingleSlot, completed: true };
         setLocalSingleSlot(updatedSlot);
         updateBusinessesState(updatedSlot);
-        setErrorMessage("Your appointment has been marked as completed.");
+        setErrorMessage(translations.completionSuccess);
         setShowError(true);
       } else {
-        setErrorMessage("Completion failed. Please try again.");
+        setErrorMessage(translations.completionFailed);
         setShowError(true);
       }
     } catch (error) {
       console.error("Error during completion:", error);
-      setErrorMessage("An error occurred during completion. Please try again.");
+      setErrorMessage(translations.completionFailed);
       setShowError(true);
     }
   };
+
   const handleConfirmModalConfirm = async () => {
     try {
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
-        console.log("No token found");
         return;
       }
 
@@ -270,17 +269,15 @@ function AppointmentCard({
         const updatedSlot = { ...localSingleSlot, confirmed: true };
         setLocalSingleSlot(updatedSlot);
         updateBusinessesState(updatedSlot);
-        setErrorMessage("Your appointment has been confirmed.");
+        setErrorMessage(translations.confirmSuccess);
         setShowError(true);
       } else {
-        setErrorMessage("Confirmation failed. Please try again.");
+        setErrorMessage(translations.confirmFailed);
         setShowError(true);
       }
     } catch (error) {
       console.error("Error during confirmation:", error);
-      setErrorMessage(
-        "An error occurred during confirmation. Please try again."
-      );
+      setErrorMessage(translations.confirmFailed);
       setShowError(true);
     } finally {
       setConfirmModalVisible(false);
@@ -291,7 +288,6 @@ function AppointmentCard({
     try {
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
-        console.log("No token found");
         return;
       }
 
@@ -309,18 +305,19 @@ function AppointmentCard({
         const updatedSlot = { ...localSingleSlot, rejected: true };
         setLocalSingleSlot(updatedSlot);
         updateBusinessesState(updatedSlot);
-        setErrorMessage("Your appointment has been rejected.");
+        setErrorMessage(translations.rejectionSuccess);
         setShowError(true);
       } else {
-        setErrorMessage("Rejection failed. Please try again.");
+        setErrorMessage(translations.rejectionFailed);
         setShowError(true);
       }
     } catch (error) {
       console.error("Error during rejection:", error);
-      setErrorMessage("An error occurred during rejection. Please try again.");
+      setErrorMessage(translations.rejectionFailed);
       setShowError(true);
     }
   };
+
   const formatTimeWindow = (minutes) => {
     if (minutes >= 60) {
       const hours = Math.floor(minutes / 60);
@@ -336,11 +333,9 @@ function AppointmentCard({
       return `${minutes} minute${minutes > 1 ? "s" : ""}`;
     }
   };
+
   const handleBookAgain = () => {
-    // Implement book again logic here
-    console.log("Book again for business:", businesss.yelpBusiness.id);
     navigation.navigate("DetailScreen", { business: businesss });
-    // You might want to navigate to a booking screen or open a booking modal
   };
 
   const updateBusinessesState = (updatedSlot) => {
@@ -357,11 +352,10 @@ function AppointmentCard({
       )
     );
   };
+
   const handleReschedule = () => {
     if (localSingleSlot.rescheduled) {
-      setErrorMessage(
-        "We apologize, but this appointment has already been rescheduled. For any further changes, please contact our customer support team."
-      );
+      setErrorMessage(translations.rescheduleFailed);
       setShowError(true);
       return;
     }
@@ -373,13 +367,12 @@ function AppointmentCard({
     const timeDifference = appointmentTime.getTime() - now.getTime();
     const reschedulingWindowInMinutes =
       businesss.yelpBusinessSettings?.rescheduleWindow || 60;
-    const reschedulingWindowInMs =
-      (businesss.yelpBusinessSettings?.rescheduleWindow || 60) * 60 * 1000; // Default to 60 minutes if not set
+    const reschedulingWindowInMs = reschedulingWindowInMinutes * 60 * 1000;
 
     if (timeDifference <= reschedulingWindowInMs) {
       const formattedTimeWindow = formatTimeWindow(reschedulingWindowInMinutes);
       setErrorMessage(
-        `We're sorry, but rescheduling is only allowed up to ${formattedTimeWindow} before the appointment. Please contact our support team for assistance.`
+        `${translations.rescheduleFailed} ${formattedTimeWindow}`
       );
       setShowError(true);
       return;
@@ -398,14 +391,13 @@ function AppointmentCard({
   const handleCancelConfirm = async (reason) => {
     try {
       if (!localSingleSlot || !localSingleSlot.date) {
-        setErrorMessage("Unable to cancel. Invalid appointment slot.");
+        setErrorMessage(translations.cancellationFailed);
         setShowError(true);
         return;
       }
 
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
-        console.log("No token found");
         return;
       }
 
@@ -422,9 +414,7 @@ function AppointmentCard({
         const formattedTimeWindow = formatTimeWindow(
           cancellationWindowInMinutes
         );
-        setErrorMessage(
-          `You cannot cancel the appointment within ${formattedTimeWindow} of its start time.`
-        );
+        setErrorMessage(`${translations.cancelSuccess} ${formattedTimeWindow}`);
         setShowError(true);
         return;
       }
@@ -460,24 +450,23 @@ function AppointmentCard({
               : business
           )
         );
-        setErrorMessage("Your appointment has been successfully cancelled.");
+        setErrorMessage(translations.cancelSuccess);
         setShowError(true);
       } else {
-        console.log("Cancellation failed:", response.data);
-        setErrorMessage("Cancellation failed. Please try again.");
+        setErrorMessage(translations.cancellationFailed);
         setShowError(true);
       }
     } catch (error) {
       console.error("There was an error while canceling:", error);
-      setErrorMessage("There was an error while canceling. Please try again.");
+      setErrorMessage(translations.cancellationFailed);
       setShowError(true);
     } finally {
       setCancelModalVisible(false);
     }
   };
+
   const handleChatButtonPress = () => {
     if (!userData) {
-      console.error("User data not available");
       return;
     }
 
@@ -498,19 +487,21 @@ function AppointmentCard({
       },
     });
   };
+
   const getStatusMessage = (slot) => {
     const statusLabels = {
-      cancelled: { label: "Cancelled", color: "#FF6347" },
-      rescheduled: { label: "Rescheduled", color: "#FFD700" },
-      noshow: { label: "No Show", color: "#FF4500" },
-      completed: { label: "Completed", color: "#32CD32" },
-      confirmed: { label: "Confirmed", color: "#32CD32" },
-      accepted: { label: "Accepted", color: "#4682B4" },
-      booked: { label: "Booked", color: "#1E90FF" },
-      open: { label: "Open", color: "#6EBD6A" },
-      unknown: { label: "Unknown Status", color: "#808080" },
-      reviewed: { label: "Reviewed", color: "#8A2BE2" }, // Added reviewed status
+      cancelled: { label: translations.statusCancelled, color: "#FF6347" },
+      rescheduled: { label: translations.statusRescheduled, color: "#FFD700" },
+      noshow: { label: translations.statusNoShow, color: "#FF4500" },
+      completed: { label: translations.statusCompleted, color: "#32CD32" },
+      confirmed: { label: translations.statusConfirmed, color: "#32CD32" },
+      accepted: { label: translations.statusAccepted, color: "#4682B4" },
+      booked: { label: translations.statusBooked, color: "#1E90FF" },
+      open: { label: translations.statusOpen, color: "#6EBD6A" },
+      unknown: { label: translations.statusUnknown, color: "#808080" },
+      reviewed: { label: translations.statusReviewed, color: "#8A2BE2" },
     };
+
     if (slot.reviewed) {
       return statusLabels.reviewed;
     }
@@ -526,19 +517,25 @@ function AppointmentCard({
     if (slot.confirmed) {
       return {
         ...statusLabels.confirmed,
-        label: slot.rescheduled ? "Confirmed (R)" : "Confirmed",
+        label: slot.rescheduled
+          ? `${translations.statusConfirmed} (R)`
+          : translations.statusConfirmed,
       };
     }
     if (slot.accepted) {
       return {
         ...statusLabels.accepted,
-        label: slot.rescheduled ? "Accepted (R)" : "Accepted",
+        label: slot.rescheduled
+          ? `${translations.statusAccepted} (R)`
+          : translations.statusAccepted,
       };
     }
     if (slot.rescheduled) {
       return {
         ...statusLabels.rescheduled,
-        label: slot.booked ? "Booked (R)" : "Rescheduled",
+        label: slot.booked
+          ? `${translations.statusBooked} (R)`
+          : translations.statusRescheduled,
       };
     }
     if (slot.booked) {
@@ -576,7 +573,7 @@ function AppointmentCard({
             onPress={handleReview}
             style={buttonStyle(theme3.primaryColor, "100%")}
           >
-            <Text style={Styles.LoginTxt}>Review</Text>
+            <Text style={Styles.LoginTxt}>{translations.review}</Text>
           </TouchableOpacity>
         );
       }
@@ -585,7 +582,7 @@ function AppointmentCard({
           onPress={handleReview}
           style={buttonStyle(theme3.primaryColor, "100%")}
         >
-          <Text style={Styles.LoginTxt}>Book Again</Text>
+          <Text style={Styles.LoginTxt}>{translations.bookAgain}</Text>
         </TouchableOpacity>
       );
     }
@@ -596,7 +593,7 @@ function AppointmentCard({
           onPress={handleBookAgain}
           style={buttonStyle(theme3.primaryColor, "100%")}
         >
-          <Text style={Styles.LoginTxt}>Book Again</Text>
+          <Text style={Styles.LoginTxt}>{translations.bookAgain}</Text>
         </TouchableOpacity>
       );
     }
@@ -607,7 +604,7 @@ function AppointmentCard({
           onPress={handleReview}
           style={buttonStyle(theme3.primaryColor, "100%")}
         >
-          <Text style={Styles.LoginTxt}>Review</Text>
+          <Text style={Styles.LoginTxt}>{translations.review}</Text>
         </TouchableOpacity>
       );
     }
@@ -617,7 +614,7 @@ function AppointmentCard({
           onPress={handleComplete}
           style={buttonStyle(theme3.primaryColor, "100%")}
         >
-          <Text style={Styles.LoginTxt}>Mark Complete</Text>
+          <Text style={Styles.LoginTxt}>{translations.markComplete}</Text>
         </TouchableOpacity>
       );
     }
@@ -628,13 +625,13 @@ function AppointmentCard({
             onPress={handleConfirm}
             style={buttonStyle(theme3.primaryColor)}
           >
-            <Text style={Styles.LoginTxt}>Confirm</Text>
+            <Text style={Styles.LoginTxt}>{translations.confirm}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleReject}
             style={buttonStyle(theme3.danger)}
           >
-            <Text style={Styles.LoginTxt}>Reject</Text>
+            <Text style={Styles.LoginTxt}>{translations.reject}</Text>
           </TouchableOpacity>
         </View>
       );
@@ -646,13 +643,13 @@ function AppointmentCard({
             onPress={handleReschedule}
             style={buttonStyle(theme3.primaryColor)}
           >
-            <Text style={Styles.LoginTxt}>Reschedule</Text>
+            <Text style={Styles.LoginTxt}>{translations.reschedule}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleCancel}
             style={buttonStyle(theme3.danger)}
           >
-            <Text style={Styles.LoginTxt}>Cancel</Text>
+            <Text style={Styles.LoginTxt}>{translations.cancel}</Text>
           </TouchableOpacity>
         </View>
       );
@@ -705,7 +702,7 @@ function AppointmentCard({
           style={{ color: theme3.primaryColor }}
           onPress={() => setExpandDescription(!expandDescription)}
         >
-          {expandDescription ? " Read Less" : " Read More"}
+          {expandDescription ? translations.readLess : translations.readMore}
         </Text>
       </Text>
 
@@ -722,7 +719,7 @@ function AppointmentCard({
             <Text
               style={[styles.mostPopularName, { fontSize: 14, marginLeft: 0 }]}
             >
-              Categories
+              {translations.categories}
             </Text>
           </View>
 
@@ -783,7 +780,7 @@ function AppointmentCard({
             <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
               {singleSlot.amountDue
                 ? `$${singleSlot.amountDue}`
-                : "Final Amount Pending"}
+                : translations.finalAmountPending}
             </Text>
           </View>
 
@@ -794,7 +791,9 @@ function AppointmentCard({
             <TouchableOpacity
               onPress={() => handleChatButtonPress(businesss.yelpBusiness)}
             >
-              <Text style={[styles.DescText, { marginLeft: 0 }]}>Chat Now</Text>
+              <Text style={[styles.DescText, { marginLeft: 0 }]}>
+                {translations.chatNow}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -820,7 +819,7 @@ function AppointmentCard({
               color={theme3.primaryColor}
             />
             <Text style={[styles.mostPopularCity, { marginTop: 0 }]}>
-              Directions
+              {translations.directions}
             </Text>
           </TouchableOpacity>
 
@@ -838,7 +837,7 @@ function AppointmentCard({
       </View>
 
       <Text style={[styles.mostPopularName, { fontSize: 14, marginLeft: 0 }]}>
-        Booking Details
+        {translations.bookingDetails}
       </Text>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         <View style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}>
@@ -864,7 +863,7 @@ function AppointmentCard({
       <ErrorAlert
         show={showError}
         onAction={() => setShowError(false)}
-        title="Attention!"
+        title={translations.attention}
         body={errorMessage}
       />
       <CancelModal
@@ -876,7 +875,7 @@ function AppointmentCard({
         isVisible={isConfirmModalVisible}
         onClose={handleConfirmModalClose}
         onConfirm={handleConfirmModalConfirm}
-        slot={localSingleSlot }
+        slot={localSingleSlot}
         business={businesss}
       />
       <RescheduleModal

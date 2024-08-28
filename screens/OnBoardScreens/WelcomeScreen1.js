@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { LanguageContext } from "../../api/LanguageContext";
 import TopImg from "../../assets/newimage/Ellipse4.png";
 import Logo from "../../assets/images/welcome1.png";
 import OnBoard from "../../assets/newimage/onBoard1.png";
@@ -18,6 +19,7 @@ const WindowHeight = Dimensions.get("screen").height;
 
 const WelcomeScreen1 = ({ handleNextButtonPress }) => {
   const navigation = useNavigation();
+  const { translations } = useContext(LanguageContext);
 
   return (
     <ImageBackground
@@ -30,12 +32,8 @@ const WelcomeScreen1 = ({ handleNextButtonPress }) => {
       </View>
 
       <View style={styles.middleSection}>
-        <Text style={styles.title}>Unlock Your Time</Text>
-        <Text style={styles.paragraph}>
-          Welcome to a new era of convenience. Say goodbye to the hassle of
-          booking appointments. Discover a world where scheduling meets
-          simplicity, and your next appointment is just a tap away.
-        </Text>
+        <Text style={styles.title}>{translations.unlockYourTime}</Text>
+        <Text style={styles.paragraph}>{translations.welcomeMessage}</Text>
       </View>
 
       <View style={styles.buttonContainer}>
@@ -43,13 +41,13 @@ const WelcomeScreen1 = ({ handleNextButtonPress }) => {
           onPress={() => handleNextButtonPress()}
           style={styles.loginBtn}
         >
-          <Text style={styles.loginTxt}>Next</Text>
+          <Text style={styles.loginTxt}>{translations.next}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("LoginScreen")}
           style={[styles.loginBtn, styles.skipBtn]}
         >
-          <Text style={styles.loginTxt}>Skip</Text>
+          <Text style={styles.loginTxt}>{translations.skip}</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>

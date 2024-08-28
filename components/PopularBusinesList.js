@@ -8,94 +8,57 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
+  Linking,
 } from "react-native";
 import { AirbnbRating } from "react-native-ratings";
-import { Linking } from "react-native";
 import MapIcon from "react-native-vector-icons/FontAwesome5";
 import DealIcon from "react-native-vector-icons/FontAwesome5";
-import HeartIcon from "react-native-vector-icons/AntDesign"; // Add this import for the heart icon
-import { ThemeContext, ThemeProvider } from "../components/ThemeContext";
-import { translation } from "../assets/translations/translations";
+import HeartIcon from "react-native-vector-icons/AntDesign";
+import { ThemeContext } from "../components/ThemeContext";
 import { getStoredToken, getStoredUser } from "../api/ApiCall";
 import { getBadgeDetails } from "../components/BadgeInfo";
+import { LanguageContext } from "../api/LanguageContext";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
-import {
-  FontAwesome,
-  Octicons,
-  MaterialIcons,
-  Ionicons,
-} from "@expo/vector-icons"; // Import the icon library
+import { FontAwesome, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import SoftLoadImage from "../components/SoftLoadImage";
 import { baseApiUrl } from "../api/Config";
 import { theme3 } from "../assets/branding/themes";
 import Styles from "../assets/branding/GlobalStyles";
 import { FlatList } from "react-native-gesture-handler";
-import Specialieites from "../assets/data/SpecialitiesData";
-import AvailableSlots from "../assets/data/Availableslots";
-import { Entypo } from "@expo/vector-icons";
 import DealIcons from "../screens/GlobalComponents/DealIcons";
 import DealModal from "./DealModal";
-// import { faV } from "@fortawesome/free-solid-svg-icons";
-// import { set } from "date-fns";
 import ChatAnim from "../screens/GlobalComponents/ChatAnim";
 
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
 const defaultImageUrl = require("../assets/images/defaultImage.png");
+
 const metersToMiles = (meters) => {
   const miles = meters * 0.000621371;
   return miles.toFixed(2);
 };
-const renderBusinessImage = (item) => {
-  const imageUrlMap = item.yelpBusiness.image_url_map;
-  const imageKeys = Object.keys(imageUrlMap);
-  let mainImageKey;
 
-  // Find the key marked as the main image
-  for (const key of imageKeys) {
-    if (imageUrlMap[key].main) {
-      mainImageKey = key;
-      break;
-    }
-  }
-
-  return (
-    <Image
-      source={
-        mainImageKey
-          ? { uri: imageUrlMap[mainImageKey] }
-          : imageKeys.length > 0
-          ? { uri: imageUrlMap[imageKeys[0]] }
-          : defaultImageUrl
-      }
-      style={Styles.mostPopularImage}
-    />
-  );
-};
 const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
   const initialFavorites = fetchedBusinesses.reduce((acc, business) => {
-    acc[business.id] = business.favorite || false; // Default to false if 'favorite' is not provided
-    // Log the business ID if it's marked as a favorite
-
+    acc[business.id] = business.favorite || false;
     return acc;
   }, {});
+
   const [favorites, setFavorites] = useState(initialFavorites);
   const [isDealModalVisible, setIsDealModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
-  // Ensure that `selectedDeal` is initialized as an array, even if empty
   const [selectedDeal, setSelectedDeal] = useState([]);
+  const { translations } = useContext(LanguageContext);
 
-  // When opening the modal, make sure `selectedDeal` is always an array
   const openDealModal = (dealData) => {
     const dealsArray = Array.isArray(dealData) ? dealData : [dealData];
     setSelectedDeal(dealsArray);
     setIsDealModalVisible(true);
   };
 
-  const desc = "Description will be written here";
   const renderBadge = ({ item }) => {
-    const badge = getBadgeDetails(item); // Correctly call the function
+    const badge = getBadgeDetails(item, translations);
     if (!badge) return null;
 
     return (
@@ -108,29 +71,16 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
 
   const { currentTheme } = useContext(ThemeContext);
   const styles = getStyles(currentTheme);
+
   useEffect(() => {
     const fetchUserData = async () => {
-      const storedUserData = await getStoredUser(); // Await the async call
-      setUserData(storedUserData); // Set userData state
+      const storedUserData = await getStoredUser();
+      setUserData(storedUserData);
     };
 
     fetchUserData();
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, []);
 
-  const filters = [
-    { name: "Top Rated", icon: "star" },
-    { name: "Verified", icon: "checkmark-circle" },
-    { name: "Low Price", icon: "pricetag" },
-    { name: "Insurance", icon: "shield-checkmark" },
-    { name: "5 years+ old", icon: "time" },
-    { name: "Licensed", icon: "document-text" },
-    { name: "Response in 1 Hr", icon: "timer" },
-    { name: "Top Professional (Yearly)", icon: "medal" },
-    { name: "Fair Business", icon: "business" },
-    { name: "Most Busy", icon: "analytics" },
-    { name: "Punctuality Award", icon: "time-outline" },
-    { name: "New", icon: "newspaper" },
-  ];
   const toggleFavorite = (itemId, changeTepFav) => {
     if (favorites[itemId]) {
       removeFavorite(itemId, changeTepFav);
@@ -138,21 +88,22 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       addFavorite(itemId, changeTepFav);
     }
   };
+
   const handleChatButtonPress = async (business) => {
     let user = userData;
     if (!user) {
-      user = await getStoredUser(); // Synchronously get user data if not already loaded
+      user = await getStoredUser();
       if (!user) {
         console.error("User data is not available.");
-        return; // Optionally, handle this case (e.g., show an error)
+        return;
       }
     }
     if (business.is_registered) {
       const selectedChat = {
         chat_id: uuidv4(),
         project_name: "New Job",
-        user_id: user.user_id, // Use local user variable
-        username: user.username, // Use local user variable
+        user_id: user.user_id,
+        username: user.username,
         business_id: business.id,
         business_name: business.name,
         chatMessages: [],
@@ -170,7 +121,6 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
   const addFavorite = async (itemId, changeTepFav) => {
     try {
       const secureToken = await getStoredToken();
-
       const headers = {
         Authorization: `Bearer ${secureToken}`,
       };
@@ -187,44 +137,13 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       changeTepFav(true);
     } catch (error) {
       changeTepFav(false);
-
       console.log("Failed to add favorite:", error);
     }
-  };
-
-  const getImageSource = (businessName, image_url) => {
-    // Check if image_url is an object with properties
-    if (
-      typeof image_url === "object" &&
-      image_url !== null &&
-      Object.keys(image_url).length > 0
-    ) {
-      // Look for a key named "Main" first
-      if (image_url.Main && image_url.Main.trim() !== "") {
-        return { uri: image_url.Main };
-      }
-      // If no "Main", use the first available key
-      const firstImageUrl = Object.values(image_url).find(
-        (url) => typeof url === "string" && url.trim() !== ""
-      );
-      if (firstImageUrl) {
-        return { uri: firstImageUrl };
-      }
-    }
-
-    // If image_url is a string and not empty, return it
-    if (typeof image_url === "string" && image_url.trim() !== "") {
-      return { uri: image_url };
-    }
-
-    // Fallback to the default image
-    return defaultImageUrl;
   };
 
   const removeFavorite = async (itemId, changeTepFav) => {
     try {
       const secureToken = await getStoredToken();
-
       const headers = {
         Authorization: `Bearer ${secureToken}`,
       };
@@ -242,9 +161,32 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       console.log("function remove");
     } catch (error) {
       changeTepFav(true);
-
       console.error("Failed to remove favorite:", error);
     }
+  };
+
+  const getImageSource = (businessName, image_url) => {
+    if (
+      typeof image_url === "object" &&
+      image_url !== null &&
+      Object.keys(image_url).length > 0
+    ) {
+      if (image_url.Main && image_url.Main.trim() !== "") {
+        return { uri: image_url.Main };
+      }
+      const firstImageUrl = Object.values(image_url).find(
+        (url) => typeof url === "string" && url.trim() !== ""
+      );
+      if (firstImageUrl) {
+        return { uri: firstImageUrl };
+      }
+    }
+
+    if (typeof image_url === "string" && image_url.trim() !== "") {
+      return { uri: image_url };
+    }
+
+    return defaultImageUrl;
   };
 
   function DetailCard({ item, index }) {
@@ -295,22 +237,9 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       );
     };
 
-    function SpecialityList({ item }) {
-      return (
-        <View style={styles.CatList}>
-          {/* Ensure you're using a valid icon name for Ionicons here */}
-          <Ionicons name={item.icon} size={18} color={theme3.secondaryColor} />
-          <Text style={{ color: theme3.light, marginLeft: 5, fontSize: 11 }}>
-            {item.name} {/* Use item.name to render the name */}
-          </Text>
-        </View>
-      );
-    }
-
     function SpecialityListII({ item }) {
       return (
         <View style={styles.CatListII}>
-          {/* <Ionicons name={item.icon} size={20} color={theme3.secondaryColor} /> */}
           <Text
             style={{
               color: theme3.light,
@@ -323,28 +252,11 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         </View>
       );
     }
-    function AvailableSlotsList({ item }) {
-      return (
-        <View style={styles.CatList}>
-          {/* <Ionicons name={item.icon} size={20} color={theme3.secondaryColor} /> */}
-          <Text style={{ color: theme3.light, marginLeft: 5 }}>
-            {item.title}
-          </Text>
-        </View>
-      );
-    }
 
     return (
       <View key={index} style={styles.mostPopularItem}>
         <View style={styles.favoriteIconContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              // setIsFav()
-
-              // toggleFavorite(item.yelpBusiness.id,changeTepFav)
-              handleFav(item.yelpBusiness.id);
-            }}
-          >
+          <TouchableOpacity onPress={() => handleFav(item.yelpBusiness.id)}>
             <HeartIcon
               name={isFav ? "heart" : "hearto"}
               size={25}
@@ -384,7 +296,9 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 <View style={{ marginRight: 4 }}>
                   <ChatAnim />
                 </View>
-                <Text style={styles.slotsAvailableText}>Slots Available</Text>
+                <Text style={styles.slotsAvailableText}>
+                  {translations.slotsAvailable}
+                </Text>
               </View>
             )}
           </View>
@@ -392,7 +306,6 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
 
         {item.yelpBusiness.is_registered && (
           <>
-            {/* Description with Read More/Less functionality */}
             {showMore ? (
               <Text style={styles.DescText}>
                 {item.yelpBusiness.details}
@@ -401,7 +314,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                   onPress={() => setShowMore(false)}
                 >
                   {" "}
-                  Read Less...
+                  {translations.readLess}
                 </Text>
               </Text>
             ) : (
@@ -412,22 +325,23 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                   onPress={() => setShowMore(true)}
                 >
                   {" "}
-                  Read More...
+                  {translations.readMore}
                 </Text>
               </Text>
             )}
 
-            {/* Display badges or 'No badges available' based on condition */}
             {item.yelpBusiness.badges && item.yelpBusiness.badges.length > 0 ? (
               <FlatList
                 data={item.yelpBusiness.badges}
                 horizontal={true}
-                renderItem={renderBadge} // Ensure this function is defined to render each badge
+                renderItem={renderBadge}
                 keyExtractor={(badge, index) => `badge-${index}`}
                 showsHorizontalScrollIndicator={false}
               />
             ) : (
-              <Text style={styles.noSlotsText}>No badges available.</Text>
+              <Text style={styles.noSlotsText}>
+                {translations.noBadgesAvailable}
+              </Text>
             )}
           </>
         )}
@@ -448,7 +362,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                   { fontSize: 14, marginLeft: 0 },
                 ]}
               >
-                Categories
+                {translations.categories}
               </Text>
             </View>
 
@@ -456,15 +370,13 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
               data={item.yelpBusinessCategory?.serviceTypes || []}
               horizontal={true}
               showsHorizontalScrollIndicator={false}
-              renderItem={({ item: serviceType, index }) => {
-                // Directly return SpecialityListII component for each serviceType
-                return <SpecialityListII item={serviceType} index={index} />;
-              }}
-              keyExtractor={(serviceType, index) => index.toString()} // Add a keyExtractor for good practice
+              renderItem={({ item: serviceType, index }) => (
+                <SpecialityListII item={serviceType} index={index} />
+              )}
+              keyExtractor={(serviceType, index) => index.toString()}
             />
           </>
         )}
-        {/* <Text>item.slot</Text> */}
 
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View style={styles.extraInfoContainer}>
@@ -506,13 +418,12 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 color={theme3.primaryColor}
               />
               <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                {metersToMiles(item.yelpBusiness.distance)} miles
+                {metersToMiles(item.yelpBusiness.distance)} {translations.miles}
               </Text>
             </View>
 
             {item.yelpBusiness.is_registered && (
               <View style={Styles.OneRow}>
-                {/* <Octicons name="dot-fill" size={20} color={theme3.send} /> */}
                 <View style={{ marginLeft: -6 }}>
                   <ChatAnim />
                 </View>
@@ -520,7 +431,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                   onPress={() => handleChatButtonPress(item.yelpBusiness)}
                 >
                   <Text style={[styles.DescText, { marginLeft: 0 }]}>
-                    Chat Now
+                    {translations.chatNow}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -538,8 +449,6 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 if (mapQuery) {
                   Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
                 } else {
-                  // Optionally, handle the case where there is no address to navigate to
-                  // e.g., alert the user or log an error
                   console.warn("No address available for directions");
                 }
               }}
@@ -550,7 +459,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 color={theme3.primaryColor}
               />
               <Text style={[styles.mostPopularCity, { marginTop: 0 }]}>
-                Directions
+                {translations.directions}
               </Text>
             </TouchableOpacity>
             {item.yelpBusinessDeal && (
@@ -562,7 +471,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
               >
                 <DealIcons />
                 <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-                  Deals
+                  {translations.deals}
                 </Text>
               </TouchableOpacity>
             )}
@@ -577,7 +486,10 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 navigation.navigate("DetailScreen", { business: item })
               }
             >
-              <Text style={styles.bookButtonText}>Book Now</Text>
+              <Text style={styles.bookButtonText}>
+                {translations.bookNow}{" "}
+                {/* Use translation for the button text */}
+              </Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -592,16 +504,17 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 });
               }}
             >
-              <Text style={styles.callButtonText}>Call Now</Text>
+              <Text style={styles.callButtonText}>
+                {translations.callNow}{" "}
+                {/* Use translation for the button text */}
+              </Text>
             </TouchableOpacity>
           )}
         </View>
         <View style={{ flex: 1 }}>
-          {/* Your existing components */}
-
           <DealModal
             isVisible={isDealModalVisible}
-            deals={selectedDeal} // Ensure this matches the prop expected by the modal
+            deals={selectedDeal}
             onClose={() => setIsDealModalVisible(false)}
           />
         </View>
@@ -625,10 +538,10 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         <View style={styles.noBusinessContainer}>
           <FontAwesome name="frown-o" size={50} color={theme3.secondaryColor} />
           <Text style={styles.noBusinessPrimaryText}>
-            No matching businesses found.
+            {translations.noMatchingBusinesses}
           </Text>
           <Text style={styles.noBusinessSecondaryText}>
-            Try increasing the search radius or choose a different category.
+            {translations.increaseRadiusOrChooseDifferentCategory}
           </Text>
         </View>
       )}
@@ -639,17 +552,8 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
 const getStyles = (currentTheme) =>
   StyleSheet.create({
     mostPopular: {
-      // flex: 1,
-      // padding: 10,
       height: WindowHeight,
       width: WindowWidth,
-      // backgroundColor: currentTheme.secondaryColor, // Blue background color
-    },
-    sectionHeading: {
-      fontSize: 20,
-      fontWeight: "bold",
-      marginBottom: 16,
-      color: currentTheme.whiteColor, // White text color
     },
     mostPopularItem: {
       marginTop: 16,
@@ -659,22 +563,16 @@ const getStyles = (currentTheme) =>
       elevation: 4,
       shadowOpacity: 4,
       borderRadius: 10,
-      backgroundColor: theme3.GlobalBg, // White background color
-    },
-    businessNameContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginBottom: 8,
+      backgroundColor: theme3.GlobalBg,
     },
     favoriteIconContainer: {
       position: "absolute",
-      top: 20, // Changed this
-      right: 20, // Changed this
+      top: 20,
+      right: 20,
       zIndex: 2,
-      padding: 5, // Added this to make it touch-friendly
-      borderRadius: 20, // Added this for a rounded touch area
-      backgroundColor: "rgba(255, 255, 255, 0.5)", // Added a light background for visibility
+      padding: 5,
+      borderRadius: 20,
+      backgroundColor: "rgba(255, 255, 255, 0.5)",
     },
     mostPopularImage: {
       width: "100%",
@@ -720,47 +618,13 @@ const getStyles = (currentTheme) =>
     },
     mostPopularCity: {
       fontSize: 14,
-      color: theme3.fontColorI, // Gray text color
+      color: theme3.fontColorI,
     },
-    mostPopularDistance: {
-      fontSize: 12,
-      color: currentTheme.primaryColor, // Gray text color
-    },
-    mostPopularPhone: {
-      fontSize: 12,
-      color: currentTheme.primaryColor, // Gray text color
-    },
-    ratingContainer: {
-      alignSelf: "flex-start",
-      flex: 1,
-      // alignSelf: "left",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 2,
-      elevation: 2,
-      flexDirection: "row",
-    },
-    bookButton: {
-      flex: 1,
-      paddingVertical: 8,
-      marginLeft: 5, // Added this
-      borderRadius: 5,
-      backgroundColor: currentTheme.primaryColor,
-      alignItems: "center",
-      elevation: 3, // Added shadow for Android
-      shadowOffset: { width: 0, height: 1 }, // Shadow for iOS
-      shadowRadius: 2,
-      shadowOpacity: 0.2,
-    },
-    bookButtonText: {
-      fontSize: 16,
-      fontWeight: "bold",
-      color: currentTheme.whiteColor, // White text color
+    DescText: {
+      fontSize: 14,
+      color: theme3.fontColorI,
     },
     extraInfoContainer: {
-      // flexDirection: "row",
-      // marginRight:20,
       alignItems: "flex-start",
       justifyContent: "space-between",
       marginTop: 10,
@@ -769,37 +633,28 @@ const getStyles = (currentTheme) =>
       flexDirection: "row",
       alignItems: "center",
     },
-    dealText: {
-      marginLeft: 5,
-      color: currentTheme.primaryColor, // Gray text color
-    },
     mapIconContainer: {
       flexDirection: "row",
       alignItems: "center",
     },
-    mapText: {
-      marginLeft: 5,
-      color: currentTheme.primaryColor, // Gray text color
-    },
     callButton: {
       flex: 1,
       paddingVertical: 8,
-      marginRight: 5, // Added this
+      marginRight: 5,
       borderRadius: 5,
       backgroundColor: "#FF0000",
       alignItems: "center",
-      elevation: 3, // Added shadow for Android
-      shadowOffset: { width: 0, height: 1 }, // Shadow for iOS
+      elevation: 3,
+      shadowOffset: { width: 0, height: 1 },
       shadowRadius: 2,
       shadowOpacity: 0.2,
     },
     callButtonText: {
       fontSize: 16,
       fontWeight: "bold",
-      color: "#FFFFFF", // Change this to the color you want
+      color: "#FFFFFF",
     },
     buttonsContainer: {
-      // New style for the button container
       flexDirection: "row",
       justifyContent: "space-between",
       marginTop: 10,
@@ -808,7 +663,7 @@ const getStyles = (currentTheme) =>
       marginTop: 5,
       padding: 20,
       borderRadius: 10,
-      backgroundColor: "#ffff", // Light grey color, adjust as necessary
+      backgroundColor: "#ffff",
       alignItems: "center",
     },
     noBusinessPrimaryText: {
@@ -840,15 +695,46 @@ const getStyles = (currentTheme) =>
       flexDirection: "row",
       alignItems: "center",
       backgroundColor: theme3.primaryColor,
-      // borderColor: theme3.secondaryColor,
-      // borderWidth: 2,
       paddingBottom: 5,
       paddingTop: 5,
       margin: 5,
     },
-    DescText: {
-      fontSize: 14,
-      color: theme3.fontColorI, // Gray text color
+    buttonsContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginTop: 10,
+    },
+    bookButton: {
+      flex: 1,
+      paddingVertical: 12,
+      borderRadius: 5,
+      backgroundColor: theme3.primaryColor,
+      alignItems: "center",
+      elevation: 3,
+      shadowOffset: { width: 0, height: 1 },
+      shadowRadius: 2,
+      shadowOpacity: 0.2,
+    },
+    bookButtonText: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: "#FFFFFF",
+    },
+    callButton: {
+      flex: 1,
+      paddingVertical: 12,
+      borderRadius: 5,
+      backgroundColor: "#FF0000",
+      alignItems: "center",
+      elevation: 3,
+      shadowOffset: { width: 0, height: 1 },
+      shadowRadius: 2,
+      shadowOpacity: 0.2,
+    },
+    callButtonText: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: "#FFFFFF",
     },
   });
 

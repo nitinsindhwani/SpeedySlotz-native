@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  Image,
   ImageBackground,
   TouchableOpacity,
   KeyboardAvoidingView,
@@ -13,10 +12,11 @@ import {
 import { loginUser } from "../api/ApiCall";
 import { useNavigation } from "@react-navigation/native";
 import SocialButton from "../components/SocialButton";
-import { ThemeContext, ThemeProvider } from "../components/ThemeContext";
-import { translation } from "../assets/translations/translations";
+import { ThemeContext } from "../components/ThemeContext";
 import { FontAwesome } from "@expo/vector-icons";
 import { PushNotification } from "../api/PushNotification";
+import { LanguageContext } from "../api/LanguageContext";
+
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -25,61 +25,62 @@ const LoginScreen = () => {
 
   const navigation = useNavigation();
   const { currentTheme } = useContext(ThemeContext);
+
   const styles = getStyles(currentTheme);
 
+  const languageContext = useContext(LanguageContext);
+  console.log("Language context in LoginScreen:", languageContext);
+
+  // Check if context is available
+  if (!languageContext) {
+    console.log("LanguageContext not available");
+    return <Text>Loading...</Text>;
+  }
+
+  const { language, translations } = languageContext;
+  console.log("Current language:", language);
+  console.log("Translations:", translations);
   useEffect(() => {
     PushNotification();
   }, []);
 
   const handleLogin = async () => {
-    console.log("i am running login function ")
-
     if (username.length < 4) {
-      setUsernameError("Username must be at least 4 characters");
+      setUsernameError(translations.usernameError);
       return;
     } else {
       setUsernameError(null);
     }
 
     if (password.length < 6) {
-      setPasswordError("Password must be at least 6 characters");
+      setPasswordError(translations.passwordError);
       return;
     } else {
       setPasswordError(null);
     }
 
-    try {console.log("i am in try block")
-
+    try {
       const response = await loginUser(username, password);
-      console.log(response)
-      // if (response && response.push_notification === null) {
-      //   // The user is logged in but doesn't have a push token saved.
-      //   const pushToken = await PushNotification();
-      //   if (pushToken) {
-      //     // Call an API endpoint to update the user's push token in your backend.
-      //   }
-      // }
       if (response) {
-      console.log(response)
-
-        // navigation.navigate("LandingScreen", { user: response });
+        console.log(response);
+        if (response.settings && response.settings.preferred_language) {
+          await updateLanguageAfterLogin(response.settings.preferred_language);
+        }
+        // Navigate to next screen or handle successful login
+        navigation.navigate("LandingScreen", { user: response });
       } else {
-        console.log(
-          "Login failed. Please check your credentials and try again."
-        );
+        console.log(translations.loginFailed);
+        // Handle failed login (e.g., show an error message)
       }
     } catch (error) {
-      console.error("Login error:", error.message);
+      console.error(translations.loginError, error.message);
+      // Handle login error (e.g., show an error message)
     }
   };
 
   const handleForgotPassword = () => {
-    console.log("Forgot password logic here!");
+    navigation.navigate("ForgotPasswordScreen");
   };
-
-  // const handleSocialLogin = (platform) => {
-  //   console.log(`Logged in with ${platform}`);
-  // };
 
   return (
     <ImageBackground
@@ -92,7 +93,7 @@ const LoginScreen = () => {
         style={styles.container}
       >
         <View style={styles.middleContent}>
-          <Text style={styles.heading}>Login</Text>
+          <Text style={styles.heading}>{translations.login}</Text>
         </View>
         <View style={styles.innerContainer}>
           <View style={styles.inputContainer}>
@@ -103,8 +104,8 @@ const LoginScreen = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Username"
-              autoCapitalize="false"
+              placeholder={translations.username}
+              autoCapitalize="none"
               value={username}
               onChangeText={setUsername}
               keyboardType="default"
@@ -122,10 +123,10 @@ const LoginScreen = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Password"
+              placeholder={translations.password}
               value={password}
               onChangeText={setPassword}
-              autoCapitalize="false"
+              autoCapitalize="none"
               secureTextEntry
             />
           </View>
@@ -137,31 +138,18 @@ const LoginScreen = () => {
             style={styles.forgotPassword}
             onPress={handleForgotPassword}
           >
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+            <Text style={styles.forgotPasswordText}>
+              {translations.forgotPassword}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonPrimary} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>{translations.loginButton}</Text>
           </TouchableOpacity>
-          {/* <View style={styles.socialButtonsContainer}>
-            <SocialButton
-              platform="Google"
-              onPress={() => handleSocialLogin("Google")}
-            />
-            <SocialButton
-              platform="Facebook"
-              onPress={() => handleSocialLogin("Facebook")}
-            />
-            <SocialButton
-              platform="Apple"
-              onPress={() => handleSocialLogin("Apple")}
-            />
-          </View> */}
         </View>
       </KeyboardAvoidingView>
     </ImageBackground>
   );
 };
-
 const getStyles = (currentTheme) =>
   StyleSheet.create({
     backgroundImage: {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   ScrollView,
@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   MaterialCommunityIcons,
@@ -33,9 +34,9 @@ import SuccessModal from "./GlobalComponents/SuccessModal";
 import { theme3 } from "../assets/branding/themes";
 import Styles from "../assets/branding/GlobalStyles";
 import { baseApiUrl } from "../api/Config";
-import { setISODay } from "date-fns";
 import LoadingModal from "./GlobalComponents/LoadingModal";
 import { SwipeButton } from "react-native-expo-swipe-button";
+import { LanguageContext } from "../api/LanguageContext";
 
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
@@ -46,7 +47,7 @@ const NewJobScreen = ({ route }) => {
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("Pets");
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
   const [selectedServiceTypeName, setSelectedServiceTypeName] = useState("");
   const [userData, setUserData] = useState(null);
@@ -62,6 +63,9 @@ const NewJobScreen = ({ route }) => {
   const [zipcodes, setZipcodes] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLOading, setIsLoading] = useState(false);
+
+  const languageContext = useContext(LanguageContext);
+  const { translations, language } = useContext(LanguageContext);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -229,7 +233,9 @@ const NewJobScreen = ({ route }) => {
       date: formattedDate,
       startTime: formattedTime,
       zipcodes: zipcodeArray,
-      selectedServiceTypes: [selectedServiceTypeName],
+      selectedServiceTypes: selectedServiceTypeName
+        ? [selectedServiceTypeName.name]
+        : [],
       job_description: jobDescription,
       open: true,
       priorityStatus: priorityStatus,
@@ -303,7 +309,7 @@ const NewJobScreen = ({ route }) => {
               style={styles.datePickerButton}
             >
               <Text style={styles.datePickerText}>
-                Select Date: {moment(selectedDate).format("L")}
+                {translations.selectDate}: {moment(selectedDate).format("L")}
               </Text>
             </TouchableOpacity>
             {showDatePicker && (
@@ -321,12 +327,12 @@ const NewJobScreen = ({ route }) => {
               style={styles.datePickerButton}
             >
               <Text style={styles.datePickerText}>
-                Select Time: {moment(selectedDate).format("LT")}
+                {translations.selectTime}: {moment(selectedTime).format("LT")}
               </Text>
             </TouchableOpacity>
             {showTimePicker && (
               <DateTimePicker
-                value={selectedDate}
+                value={selectedTime}
                 mode="time"
                 display="default"
                 onChange={onChangeTime}
@@ -345,16 +351,18 @@ const NewJobScreen = ({ route }) => {
               selectedServiceTypeName={selectedServiceTypeName}
               setSelectedServiceTypeName={setSelectedServiceTypeName}
               rows={3}
+              language={language}
+              translations={translations}
             />
           )}
         </View>
 
         <View style={styles.inputContainer}>
           <View style={styles.InputView}>
-            <Text style={styles.label}>Zipcode:</Text>
+            <Text style={styles.label}>{translations.zipcode}</Text>
             <TextInput
               style={styles.inputField}
-              placeholder="Enter zipcodes (e.g., 76262,72623)"
+              placeholder={translations.enterZipcodes}
               value={zipcodes}
               onChangeText={(e) => setZipcodes(e)}
               autoCapitalize="none"
@@ -364,35 +372,38 @@ const NewJobScreen = ({ route }) => {
 
         <View style={styles.inputContainer}>
           <View style={styles.input}>
-            <Text style={styles.label}>Job Description:</Text>
+            <Text style={styles.label}>{translations.jobDescription}</Text>
             <TextInput
               style={{ flex: 1, textAlignVertical: "top" }}
               onChangeText={setJobDescription}
               value={jobDescription}
               numberOfLines={4}
-              placeholder="Enter job description"
+              placeholder={translations.enterJobDescription}
               multiline
             />
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>Priority Status:</Text>
+          <Text style={styles.label}>{translations.priorityStatus}</Text>
           <View style={styles.radioButtonRow}>
-            {["Routine", "Flexible", "Urgent", "Emergency"].map(
-              (priority, index) => (
-                <RadioButton
-                  key={index}
-                  label={priority}
-                  value={index}
-                  onPress={() => setPriorityStatus(index)}
-                  selectedValue={priorityStatus}
-                />
-              )
-            )}
+            {[
+              translations.routine,
+              translations.flexible,
+              translations.urgent,
+              translations.emergency,
+            ].map((priority, index) => (
+              <RadioButton
+                key={index}
+                label={priority}
+                value={index}
+                onPress={() => setPriorityStatus(index)}
+                selectedValue={priorityStatus}
+              />
+            ))}
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>Attach Profiles:</Text>
+          <Text style={styles.label}>{translations.attachProfiles}</Text>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
               onPress={() => setAttachProfileModalVisible(true)}
@@ -415,7 +426,7 @@ const NewJobScreen = ({ route }) => {
         </View>
 
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>Add Images:</Text>
+          <Text style={styles.label}>{translations.addImages}</Text>
           <View style={styles.mediaListContainer}>
             <TouchableOpacity onPress={() => pickMedia("image")}>
               <MaterialIcons
@@ -439,7 +450,7 @@ const NewJobScreen = ({ route }) => {
         </View>
 
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>Add Videos:</Text>
+          <Text style={styles.label}>{translations.addVideos}</Text>
           <View style={styles.mediaListContainer}>
             <TouchableOpacity onPress={() => pickMedia("video")}>
               <MaterialIcons
@@ -461,53 +472,6 @@ const NewJobScreen = ({ route }) => {
             ))}
           </View>
         </View>
-        {/* <View style={styles.mediaUploadSection}>
-          <TouchableOpacity
-            onPress={() => pickMedia("image")}
-            style={styles.mediaButton}
-          >
-            <MaterialCommunityIcons
-              name="add-photo-alternate"
-              size={24}
-              color="#333"
-            />
-          </TouchableOpacity>
-
-          <View style={styles.mediaListContainer}>
-            {selectedImages.map((uri, index) => (
-              <View key={uri} style={styles.mediaItem}>
-                <Image source={{ uri }} style={styles.mediaThumbnail} />
-                <TouchableOpacity
-                  onPress={() => removeMedia("image", uri)}
-                  style={styles.removeMediaIcon}
-                >
-                  <AntDesign name="closecircle" size={24} color="red" />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-
-          <TouchableOpacity
-            onPress={() => pickMedia("video")}
-            style={styles.mediaButton}
-          >
-            <FontAwesome name="video-camera" size={24} color="#333" />
-          </TouchableOpacity>
-
-          <View style={styles.mediaListContainer}>
-            {selectedVideos.map((uri, index) => (
-              <View key={uri} style={styles.mediaItem}>
-                <FontAwesome name="file-video-o" size={48} color="#333" />
-                <TouchableOpacity
-                  onPress={() => removeMedia("video", uri)}
-                  style={styles.removeMediaIcon}
-                >
-                  <AntDesign name="closecircle" size={24} color="red" />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        </View> */}
 
         {selectedServiceTypeName &&
         jobDescription &&
@@ -524,7 +488,7 @@ const NewJobScreen = ({ route }) => {
             width={320}
             height={55}
             onComplete={() => handleBookNow()}
-            title="Swipe to complete"
+            title={translations.swipeToComplete}
             borderRadius={1000}
             circleBackgroundColor={theme3.secondaryColor}
             underlayContainerGradientProps={{
@@ -534,13 +498,10 @@ const NewJobScreen = ({ route }) => {
             }}
             titleStyle={{ color: "white" }}
             containerStyle={{ backgroundColor: "gray" }}
-            underlayTitle="Release to complete"
+            underlayTitle={translations.releaseToComplete}
             underlayTitleStyle={{ color: theme3.light }}
           />
         ) : (
-          // <TouchableOpacity onPress={handleBookNow} style={Styles.LoginBtn}>
-          //   <Text style={Styles.LoginTxt}>Submit</Text>
-          // </TouchableOpacity>
           <TouchableOpacity
             style={[Styles.LoginBtn, { backgroundColor: theme3.inActive }]}
           >
@@ -549,13 +510,13 @@ const NewJobScreen = ({ route }) => {
               !jobDescription ||
               priorityStatus === null ||
               !profileAttached
-                ? "Complete selections to submit"
+                ? translations.completeSelections
                 : ""}
             </Text>
           </TouchableOpacity>
         )}
 
-        <View style={{ height: 200, width: 100 }}></View>
+        <View style={{ height: 100, width: 100 }}></View>
       </ScrollView>
       <AttachProfileModal
         isVisible={attachProfileModalVisible}
@@ -566,7 +527,7 @@ const NewJobScreen = ({ route }) => {
       <SuccessModal
         show={showSuccess}
         onBack={setShowSuccess}
-        title={"Booked Successfully"}
+        title={translations.bookedSuccessfully}
       />
       <LoadingModal show={isLOading} />
     </View>
