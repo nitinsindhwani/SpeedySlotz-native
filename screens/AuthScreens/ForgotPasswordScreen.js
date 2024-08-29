@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Styles from "../../assets/branding/GlobalStyles";
 import { theme3 } from "../../assets/branding/themes";
 import { forgotPassword } from "../../api/ApiCall";
-import { LanguageContext } from "../../api/LanguageContext"; // Import LanguageContext
+import { LanguageContext } from "../../api/LanguageContext";
 
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Logo from "../../assets/newimage/Logo1.png";
@@ -26,7 +26,7 @@ const ForgotPasswordScreen = () => {
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
   const navigation = useNavigation();
-  const { translations } = useContext(LanguageContext); // Use LanguageContext
+  const { translations } = useContext(LanguageContext);
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,17 +34,29 @@ const ForgotPasswordScreen = () => {
   };
 
   const handleForgotPassword = async () => {
-    if (!email) {
+    setErrors({});
+    setMessage("");
+
+    const lowercaseEmail = email.toLowerCase();
+    if (!lowercaseEmail) {
       setErrors({ email: translations.emailRequired });
       return;
-    } else if (!validateEmail(email)) {
+    } else if (!validateEmail(lowercaseEmail)) {
       setErrors({ email: translations.validEmailRequired });
       return;
     }
-    const response = await forgotPassword(email);
-    console.log("response", response);
-    setErrors({});
-    setMessage(translations.resetPasswordMessage);
+
+    try {
+      const response = await forgotPassword(lowercaseEmail);
+      if (response.status === 200) {
+        setMessage(translations.resetPasswordMessage);
+      } else {
+        setMessage(translations.errorResettingPassword);
+      }
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      setMessage(translations.errorResettingPassword);
+    }
   };
 
   return (
@@ -68,7 +80,10 @@ const ForgotPasswordScreen = () => {
         <View style={[Styles.InputView, { marginBottom: 20 }]}>
           <TextInput
             style={{ marginLeft: 13, flex: 1 }}
-            onChangeText={setEmail}
+            onChangeText={(text) => {
+              const lowercaseText = text.toLowerCase();
+              setEmail(lowercaseText);
+            }}
             value={email}
             placeholder={translations.emailPlaceholder}
             keyboardType="email-address"
@@ -83,6 +98,17 @@ const ForgotPasswordScreen = () => {
           <Text style={Styles.LoginTxt}>{translations.submitButton}</Text>
         </TouchableOpacity>
         {message && <Text style={styles.message}>{message}</Text>}
+
+        {/* Add the text to navigate back to the login screen */}
+        <Text style={styles.goBackText}>
+          {translations.goBackToLoginQuestion}{" "}
+          <Text
+            onPress={() => navigation.navigate("LoginScreen")}
+            style={styles.loginLink}
+          >
+            {translations.login}
+          </Text>
+        </Text>
       </View>
     </ImageBackground>
   );
@@ -117,6 +143,16 @@ const styles = StyleSheet.create({
     color: "green",
     marginTop: 20,
     textAlign: "center",
+  },
+  goBackText: {
+    color: "#8A8A8A",
+    marginTop: 20,
+    textAlign: "center",
+  },
+  loginLink: {
+    color: "#438EEC",
+    fontWeight: "bold",
+    marginLeft: 10,
   },
 });
 

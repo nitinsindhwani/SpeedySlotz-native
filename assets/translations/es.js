@@ -450,16 +450,21 @@ export default {
   aboutSpeedySlotzParagraph5:
     "Gracias por elegir SpeedySlotz. Estamos emocionados de ser parte de su viaje y esperamos poder servirle.",
 
-  forgotPasswordTitle: "¿Olvidaste tu contraseña?",
+  forgotPasswordTitle: "Olvidó su contraseña",
   forgotPasswordDescription:
-    "Ingresa tu dirección de correo electrónico a continuación para recibir instrucciones para restablecer tu contraseña.",
-  emailPlaceholder: "Dirección de correo electrónico",
-  emailRequired: "Se requiere una dirección de correo electrónico.",
-  validEmailRequired:
-    "Por favor, introduce una dirección de correo electrónico válida.",
-  resetPasswordMessage:
-    "Si este correo electrónico está registrado, recibirás un enlace para restablecer tu contraseña.",
+    "Por favor, introduzca su correo electrónico para restablecer su contraseña.",
+  emailPlaceholder: "Ingrese su dirección de correo electrónico",
   submitButton: "Enviar",
+  emailRequired: "El correo electrónico es obligatorio.",
+  validEmailRequired:
+    "Por favor, introduzca una dirección de correo electrónico válida.",
+  resetPasswordMessage:
+    "Si existe una cuenta con ese correo electrónico, se ha enviado un enlace para restablecer la contraseña.",
+  errorResettingPassword:
+    "Hubo un error al restablecer su contraseña. Por favor, inténtelo de nuevo más tarde.",
+  goBackToLoginQuestion:
+    "Después de recibir el correo electrónico, por favor regrese a la pantalla de inicio de sesión para continuar.",
+  login: "Iniciar sesión",
 
   verifyEmail: "Verifica tu correo electrónico",
   verifyEmailDescription:

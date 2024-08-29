@@ -443,15 +443,19 @@ export default {
   aboutSpeedySlotzParagraph5:
     "Thank you for choosing SpeedySlotz. We're excited to be a part of your journey and look forward to serving you.",
 
-  forgotPasswordTitle: "Forgot Your Password?",
-  forgotPasswordDescription:
-    "Enter your email address below to receive instructions to reset your password.",
-  emailPlaceholder: "Email Address",
-  emailRequired: "Email address is required.",
+  forgotPasswordTitle: "Forgot Password",
+  forgotPasswordDescription: "Please enter your email to reset your password.",
+  emailPlaceholder: "Enter your email address",
+  submitButton: "Submit",
+  emailRequired: "Email is required.",
   validEmailRequired: "Please enter a valid email address.",
   resetPasswordMessage:
-    "If this email is registered you will receive a link to reset your password.",
-  submitButton: "Submit",
+    "If an account with that email exists, a password reset link has been sent.",
+  errorResettingPassword:
+    "There was an error resetting your password. Please try again later.",
+  goBackToLoginQuestion:
+    "After receiving the email, kindly return to the login screen to proceed.",
+  login: "Login",
 
   verifyEmail: "Verify Your Email",
   verifyEmailDescription:

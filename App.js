@@ -185,6 +185,10 @@ export default function App() {
       let data = Linking.parse(event.url);
       if (data.path === "login") {
         navigationRef.current?.navigate("LoginScreen");
+      } else if (data.path === "ResetPasswordScreen") {
+        navigationRef.current?.navigate("ResetPasswordScreen", {
+          userId: data.queryParams.userId,
+        });
       }
       // Handle other deep links as needed
     };
@@ -216,7 +220,12 @@ export default function App() {
                 screens: {
                   LoginScreen: "login",
                   SignUpScreen: "signup",
-                  ResetPasswordScreen: "reset-password",
+                  ResetPasswordScreen: {
+                    path: "ResetPasswordScreen/:userId",
+                    parse: {
+                      userId: (userId) => `${userId}`,
+                    },
+                  },
                   // Add other screens and their paths here
                 },
               },
