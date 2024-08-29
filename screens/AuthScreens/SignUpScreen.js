@@ -206,7 +206,7 @@ const SignUpScreen = () => {
     const token = await SecureStore.getItemAsync("push_notification");
 
     const userData = {
-      username,
+      username: username.toLowerCase(),
       password,
       email: email.toLowerCase(), // Convert email to lowercase
       first_name: firstname,
@@ -282,7 +282,10 @@ const SignUpScreen = () => {
           />
         </View>
 
-        <Image source={Logo} style={{ width: 160, height: 160,marginTop:20 }} />
+        <Image
+          source={Logo}
+          style={{ width: 160, height: 160, marginTop: 20 }}
+        />
 
         <View style={[Styles.TopView, { marginTop: 20 }]}>
           {index === 0 ? (
@@ -323,7 +326,12 @@ const SignUpScreen = () => {
                   style={{ marginLeft: 13, flex: 1 }}
                   placeholder="Username"
                   value={username}
-                  onChangeText={(e) => setUsername(e)}
+                  onChangeText={(text) => {
+                    // Ensure the first character is always lowercase
+                    const lowercaseText =
+                      text.charAt(0).toLowerCase() + text.slice(1);
+                    setUsername(lowercaseText);
+                  }}
                   autoCapitalize="none"
                 />
               </View>
@@ -466,10 +474,7 @@ const SignUpScreen = () => {
           body={AlertBody}
         />
       </ScrollView>
-      <View
-style={{position:"absolute",bottom:50,alignItems:'center'}}
->
-
+      <View style={{ position: "absolute", bottom: 50, alignItems: "center" }}>
         <Text
           style={{
             color: "#8A8A8A",
@@ -490,8 +495,7 @@ style={{position:"absolute",bottom:50,alignItems:'center'}}
             Login
           </Text>
         </Text>
-        </View>
-
+      </View>
     </ImageBackground>
   );
 };

@@ -19,7 +19,7 @@ import { getStoredToken, getStoredUser } from "../api/ApiCall";
 import { getBadgeDetails } from "../components/BadgeInfo";
 import { LanguageContext } from "../api/LanguageContext";
 import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 import { FontAwesome, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import SoftLoadImage from "../components/SoftLoadImage";
 import { baseApiUrl } from "../api/Config";
@@ -90,34 +90,37 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
   };
 
   const handleChatButtonPress = async (business) => {
-    let user = userData;
-    if (!user) {
-      user = await getStoredUser();
+    try {
+      let user = userData;
       if (!user) {
-        console.error("User data is not available.");
-        return;
+        user = await getStoredUser();
+        if (!user) {
+          console.error("User data is not available.");
+          return;
+        }
       }
-    }
-    if (business.is_registered) {
-      const selectedChat = {
-        chat_id: uuidv4(),
-        project_name: "New Job",
-        user_id: user.user_id,
-        username: user.username,
-        business_id: business.id,
-        business_name: business.name,
-        chatMessages: [],
-      };
+      if (business.is_registered) {
+        const selectedChat = {
+          chat_id: uuid.v4(),
+          project_name: "New Job",
+          user_id: user.user_id,
+          username: user.username,
+          business_id: business.id,
+          business_name: business.name,
+          chatMessages: [],
+        };
 
-      navigation.navigate("App", {
-        screen: "ChatScreen",
-        params: {
-          chatData: selectedChat,
-        },
-      });
+        navigation.navigate("App", {
+          screen: "ChatScreen",
+          params: {
+            chatData: selectedChat,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error in handleChatButtonPress:", error);
     }
   };
-
   const addFavorite = async (itemId, changeTepFav) => {
     try {
       const secureToken = await getStoredToken();

@@ -16,7 +16,7 @@ import moment from "moment";
 import * as Calendar from "expo-calendar";
 import ChatAnim from "./GlobalComponents/ChatAnim";
 import { theme3 } from "../assets/branding/themes";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 import { getStoredUser } from "../api/ApiCall";
 import getImageSource from "./CallFuncGlobal/getImageSource";
 import Header from "./GlobalComponents/Header";
@@ -152,7 +152,7 @@ const ApptConfirmationScreen = ({ route }) => {
     }
 
     const selectedChat = {
-      chat_id: uuidv4(),
+      chat_id: uuid.v4(),
       project_name: "New Job",
       user_id: currentUser.user_id,
       username: currentUser.username,

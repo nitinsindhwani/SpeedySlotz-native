@@ -25,7 +25,7 @@ import RescheduleModal from "../Modals/RescheduleModal";
 import ConfirmModal from "../Modals/ConfirmModal";
 import RemarkModal from "../Modals/FeedbackModal";
 import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 import { LanguageContext } from "../../api/LanguageContext";
 
 function AppointmentCard({
@@ -471,7 +471,7 @@ function AppointmentCard({
     }
 
     const selectedChat = {
-      chat_id: uuidv4(),
+      chat_id: uuid.v4(),
       project_name: "New Job",
       user_id: userData.user_id,
       username: userData.username,

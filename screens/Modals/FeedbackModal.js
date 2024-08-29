@@ -14,7 +14,7 @@ import ErrorAlert from "../GlobalComponents/ErrorAlert";
 import axios from "axios";
 import { baseApiUrl } from "../../api/Config";
 import { getStoredToken } from "../../api/ApiCall";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 import { getBadgeDetails } from "../../components/BadgeInfo";
 import Header from "../GlobalComponents/Header";
 import { LanguageContext } from "../../api/LanguageContext"; // Import LanguageContext
@@ -103,7 +103,7 @@ export default function RemarkModal({
       const reviewData = {
         key: {
           slotId: slotId,
-          reviewId: uuidv4(),
+          reviewId: uuid.v4(),
         },
         userId: userId,
         businessId: businessId,

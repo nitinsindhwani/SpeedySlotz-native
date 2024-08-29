@@ -41,7 +41,8 @@ const ForgotPasswordScreen = () => {
       setErrors({ email: translations.validEmailRequired });
       return;
     }
-    forgotPassword;
+    const response = await forgotPassword(email);
+    console.log("response", response);
     setErrors({});
     setMessage(translations.resetPasswordMessage);
   };

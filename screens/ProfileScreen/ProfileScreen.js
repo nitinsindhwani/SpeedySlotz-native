@@ -182,9 +182,28 @@ const ProfileScreen = ({ route }) => {
               />
             </TouchableHighlight>
           </TouchableOpacity>
-        </View>
 
-        <View style={Styles.CardWrapperALL}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("ResetPasswordScreen", {})}
+            style={Styles.CardWrapperBottom}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <MaterialIcons
+                name="lock"
+                size={18}
+                color={iconColor}
+                style={Styles.IconWrapper}
+              />
+              <Text style={Styles.textStyle}>{translations.resetPassword}</Text>
+            </View>
+            <TouchableHighlight>
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={theme3.fontColor}
+              />
+            </TouchableHighlight>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.navigate("LanguageSelection")}
             style={Styles.CardWrapperBottom}
@@ -265,7 +284,7 @@ const ProfileScreen = ({ route }) => {
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <MaterialIcons
-                name="privacy-tip"
+                name="description"
                 color={iconColor}
                 size={20}
                 style={Styles.IconWrapper}
@@ -297,7 +316,7 @@ const ProfileScreen = ({ route }) => {
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <MaterialIcons
-                name="privacy-tip"
+                name="article"
                 color={iconColor}
                 size={20}
                 style={Styles.IconWrapper}
@@ -312,13 +331,13 @@ const ProfileScreen = ({ route }) => {
 
         <View style={Styles.CardWrapperALL}>
           <Pressable
-            onPress={() => Linking.openURL("http://speedyslotz.com")}
+            onPress={() => Linking.openURL("https://speedyslotz.com")}
             style={Styles.CardWrapperBottom}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <FontAwesome5
-                name="headset"
-                color={theme3.fontColor}
+              <MaterialIcons
+                name="person"
+                color={iconColor}
                 size={20}
                 style={Styles.IconWrapper}
               />
@@ -359,7 +378,7 @@ const ProfileScreen = ({ route }) => {
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <MaterialIcons
-                name="privacy-tip"
+                name="business"
                 color={theme3.fontColor}
                 size={20}
                 style={Styles.IconWrapper}

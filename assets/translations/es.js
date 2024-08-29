@@ -54,6 +54,7 @@ export default {
   language: "Idioma",
   manageProfile: "Gestionar perfil",
   preferredCategories: "Categorías preferidas",
+  resetPassword: "Restablecer Contraseña",
   notifications: "Notificaciones",
   chat: "Chat",
   helpCenter: "Centro de ayuda",

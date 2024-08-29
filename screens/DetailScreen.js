@@ -24,7 +24,7 @@ import {
   Ionicons,
 } from "@expo/vector-icons";
 import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 import getImageSource from "./CallFuncGlobal/getImageSource";
 import { theme3 } from "../assets/branding/themes";
 import Styles from "../assets/branding/GlobalStyles";
@@ -241,7 +241,7 @@ function DetailScreen({ route }) {
   const handleChatButtonPress = () => {
     const initialMessages = [
       {
-        messageId: uuidv4(),
+        messageId: uuid.v4(),
         content: "Hi",
         timestamp: moment().toISOString(),
         messageType: "user",

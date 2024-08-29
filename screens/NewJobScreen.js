@@ -37,7 +37,7 @@ import { baseApiUrl } from "../api/Config";
 import LoadingModal from "./GlobalComponents/LoadingModal";
 import { SwipeButton } from "react-native-expo-swipe-button";
 import { LanguageContext } from "../api/LanguageContext";
-
+import * as ImagePicker from "expo-image-picker";
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
 
@@ -66,6 +66,12 @@ const NewJobScreen = ({ route }) => {
 
   const languageContext = useContext(LanguageContext);
   const { translations, language } = useContext(LanguageContext);
+
+  const MAX_NUMBER_OF_IMAGES = 5;
+  const MAX_NUMBER_OF_VIDEOS = 3;
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
+  const IMAGE_TYPES = ["image/jpeg", "image/png"];
+  const VIDEO_TYPES = ["video/mp4"];
 
   useEffect(() => {
     const fetchUserData = async () => {

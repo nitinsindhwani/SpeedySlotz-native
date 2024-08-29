@@ -297,6 +297,7 @@ export const resendVerifyEmail = async (userData) => {
 };
 
 export const forgotPassword = async (email) => {
+  console.log("forgotPassword", email);
   const resendEmailUrl = baseApiUrl + "/api/v1/users/forgotPassword";
 
   const response = await axios.post(

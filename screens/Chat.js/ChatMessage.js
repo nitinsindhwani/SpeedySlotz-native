@@ -20,7 +20,7 @@ import attachment from "../../assets/newimage/attachment.png";
 import chatmenu from "../../assets/newimage/chatmenu.png";
 import { theme3 } from "../../assets/branding/themes";
 import Styles from "../../assets/branding/GlobalStyles";
-import { v4 as uuidv4 } from "uuid";
+import uuid from "react-native-uuid";
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("window").height;
 
@@ -77,7 +77,7 @@ const ChatMessage = ({ route }) => {
   const sendMessage = () => {
     if (client && client.connected && currentMessage.trim()) {
       const newMessage = {
-        messageId: uuidv4(),
+        messageId: uuid.v4(),
         content: currentMessage.trim(),
         timestamp: moment().toISOString(),
         messageType: "user",
