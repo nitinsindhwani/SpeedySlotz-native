@@ -38,6 +38,8 @@ import LoadingModal from "./GlobalComponents/LoadingModal";
 import { SwipeButton } from "react-native-expo-swipe-button";
 import { LanguageContext } from "../api/LanguageContext";
 import * as ImagePicker from "expo-image-picker";
+import ErrorAlert from "./GlobalComponents/ErrorAlert"; // Make sure this import is correct
+
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
 
@@ -63,7 +65,8 @@ const NewJobScreen = ({ route }) => {
   const [zipcodes, setZipcodes] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLOading, setIsLoading] = useState(false);
-
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const languageContext = useContext(LanguageContext);
   const { translations, language } = useContext(LanguageContext);
 
@@ -170,7 +173,11 @@ const NewJobScreen = ({ route }) => {
       );
       if (overSizedAssets.length > 0) {
         console.log("Some files are too large:", overSizedAssets);
-        alert("Some files are too large and will not be added.");
+        setErrorMessage(
+          `${translations.fileSizeError} ${MAX_FILE_SIZE / (1024 * 1024)} MB.`
+        );
+        setShowError(true);
+        return;
       }
 
       const validAssets = result.assets.filter(
@@ -190,7 +197,6 @@ const NewJobScreen = ({ route }) => {
       }
     }
   };
-
   const handleAttachProfile = (profileLabel) => {
     if (!profileLabel) {
       console.error("No profile selected");
@@ -529,6 +535,12 @@ const NewJobScreen = ({ route }) => {
         onClose={() => setAttachProfileModalVisible(false)}
         onAttach={handleAttachProfile}
         user={userData}
+      />
+      <ErrorAlert
+        show={showError}
+        onAction={() => setShowError(false)}
+        title={translations.attention}
+        body={errorMessage}
       />
       <SuccessModal
         show={showSuccess}

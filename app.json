@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "scheme": "speedyslotz",
     "ios": {
       "supportsTablet": true,
@@ -21,22 +19,18 @@
       "buildNumber": "12",
       "developmentClient": true,
       "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["remote-notification"]
       }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.speedyzslotznitinapp.app",
       "versionCode": 17,
       "developmentClient": true,
-      "permissions": [
-        "NOTIFICATIONS"
-      ]
+      "permissions": ["NOTIFICATIONS"]
     },
     "plugins": [
       "expo-secure-store",

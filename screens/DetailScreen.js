@@ -41,7 +41,7 @@ import ChatAnim from "./GlobalComponents/ChatAnim";
 import { SwipeButton } from "react-native-expo-swipe-button";
 import Header from "./GlobalComponents/Header";
 import { LanguageContext } from "../api/LanguageContext";
-
+import ErrorAlert from "./GlobalComponents/ErrorAlert";
 const defaultImageUrl = require("../assets/images/defaultImage.png");
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
@@ -73,6 +73,9 @@ function DetailScreen({ route }) {
   const [priorityStatus, setPriorityStatus] = useState(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [showMore, setShowMore] = useState(false); // State for toggling description
+
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const MAX_NUMBER_OF_IMAGES = 5;
   const MAX_NUMBER_OF_VIDEOS = 3;
   const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
@@ -173,7 +176,11 @@ function DetailScreen({ route }) {
       );
       if (overSizedAssets.length > 0) {
         console.log("Some files are too large:", overSizedAssets);
-        alert("Some files are too large and will not be added.");
+        setErrorMessage(
+          `${translations.fileSizeError} ${MAX_FILE_SIZE / (1024 * 1024)} MB.`
+        );
+        setShowError(true);
+        return;
       }
 
       const validAssets = result.assets.filter(
@@ -820,6 +827,12 @@ function DetailScreen({ route }) {
         isVisible={isDealModalVisible}
         deals={dealsData}
         onClose={() => setIsDealModalVisible(false)}
+      />
+      <ErrorAlert
+        show={showError}
+        onAction={() => setShowError(false)}
+        title={translations.attention}
+        body={errorMessage}
       />
       <SuccessModal
         show={showSuccess}

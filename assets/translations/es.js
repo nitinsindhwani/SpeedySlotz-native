@@ -642,4 +642,6 @@ export default {
   directions: "Direcciones",
   deals: "Ofertas",
   chatNow: "Chatea Ahora",
+
+  fileSizeError: "El tamaño del archivo excede el límite máximo de",
 };
