@@ -25,6 +25,7 @@ import RescheduleModal from "../Modals/RescheduleModal";
 import ConfirmModal from "../Modals/ConfirmModal";
 import RemarkModal from "../Modals/FeedbackModal";
 import moment from "moment";
+
 import uuid from "react-native-uuid";
 import { LanguageContext } from "../../api/LanguageContext";
 
@@ -466,7 +467,16 @@ function AppointmentCard({
   };
 
   const handleChatButtonPress = () => {
+    console.log("handleChatButtonPress called");
+    console.log("userData:", userData);
+
     if (!userData) {
+      console.log("userData is null or undefined");
+      setErrorMessage(
+        translations.userDataMissing ||
+          "User data is missing. Please try logging in again."
+      );
+      setShowError(true);
       return;
     }
 
@@ -480,12 +490,23 @@ function AppointmentCard({
       chatMessages: [],
     };
 
-    navigation.navigate("App", {
-      screen: "ChatScreen",
-      params: {
-        chatData: selectedChat,
-      },
-    });
+    console.log("Navigating to ChatScreen with data:", selectedChat);
+
+    try {
+      navigation.navigate("App", {
+        screen: "ChatScreen",
+        params: {
+          chatData: selectedChat,
+        },
+      });
+    } catch (error) {
+      console.error("Navigation error:", error);
+      setErrorMessage(
+        translations.navigationError ||
+          "There was an error opening the chat. Please try again."
+      );
+      setShowError(true);
+    }
   };
 
   const getStatusMessage = (slot) => {
@@ -502,53 +523,21 @@ function AppointmentCard({
       reviewed: { label: translations.statusReviewed, color: "#8A2BE2" },
     };
 
-    if (slot.reviewed) {
-      return statusLabels.reviewed;
-    }
-    if (slot.cancelled) {
-      return statusLabels.cancelled;
-    }
-    if (slot.noshow) {
-      return statusLabels.noshow;
-    }
-    if (slot.completed) {
-      return statusLabels.completed;
-    }
-    if (slot.confirmed) {
-      return {
-        ...statusLabels.confirmed,
-        label: slot.rescheduled
-          ? `${translations.statusConfirmed} (R)`
-          : translations.statusConfirmed,
-      };
-    }
-    if (slot.accepted) {
-      return {
-        ...statusLabels.accepted,
-        label: slot.rescheduled
-          ? `${translations.statusAccepted} (R)`
-          : translations.statusAccepted,
-      };
-    }
-    if (slot.rescheduled) {
-      return {
-        ...statusLabels.rescheduled,
-        label: slot.booked
-          ? `${translations.statusBooked} (R)`
-          : translations.statusRescheduled,
-      };
-    }
-    if (slot.booked) {
-      return statusLabels.booked;
-    }
-    if (slot.open) {
-      return statusLabels.open;
-    }
+    // Debugging: Log the slot status
+    console.log("Slot status:", JSON.stringify(slot, null, 2));
+
+    if (slot.reviewed) return statusLabels.reviewed;
+    if (slot.cancelled) return statusLabels.cancelled;
+    if (slot.noshow) return statusLabels.noshow;
+    if (slot.completed) return statusLabels.completed;
+    if (slot.confirmed) return statusLabels.confirmed;
+    if (slot.accepted) return statusLabels.accepted;
+    if (slot.rescheduled) return statusLabels.rescheduled;
+    if (slot.booked) return statusLabels.booked;
+    if (slot.open) return statusLabels.open;
     return statusLabels.unknown;
   };
-
   const status = getStatusMessage(localSingleSlot);
-
   const renderButtons = () => {
     const buttonStyle = (color, width = "47%") => [
       Styles.LoginBtn,
@@ -566,6 +555,17 @@ function AppointmentCard({
 
     const isPastAppointment = appointmentTime < now;
 
+    // Debugging: Log the current state and conditions
+    console.log("Current state:", {
+      isPastAppointment,
+      isReviewed,
+      completed: localSingleSlot.completed,
+      confirmed: localSingleSlot.confirmed,
+      accepted: localSingleSlot.accepted,
+      booked: localSingleSlot.booked,
+      status: status.label,
+    });
+
     if (isPastAppointment) {
       if (localSingleSlot.completed && !isReviewed) {
         return (
@@ -579,7 +579,7 @@ function AppointmentCard({
       }
       return (
         <TouchableOpacity
-          onPress={handleReview}
+          onPress={handleBookAgain}
           style={buttonStyle(theme3.primaryColor, "100%")}
         >
           <Text style={Styles.LoginTxt}>{translations.bookAgain}</Text>
@@ -608,6 +608,7 @@ function AppointmentCard({
         </TouchableOpacity>
       );
     }
+
     if (localSingleSlot.confirmed) {
       return (
         <TouchableOpacity
@@ -618,6 +619,7 @@ function AppointmentCard({
         </TouchableOpacity>
       );
     }
+
     if (localSingleSlot.accepted) {
       return (
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -636,6 +638,7 @@ function AppointmentCard({
         </View>
       );
     }
+
     if (localSingleSlot.booked) {
       return (
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -655,9 +658,11 @@ function AppointmentCard({
       );
     }
 
+    // Debugging: Log if no condition was met
+    console.log("No button condition met");
+
     return null;
   };
-
   return (
     <View style={styles.mostPopularItem}>
       <Image

@@ -24,6 +24,7 @@ import { theme3 } from "../../assets/branding/themes";
 import { getBadgeDetails } from "../../components/BadgeInfo";
 import Styles from "../../assets/branding/GlobalStyles";
 import MapIcon from "react-native-vector-icons/FontAwesome5";
+import uuid from "react-native-uuid";
 
 function MainCardDesign({ business }) {
   const navigation = useNavigation();
@@ -62,31 +63,44 @@ function MainCardDesign({ business }) {
   };
 
   const handleChatButtonPress = async () => {
-    let user = userData;
-    if (!user) {
-      user = await getStoredUser();
+    console.log("handleChatButtonPress called");
+    try {
+      let user = userData;
       if (!user) {
-        console.error("User data is not available.");
-        return;
-      }
-    }
-    if (business.is_registered) {
-      const selectedChat = {
-        chat_id: uuidv4(),
-        project_name: "New Job",
-        user_id: user.user_id,
-        username: user.username,
-        business_id: business.id,
-        business_name: business.name,
-        chatMessages: [],
-      };
+        user = await getStoredUser();
+        if (!user) {
+          console.error("User data is not available.");
 
-      navigation.navigate("App", {
-        screen: "ChatScreen",
-        params: {
-          chatData: selectedChat,
-        },
-      });
+          return;
+        }
+      }
+      console.log("User data:", user);
+      console.log("Business data:", business);
+
+      if (business.yelpBusiness.is_registered) {
+        const selectedChat = {
+          chat_id: uuid.v4(),
+          project_name: "New Job",
+          user_id: user.user_id,
+          username: user.username,
+          business_id: business.yelpBusiness.id,
+          business_name: business.yelpBusiness.name,
+          chatMessages: [],
+        };
+
+        console.log("Navigating to ChatScreen with data:", selectedChat);
+
+        navigation.navigate("App", {
+          screen: "ChatScreen",
+          params: {
+            chatData: selectedChat,
+          },
+        });
+      } else {
+        console.log("Business is not registered for chat");
+      }
+    } catch (error) {
+      console.error("Error in handleChatButtonPress:", error);
     }
   };
 

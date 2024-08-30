@@ -112,7 +112,8 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
                   slot.accepted &&
                   !slot.completed &&
                   !slot.cancelled &&
-                  !slot.reviewed
+                  !slot.reviewed &&
+                  !slot.confirmed
                 );
               case translations.rescheduled:
                 return slot.rescheduled;
@@ -135,16 +136,26 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
                   !slot.completed &&
                   !slot.cancelled &&
                   !slot.reviewed &&
-                  !slot.rescheduled
+                  !slot.rescheduled &&
+                  !slot.accepted &&
+                  !slot.confirmed
                 );
               case translations.cancelled:
                 return slot.cancelled;
+              case translations.confirmed:
+                return (
+                  slot.confirmed &&
+                  !slot.completed &&
+                  !slot.cancelled &&
+                  !slot.reviewed
+                );
               case translations.accepted:
                 return (
                   slot.accepted &&
                   !slot.completed &&
                   !slot.cancelled &&
-                  !slot.reviewed
+                  !slot.reviewed &&
+                  !slot.confirmed
                 );
               case translations.rescheduled:
                 return slot.rescheduled;

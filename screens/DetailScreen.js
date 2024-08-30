@@ -73,7 +73,11 @@ function DetailScreen({ route }) {
   const [priorityStatus, setPriorityStatus] = useState(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [showMore, setShowMore] = useState(false); // State for toggling description
-
+  const MAX_NUMBER_OF_IMAGES = 5;
+  const MAX_NUMBER_OF_VIDEOS = 3;
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
+  const IMAGE_TYPES = ["image/jpeg", "image/png"];
+  const VIDEO_TYPES = ["video/mp4"];
   useEffect(() => {
     const fetchUserData = async () => {
       const storedUserData = await getStoredUser();
