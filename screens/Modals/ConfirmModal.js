@@ -1,18 +1,36 @@
 import React from "react";
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { Ionicons } from "@expo/vector-icons";
+import Header from "../GlobalComponents/Header";
 
 const ConfirmModal = ({ isVisible, onClose, onConfirm, slot, business }) => {
   return (
     <Modal
-      animationType="fade"
-      transparent={true}
+      animationType="slide"
+      transparent={false}
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <Header
+          title="Confirm Appointment"
+          typeModal={true}
+          onPress={onClose}
+        />
+        <ScrollView contentContainerStyle={styles.modalContainer}>
           <Text style={styles.title}>Confirm Appointment</Text>
 
           <View style={styles.amountContainer}>
@@ -46,44 +64,29 @@ const ConfirmModal = ({ isVisible, onClose, onConfirm, slot, business }) => {
             </Text>
           </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.confirmButton]}
-              onPress={onConfirm}
-            >
-              <Text style={styles.buttonText}>Confirm</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.rejectButton]}
-              onPress={onClose}
-            >
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+          <TouchableOpacity style={styles.submitButton} onPress={onConfirm}>
+            <Text style={styles.submitButtonText}>Confirm</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
+  modalContainer: {
+    flexGrow: 1,
     alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 20,
-    width: "90%",
-    alignItems: "center",
+    backgroundColor: "#f6f6f6",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     color: theme3.fontColor,
+    textAlign: "center",
     marginBottom: 20,
   },
   amountContainer: {
@@ -128,6 +131,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,
+    width: "100%",
   },
   warningIcon: {
     marginRight: 10,
@@ -137,28 +141,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme3.danger,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
+  submitButton: {
+    backgroundColor: theme3.primaryColor,
+    width: "95%",
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 20,
   },
-  button: {
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    marginHorizontal: 5,
-  },
-  confirmButton: {
-    backgroundColor: "#0056b3", // Blue color matching the image
-  },
-  rejectButton: {
-    backgroundColor: "#dc3545", // Red color matching the image
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
+  submitButtonText: {
+    textAlign: "center",
+    color: "#fff",
+    fontSize: 18,
     fontWeight: "bold",
   },
 });

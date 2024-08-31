@@ -1,12 +1,14 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import {
   View,
   Text,
   Modal,
   TouchableOpacity,
+  KeyboardAvoidingView,
   StyleSheet,
   TextInput,
   FlatList,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../../assets/branding/themes";
@@ -28,7 +30,7 @@ export default function RemarkModal({
   onReviewSubmit,
 }) {
   const { translations } = useContext(LanguageContext); // Access translations from context
-
+  const reviewInputRef = useRef(null);
   // Prepare the badges array dynamically from getBadgeDetails
   const badgeCodes = [
     "TOPR",
@@ -223,49 +225,68 @@ export default function RemarkModal({
   return (
     <View style={styles.container}>
       <Modal animationType="slide" transparent={false} visible={modalVisible}>
-        <Header
-          title={"Leave Review"}
-          typeModal={true}
-          onPress={() => setModalVisible(false)}
-        />
-        <FlatList
-          data={badges}
-          numColumns={3}
-          renderItem={renderBadge}
-          keyExtractor={(item) => item.code}
-          ListHeaderComponent={
-            <>
-              <Text style={styles.title}>Rate Your Experience</Text>
-              <Text style={styles.instructionText}>
-                Choose any number of positive or negative badges to best
-                represent your experience.
-              </Text>
-            </>
-          }
-          ListFooterComponent={
-            <>
-              <Text style={styles.reviewTitle}>Leave a review</Text>
-              <View style={styles.ReviewContainer}>
-                <TextInput
-                  value={review}
-                  onChangeText={(e) => setReview(e)}
-                  style={styles.textInput}
-                  placeholder="Write a review"
-                  placeholderTextColor={theme3.placeHolder}
-                  multiline={true}
-                />
-              </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <Header
+            title={"Leave Review"}
+            typeModal={true}
+            onPress={() => setModalVisible(false)}
+          />
+          <FlatList
+            data={badges}
+            numColumns={3}
+            renderItem={renderBadge}
+            keyExtractor={(item) => item.code}
+            ListHeaderComponent={
+              <>
+                <Text style={styles.title}>Rate Your Experience</Text>
+                <Text style={styles.instructionText}>
+                  Choose any number of positive or negative badges to best
+                  represent your experience.
+                </Text>
+              </>
+            }
+            ListFooterComponent={
+              <>
+                <Text style={styles.reviewTitle}>Leave a review</Text>
+                <View style={styles.ReviewContainer}>
+                  <TextInput
+                    ref={reviewInputRef}
+                    value={review}
+                    onChangeText={(e) => setReview(e)}
+                    style={styles.textInput}
+                    placeholder="Write a review"
+                    placeholderTextColor={theme3.placeHolder}
+                    multiline={true}
+                    textAlignVertical="top"
+                    onFocus={() => {
+                      // Scroll the FlatList to show the TextInput when it's focused
+                      reviewInputRef.current.measure(
+                        (fx, fy, width, height, px, py) => {
+                          this.flatListRef.scrollToOffset({
+                            offset: py,
+                            animated: true,
+                          });
+                        }
+                      );
+                    }}
+                  />
+                </View>
 
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={submitRemarks}
-              >
-                <Text style={styles.submitButtonText}>Submit Remarks</Text>
-              </TouchableOpacity>
-            </>
-          }
-          contentContainerStyle={styles.contentContainerStyle}
-        />
+                <TouchableOpacity
+                  style={styles.submitButton}
+                  onPress={submitRemarks}
+                >
+                  <Text style={styles.submitButtonText}>Submit Remarks</Text>
+                </TouchableOpacity>
+              </>
+            }
+            contentContainerStyle={styles.contentContainerStyle}
+            ref={(ref) => (this.flatListRef = ref)}
+          />
+        </KeyboardAvoidingView>
       </Modal>
       <ErrorAlert
         show={showError}
@@ -390,5 +411,21 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     paddingHorizontal: 15,
+  },
+  ReviewContainer: {
+    backgroundColor: theme3.light,
+    width: "95%",
+    height: 150, // Fixed height instead of percentage
+    borderRadius: 20,
+    shadowColor: "rgba(0,0,0,0.1)",
+    shadowOpacity: 1,
+    elevation: 1,
+    padding: 10,
+  },
+  textInput: {
+    flex: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    textAlignVertical: "top",
   },
 });

@@ -42,6 +42,8 @@ import { SwipeButton } from "react-native-expo-swipe-button";
 import Header from "./GlobalComponents/Header";
 import { LanguageContext } from "../api/LanguageContext";
 import ErrorAlert from "./GlobalComponents/ErrorAlert";
+import * as ImageManipulator from "expo-image-manipulator";
+import * as FileSystem from "expo-file-system";
 const defaultImageUrl = require("../assets/images/defaultImage.png");
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
@@ -77,10 +79,13 @@ function DetailScreen({ route }) {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const MAX_NUMBER_OF_IMAGES = 5;
-  const MAX_NUMBER_OF_VIDEOS = 3;
-  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
+  const MAX_NUMBER_OF_VIDEOS = 1;
+  const MAX_IMAGE_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+  const MAX_VIDEO_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
+  const MAX_NUMBER_OF_PROFILES = 5; // You can adjust this number as needed
   const IMAGE_TYPES = ["image/jpeg", "image/png"];
   const VIDEO_TYPES = ["video/mp4"];
+
   useEffect(() => {
     const fetchUserData = async () => {
       const storedUserData = await getStoredUser();
@@ -95,6 +100,15 @@ function DetailScreen({ route }) {
     setIsDealModalVisible(true);
   };
 
+  const FileSizeNote = ({ fileType }) => (
+    <View style={styles.noteBubble}>
+      <Text style={styles.noteText}>
+        {translations.fileSizeNote}{" "}
+        {fileType === "image" ? translations.images : translations.videos}:
+        {`${MAX_FILE_SIZE / (1024 * 1024)}MB`}
+      </Text>
+    </View>
+  );
   const formatTime = (time) => {
     const [hour, minute] = time.split(":");
     return `${hour}:${minute}`;
@@ -155,6 +169,24 @@ function DetailScreen({ route }) {
   }
 
   const pickMedia = async (mediaType) => {
+    if (
+      mediaType === "video" &&
+      selectedVideos.length >= MAX_NUMBER_OF_VIDEOS
+    ) {
+      setErrorMessage(translations.maxVideosReached);
+      setShowError(true);
+      return;
+    }
+
+    if (
+      mediaType === "image" &&
+      selectedImages.length >= MAX_NUMBER_OF_IMAGES
+    ) {
+      setErrorMessage(translations.maxImagesReached);
+      setShowError(true);
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes:
         mediaType === "image"
@@ -162,7 +194,7 @@ function DetailScreen({ route }) {
           : ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: false,
       quality: 1,
-      allowsMultipleSelection: true,
+      allowsMultipleSelection: mediaType === "image",
     });
 
     if (result.canceled) {
@@ -171,32 +203,63 @@ function DetailScreen({ route }) {
     }
 
     if (result.assets) {
-      const overSizedAssets = result.assets.filter(
-        (asset) => asset.fileSize > MAX_FILE_SIZE
-      );
-      if (overSizedAssets.length > 0) {
-        console.log("Some files are too large:", overSizedAssets);
-        setErrorMessage(
-          `${translations.fileSizeError} ${MAX_FILE_SIZE / (1024 * 1024)} MB.`
-        );
-        setShowError(true);
-        return;
-      }
+      const processAsset = async (asset) => {
+        try {
+          let fileInfo;
+          if (mediaType === "image") {
+            const manipulatedImage = await ImageManipulator.manipulateAsync(
+              asset.uri,
+              [{ resize: { width: 1024 } }],
+              { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+            );
+            fileInfo = await FileSystem.getInfoAsync(manipulatedImage.uri);
+            if (fileInfo.size <= MAX_IMAGE_FILE_SIZE) {
+              return manipulatedImage.uri;
+            }
+          } else {
+            fileInfo = await FileSystem.getInfoAsync(asset.uri);
+            if (fileInfo.size <= MAX_VIDEO_FILE_SIZE) {
+              return asset.uri;
+            }
+          }
+          console.log(`File too large: ${fileInfo.size} bytes`);
+          return null;
+        } catch (error) {
+          console.error("Error processing file:", error);
+          return null;
+        }
+      };
 
-      const validAssets = result.assets.filter(
-        (asset) => asset.fileSize <= MAX_FILE_SIZE
+      const processedAssets = await Promise.all(
+        result.assets.map(processAsset)
       );
+      const validAssets = processedAssets.filter((uri) => uri !== null);
 
       if (mediaType === "image") {
-        setSelectedImages((images) => [
-          ...images,
-          ...validAssets.map((asset) => asset.uri),
-        ]);
-      } else if (mediaType === "video") {
-        setSelectedVideos((videos) => [
-          ...videos,
-          ...validAssets.map((asset) => asset.uri),
-        ]);
+        const newImages = [...selectedImages, ...validAssets].slice(
+          0,
+          MAX_NUMBER_OF_IMAGES
+        );
+        setSelectedImages(newImages);
+        if (newImages.length > selectedImages.length) {
+          setErrorMessage(translations.someImagesNotAdded);
+          setShowError(true);
+        }
+      } else {
+        if (
+          validAssets.length > 0 &&
+          selectedVideos.length < MAX_NUMBER_OF_VIDEOS
+        ) {
+          setSelectedVideos([validAssets[0]]); // Only take the first valid video
+        } else {
+          setErrorMessage(translations.videoNotAdded);
+          setShowError(true);
+        }
+      }
+
+      if (validAssets.length < result.assets.length) {
+        setErrorMessage(translations.someFilesStillTooLarge);
+        setShowError(true);
       }
     }
   };
@@ -204,6 +267,11 @@ function DetailScreen({ route }) {
   const handleAttachProfile = (profileLabel) => {
     if (!profileLabel) {
       console.error("No profile selected");
+      return;
+    }
+    if (attachedProfiles.length >= MAX_NUMBER_OF_PROFILES) {
+      setErrorMessage(translations.maxProfilesReached);
+      setShowError(true);
       return;
     }
     setAttachedProfiles((prevProfiles) => [...prevProfiles, profileLabel]);
@@ -703,38 +771,84 @@ function DetailScreen({ route }) {
         </View>
         <View style={styles.mostPopularItem}>
           <Text style={styles.label}>{translations.attachProfiles}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={styles.subLabel}>
+            {translations.maxProfilesAllowed}: {MAX_NUMBER_OF_PROFILES}
+          </Text>
+          <View style={styles.mediaListContainer}>
             <TouchableOpacity
               onPress={() => setAttachProfileModalVisible(true)}
+              style={[
+                styles.addMediaButton,
+                attachedProfiles.length >= MAX_NUMBER_OF_PROFILES &&
+                  styles.disabledButton,
+              ]}
+              disabled={attachedProfiles.length >= MAX_NUMBER_OF_PROFILES}
             >
               <MaterialIcons
-                name="add-circle"
-                size={35}
-                color={theme3.primaryColor}
+                name="person-add"
+                size={40}
+                color={
+                  attachedProfiles.length >= MAX_NUMBER_OF_PROFILES
+                    ? "#999"
+                    : theme3.primaryColor
+                }
               />
             </TouchableOpacity>
-            <FlatList
-              data={attachedProfiles}
-              horizontal
-              renderItem={renderAttachedProfile}
-              keyExtractor={(item, index) => index.toString()}
-              style={styles.attachedProfilesList}
-              showsHorizontalScrollIndicator={false}
-            />
+            {attachedProfiles.map((profile, index) => (
+              <View key={`profile-${index}`} style={styles.mediaItem}>
+                <View style={styles.profileIcon}>
+                  <MaterialIcons
+                    name="person"
+                    size={40}
+                    color={theme3.primaryColor}
+                  />
+                </View>
+                <Text
+                  style={styles.profileName}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {profile}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => handleRemoveProfile(index)}
+                  style={styles.removeMediaIcon}
+                >
+                  <AntDesign name="closecircle" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
+            ))}
           </View>
         </View>
         <View style={styles.mostPopularItem}>
           <Text style={styles.label}>{translations.addImages}</Text>
+          <Text style={styles.subLabel}>
+            {translations.maxImagesAllowed}: {MAX_NUMBER_OF_IMAGES},{" "}
+            {translations.maxSizePerImage}:{" "}
+            {MAX_IMAGE_FILE_SIZE / (1024 * 1024)}MB
+          </Text>
           <View style={styles.mediaListContainer}>
-            <TouchableOpacity onPress={() => pickMedia("image")}>
+            <TouchableOpacity
+              onPress={() => pickMedia("image")}
+              style={[
+                styles.addMediaButton,
+                selectedImages.length >= MAX_NUMBER_OF_IMAGES &&
+                  styles.disabledButton,
+              ]}
+              disabled={selectedImages.length >= MAX_NUMBER_OF_IMAGES}
+            >
               <MaterialIcons
                 name="add-photo-alternate"
                 size={40}
-                color="#333"
+                color={
+                  selectedImages.length >= MAX_NUMBER_OF_IMAGES
+                    ? "#999"
+                    : theme3.primaryColor
+                }
               />
             </TouchableOpacity>
-            {selectedImages?.map((uri, index) => (
-              <View key={uri} style={styles.mediaItem}>
+            {selectedImages.map((uri, index) => (
+              <View key={`image-${index}`} style={styles.mediaItem}>
                 <Image source={{ uri }} style={styles.mediaThumbnail} />
                 <TouchableOpacity
                   onPress={() => removeMedia("image", uri)}
@@ -747,17 +861,34 @@ function DetailScreen({ route }) {
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          <Text style={styles.label}>{translations.addVideos}</Text>
+          <Text style={styles.label}>{translations.addVideo}</Text>
+          <Text style={styles.subLabel}>
+            {translations.maxVideoAllowed}: {MAX_NUMBER_OF_VIDEOS},{" "}
+            {translations.maxSizePerVideo}:{" "}
+            {MAX_VIDEO_FILE_SIZE / (1024 * 1024)}MB
+          </Text>
           <View style={styles.mediaListContainer}>
-            <TouchableOpacity onPress={() => pickMedia("video")}>
+            <TouchableOpacity
+              onPress={() => pickMedia("video")}
+              style={[
+                styles.addMediaButton,
+                selectedVideos.length >= MAX_NUMBER_OF_VIDEOS &&
+                  styles.disabledButton,
+              ]}
+              disabled={selectedVideos.length >= MAX_NUMBER_OF_VIDEOS}
+            >
               <MaterialIcons
-                name="add-photo-alternate"
+                name="videocam"
                 size={40}
-                color="#333"
+                color={
+                  selectedVideos.length >= MAX_NUMBER_OF_VIDEOS
+                    ? "#999"
+                    : theme3.primaryColor
+                }
               />
             </TouchableOpacity>
-            {selectedVideos?.map((uri, index) => (
-              <View key={uri} style={styles.mediaItem}>
+            {selectedVideos.map((uri, index) => (
+              <View key={`video-${index}`} style={styles.mediaItem}>
                 <FontAwesome name="file-video-o" size={48} color="#333" />
                 <TouchableOpacity
                   onPress={() => removeMedia("video", uri)}
@@ -892,6 +1023,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: theme3.fontColor,
     marginTop: 8,
+  },
+  noteBubble: {
+    backgroundColor: theme3.primaryColor,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 10,
+  },
+  noteText: {
+    color: theme3.light,
+    fontSize: 12,
   },
   CatList: {
     padding: 15,
@@ -1119,6 +1260,86 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     paddingVertical: 5,
+  },
+  mediaListContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+  },
+  addMediaButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 65,
+    height: 65,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  mediaItem: {
+    position: "relative",
+    width: 65,
+    height: 65,
+    marginRight: 10,
+    marginBottom: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  mediaThumbnail: {
+    width: 65,
+    height: 65,
+    borderRadius: 5,
+  },
+  profileIcon: {
+    width: 65,
+    height: 65,
+    borderRadius: 5,
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileName: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    color: "white",
+    fontSize: 10,
+    padding: 2,
+    textAlign: "center",
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+  },
+  removeMediaIcon: {
+    position: "absolute",
+    top: -10,
+    right: -10,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 0,
+  },
+  subLabel: {
+    fontSize: 12,
+    color: theme3.fontColorI,
+    marginBottom: 10,
+  },
+  addMediaButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 65,
+    height: 65,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
 });
 

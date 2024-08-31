@@ -6,14 +6,12 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  Dimensions,
-  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import CalenderCustom from "../Filters/CalenderCustom";
 import { theme3 } from "../../assets/branding/themes";
-
-const { width, height } = Dimensions.get("window");
+import Header from "../GlobalComponents/Header";
+import CalenderCustom from "../Filters/CalenderCustom";
 
 const RescheduleModal = ({
   isVisible,
@@ -43,12 +41,11 @@ const RescheduleModal = ({
   }, [selectedSlotId, slots]);
 
   const handleDayPress = (day) => {
-    console.log("Day pressed in RescheduleModal:", day);
     setLocalSelectedDate(day.dateString);
     onDayPress(day);
   };
 
-  function SpecialityListII({ item, onPress, isSelected }) {
+  const SpecialityListII = ({ item, onPress, isSelected }) => {
     const backgroundColor = isSelected ? theme3.primaryColor : theme3.inActive;
     return (
       <TouchableOpacity
@@ -58,7 +55,7 @@ const RescheduleModal = ({
         <Text style={styles.catListText}>{item}</Text>
       </TouchableOpacity>
     );
-  }
+  };
 
   return (
     <Modal
@@ -67,12 +64,17 @@ const RescheduleModal = ({
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <View style={styles.modalContainer}>
-        <TouchableOpacity style={styles.closeIconContainer} onPress={onClose}>
-          <Ionicons name="close-circle" size={30} color={theme3.danger} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Reschedule Appointment</Text>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <Header
+          title="Reschedule Appointment"
+          typeModal={true}
+          onPress={onClose}
+        />
+        <View style={styles.modalContainer}>
+          <Text style={styles.title}>Reschedule Appointment</Text>
           <Text style={styles.instructionText}>
             Select a new date and category that suits your schedule.
           </Text>
@@ -109,11 +111,8 @@ const RescheduleModal = ({
               )}
             </View>
           </View>
-        </ScrollView>
-        <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[
-              styles.button,
               styles.submitButton,
               (!selectedSlotId || !selectedServiceType) &&
                 styles.disabledButton,
@@ -121,16 +120,10 @@ const RescheduleModal = ({
             onPress={onSubmit}
             disabled={!selectedSlotId || !selectedServiceType}
           >
-            <Text style={styles.buttonText}>Reschedule</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={onClose}
-          >
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+            <Text style={styles.submitButtonText}>Reschedule</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -141,25 +134,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#f6f6f6",
     paddingHorizontal: 20,
-    paddingTop: 60,
-  },
-  closeIconContainer: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 10,
+    paddingTop: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     color: theme3.fontColor,
     textAlign: "center",
-    marginBottom: 20,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-    alignItems: "center",
-    paddingBottom: 20,
+    marginBottom: 10,
   },
   instructionText: {
     fontSize: 16,
@@ -209,38 +191,20 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: "center",
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    position: "absolute",
-    bottom: 40,
-    paddingHorizontal: 20,
-  },
-  button: {
-    width: width * 0.4,
-    paddingVertical: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
   submitButton: {
     backgroundColor: theme3.primaryColor,
+    width: "95%",
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginVertical: 30,
   },
   disabledButton: {
     backgroundColor: theme3.inActive,
   },
-  cancelButton: {
-    backgroundColor: theme3.danger,
-  },
-  buttonText: {
-    color: "white",
+  submitButtonText: {
+    textAlign: "center",
+    color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
-  },
-  cancelButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
   },
 });
 

@@ -293,7 +293,7 @@ function AppointmentCard({
       }
 
       const response = await axios.post(
-        `${baseApiUrl}/api/v1/userBookings/reject`,
+        `${baseApiUrl}/api/v1/userBookings/rejectByUser`,
         { ...localSingleSlot, rejected: true },
         {
           headers: {
@@ -521,11 +521,9 @@ function AppointmentCard({
       open: { label: translations.statusOpen, color: "#6EBD6A" },
       unknown: { label: translations.statusUnknown, color: "#808080" },
       reviewed: { label: translations.statusReviewed, color: "#8A2BE2" },
+      rejected: { label: translations.statusRejected, color: "#FF0000" },
     };
-
-    // Debugging: Log the slot status
-    console.log("Slot status:", JSON.stringify(slot, null, 2));
-
+    if (slot.rejected) return statusLabels.rejected;
     if (slot.reviewed) return statusLabels.reviewed;
     if (slot.cancelled) return statusLabels.cancelled;
     if (slot.noshow) return statusLabels.noshow;
@@ -555,17 +553,6 @@ function AppointmentCard({
 
     const isPastAppointment = appointmentTime < now;
 
-    // Debugging: Log the current state and conditions
-    console.log("Current state:", {
-      isPastAppointment,
-      isReviewed,
-      completed: localSingleSlot.completed,
-      confirmed: localSingleSlot.confirmed,
-      accepted: localSingleSlot.accepted,
-      booked: localSingleSlot.booked,
-      status: status.label,
-    });
-
     if (isPastAppointment) {
       if (localSingleSlot.completed && !isReviewed) {
         return (
@@ -587,7 +574,7 @@ function AppointmentCard({
       );
     }
 
-    if (localSingleSlot.reviewed) {
+    if (localSingleSlot.reviewed || localSingleSlot.rejected) {
       return (
         <TouchableOpacity
           onPress={handleBookAgain}

@@ -388,6 +388,7 @@ export default {
   booked: "Reservado",
   confirmed: "Confirmado",
   cancelled: "Cancelado",
+  rejected: "Rechazado",
   accepted: "Aceptado",
   rescheduled: "Reprogramado",
   actionError: "Error de acción",
@@ -416,6 +417,7 @@ export default {
   statusRescheduled: "Reprogramado",
   statusNoShow: "No asistió",
   statusCompleted: "Completado",
+  statusRejected: "Rechazado",
   statusConfirmed: "Confirmado",
   statusAccepted: "Aceptado",
   statusBooked: "Reservado",
@@ -644,4 +646,25 @@ export default {
   chatNow: "Chatea Ahora",
 
   fileSizeError: "El tamaño del archivo excede el límite máximo de",
+  fileSizeNote: "Tamaño máximo de archivo para",
+  images: "imágenes",
+  videos: "vídeos",
+  someFilesStillTooLarge:
+    "Algunos archivos seguían siendo demasiado grandes después de la compresión y no se añadieron.",
+  maxImagesReached: "Se alcanzó el número máximo de imágenes (5)",
+  maxVideosReached: "Se alcanzó el número máximo de videos (1)",
+  someFilesStillTooLarge:
+    "Algunos archivos eran demasiado grandes y no se añadieron",
+  maxImagesAllowed: "Máximo de imágenes permitidas",
+  maxVideoAllowed: "Máximo de videos permitidos",
+  maxSizePerImage: "Tamaño máximo por imagen",
+  maxSizePerVideo: "Tamaño máximo por video",
+  addVideo: "Añadir Video",
+  someImagesNotAdded:
+    "Algunas imágenes no se añadieron debido al límite máximo",
+  videoNotAdded: "No se pudo añadir el video debido al límite máximo",
+  maxImagesReached: "Se alcanzó el número máximo de imágenes",
+  maxVideosReached: "Se alcanzó el número máximo de videos",
+  maxProfilesReached: "Se alcanzó el número máximo de perfiles",
+  maxProfilesAllowed: "Máximo de perfiles permitidos",
 };

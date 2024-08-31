@@ -4,7 +4,7 @@
     "slug": "speedySlotzfinalapp",
     "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-new.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
-      "buildNumber": "12",
+      "buildNumber": "15",
       "developmentClient": true,
       "infoPlist": {
         "UIBackgroundModes": ["remote-notification"]
@@ -24,11 +24,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/icon-new.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.speedyzslotznitinapp.app",
-      "versionCode": 17,
+      "versionCode": 21,
       "developmentClient": true,
       "permissions": ["NOTIFICATIONS"]
     },
@@ -38,7 +38,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/icon.png",
+          "icon": "./assets/icon-new.png",
           "color": "#ffffff"
         }
       ]

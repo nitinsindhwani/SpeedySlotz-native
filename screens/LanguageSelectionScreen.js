@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  SafeAreaView,
   StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -25,35 +24,7 @@ const LanguageSelectionScreen = () => {
   const [selectedLanguage, setSelectedLanguage] = useState(null);
   const navigation = useNavigation();
   const { translations, changeLanguage } = useContext(LanguageContext);
-
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async () => {
-    if (selectedLanguage) {
-      setIsLoading(true);
-      try {
-        await SecureStore.setItemAsync(
-          "selectedLanguage",
-          JSON.stringify(selectedLanguage)
-        );
-        changeLanguage(selectedLanguage.code);
-        const userData = await getStoredUser();
-
-        if (!userData || !userData.user_id) {
-          throw new Error("User ID is missing");
-        }
-
-        const userId = userData.user_id;
-        await updateUserLanguage(userId, selectedLanguage.code);
-
-        navigation.goBack();
-      } catch (error) {
-        console.error("Error saving language:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
 
   useEffect(() => {
     loadSelectedLanguage();
@@ -83,6 +54,33 @@ const LanguageSelectionScreen = () => {
     }
   };
 
+  const handleSubmit = async () => {
+    if (selectedLanguage) {
+      setIsLoading(true);
+      try {
+        await SecureStore.setItemAsync(
+          "selectedLanguage",
+          JSON.stringify(selectedLanguage)
+        );
+        changeLanguage(selectedLanguage.code);
+        const userData = await getStoredUser();
+
+        if (!userData || !userData.user_id) {
+          throw new Error("User ID is missing");
+        }
+
+        const userId = userData.user_id;
+        await updateUserLanguage(userId, selectedLanguage.code);
+
+        navigation.goBack();
+      } catch (error) {
+        console.error("Error saving language:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   const renderLanguageItem = ({ item }) => (
     <TouchableOpacity
       style={[
@@ -105,13 +103,17 @@ const LanguageSelectionScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.container}>
       <StatusBar
         backgroundColor={theme3.primaryColor}
         barStyle="light-content"
       />
-      <Header title={translations.language_selection} />
-      <View style={styles.container}>
+      <Header
+        title={translations.language_selection}
+        typeModal={true}
+        onPress={() => navigation.goBack()}
+      />
+      <View style={styles.content}>
         <Text style={styles.title}>
           {translations.select_preferred_language}
         </Text>
@@ -122,7 +124,10 @@ const LanguageSelectionScreen = () => {
           style={styles.list}
         />
         <TouchableOpacity
-          style={[styles.submitButton, isLoading && styles.disabledButton]}
+          style={[
+            styles.submitButton,
+            (!selectedLanguage || isLoading) && styles.disabledButton,
+          ]}
           onPress={handleSubmit}
           disabled={!selectedLanguage || isLoading}
         >
@@ -131,30 +136,28 @@ const LanguageSelectionScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: theme3.primaryColor,
   },
-  container: {
+  content: {
     flex: 1,
-    padding: 20,
-    backgroundColor: theme3.backgroundColor,
+    backgroundColor: "#f6f6f6",
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 10,
     color: theme3.fontColor,
-  },
-  subtitle: {
-    fontSize: 16,
+    textAlign: "center",
     marginBottom: 20,
-    color: theme3.fontColorLight,
   },
   list: {
     flex: 1,
@@ -182,14 +185,17 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     backgroundColor: theme3.primaryColor,
-    padding: 15,
+    paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
     marginTop: 20,
   },
+  disabledButton: {
+    backgroundColor: theme3.inActive,
+  },
   submitButtonText: {
-    color: theme3.backgroundColor,
-    fontSize: 16,
+    color: "#fff",
+    fontSize: 18,
     fontWeight: "bold",
   },
 });

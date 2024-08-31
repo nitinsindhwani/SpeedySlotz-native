@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../../assets/branding/themes";
+import Header from "../GlobalComponents/Header";
 
 const CancelModal = ({ isVisible, onClose, onConfirm }) => {
   const [reason, setReason] = useState("");
@@ -21,42 +22,33 @@ const CancelModal = ({ isVisible, onClose, onConfirm }) => {
 
   return (
     <Modal animationType="slide" transparent={false} visible={isVisible}>
-      <View style={styles.modalContainer}>
-        <TouchableOpacity
-          style={styles.closeIconContainer}
-          onPress={onClose}
-        >
-          <Ionicons name="close-circle" size={30} color={theme3.danger} />
-        </TouchableOpacity>
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <Header title="Cancel Appointment" typeModal={true} onPress={onClose} />
+        <View style={styles.modalContainer}>
           <Text style={styles.title}>Cancel Appointment</Text>
-          <View style={styles.warningContainer}>
-            <Ionicons name="warning-outline" size={24} color={theme3.danger} />
-            <Text style={styles.warningText}>
-              Please note: Once cancelled, this action cannot be undone. The appointment slot will be released and may be booked by another client.
-            </Text>
-          </View>
           <Text style={styles.instructionText}>
-            We'd appreciate if you could provide a reason for cancellation. This helps us improve our services.
+            Please provide a reason for cancellation. This helps us improve our
+            services.
           </Text>
           <View style={styles.reasonContainer}>
             <TextInput
               value={reason}
               onChangeText={setReason}
-              style={styles.reasonInput}
+              style={styles.textInput}
               placeholder="Reason for cancellation"
               placeholderTextColor={theme3.placeHolder}
               multiline={true}
+              textAlignVertical="top"
             />
           </View>
-          <TouchableOpacity
-            style={styles.submitButton}
-            onPress={handleSubmit}
-          >
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
             <Text style={styles.submitButtonText}>Confirm Cancellation</Text>
           </TouchableOpacity>
-        </ScrollView>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -64,39 +56,17 @@ const CancelModal = ({ isVisible, onClose, onConfirm }) => {
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    backgroundColor: "#f6f6f6",
-    paddingTop: 60,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
     alignItems: "center",
+    backgroundColor: "#f6f6f6",
     paddingHorizontal: 20,
-  },
-  closeIconContainer: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 10,
+    paddingTop: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: theme3.danger,
+    color: theme3.fontColor,
     textAlign: "center",
-    marginBottom: 20,
-  },
-  warningContainer: {
-    flexDirection: "row",
-    backgroundColor: "rgba(255, 0, 0, 0.1)",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  warningText: {
-    flex: 1,
-    marginLeft: 10,
-    color: theme3.danger,
-    fontSize: 16,
+    marginBottom: 10,
   },
   instructionText: {
     fontSize: 16,
@@ -106,28 +76,33 @@ const styles = StyleSheet.create({
   },
   reasonContainer: {
     backgroundColor: theme3.light,
-    width: "100%",
+    width: "95%",
     height: 150,
     borderRadius: 20,
+    shadowColor: "rgba(0,0,0,0.1)",
+    shadowOpacity: 1,
+    elevation: 1,
+    padding: 10,
     marginBottom: 20,
   },
-  reasonInput: {
+  textInput: {
     flex: 1,
-    padding: 15,
-    fontSize: 16,
+    paddingLeft: 10,
+    paddingRight: 10,
+    textAlignVertical: "top",
     color: theme3.fontColor,
   },
   submitButton: {
-    backgroundColor: theme3.danger,
-    width: "100%",
-    paddingVertical: 15,
+    backgroundColor: theme3.primaryColor,
+    width: "95%",
+    paddingVertical: 10,
     borderRadius: 10,
+    marginVertical: 30,
   },
   submitButtonText: {
     textAlign: "center",
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
   },
 });
 
