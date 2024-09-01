@@ -193,7 +193,6 @@ const NewJobScreen = ({ route }) => {
     });
 
     if (result.canceled) {
-      console.log("Media picking was cancelled");
       return;
     }
 
@@ -217,7 +216,7 @@ const NewJobScreen = ({ route }) => {
               return asset.uri;
             }
           }
-          console.log(`File too large: ${fileInfo.size} bytes`);
+
           return null;
         } catch (error) {
           console.error("Error processing file:", error);
@@ -341,7 +340,6 @@ const NewJobScreen = ({ route }) => {
     try {
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
-        console.log("No token found");
         return;
       }
 
@@ -357,7 +355,6 @@ const NewJobScreen = ({ route }) => {
       );
 
       if (response.status === 201) {
-        console.log("Booking successful");
         setShowSuccess(false);
         const selectedServiceTypes =
           response.data.payload.selectedServiceTypes || [];

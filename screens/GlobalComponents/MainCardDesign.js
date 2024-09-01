@@ -63,7 +63,7 @@ function MainCardDesign({ business }) {
   };
 
   const handleChatButtonPress = async () => {
-    console.log("handleChatButtonPress called");
+  
     try {
       let user = userData;
       if (!user) {
@@ -74,8 +74,7 @@ function MainCardDesign({ business }) {
           return;
         }
       }
-      console.log("User data:", user);
-      console.log("Business data:", business);
+
 
       if (business.yelpBusiness.is_registered) {
         const selectedChat = {
@@ -88,12 +87,11 @@ function MainCardDesign({ business }) {
           chatMessages: [],
         };
 
-        console.log("Navigating to ChatScreen with data:", selectedChat);
 
         navigation.navigate("App", {
-          screen: "ChatScreen",
+          screen: "ChatMessage",
           params: {
-            chatData: selectedChat,
+            currentChat: selectedChat,
           },
         });
       } else {

@@ -19,7 +19,7 @@ export const LanguageProvider = ({ children }) => {
   const loadLanguage = async () => {
     try {
       const savedLanguage = await SecureStore.getItemAsync(LANGUAGE_KEY);
-      console.log("Loaded language:", savedLanguage);
+     
       if (savedLanguage) {
         setLanguage(savedLanguage);
         setTranslations(savedLanguage === "es" ? es : en);

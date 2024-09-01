@@ -647,4 +647,11 @@ export default {
   maxVideosReached: "Maximum number of videos reached",
   maxProfilesReached: "Maximum number of profiles reached",
   maxProfilesAllowed: "Max profiles allowed",
+
+  browseServices: "Browse Services",
+  gettingStartedTitle: "Getting Started",
+  searchLocationGuidance: "1. Search for your desired location above",
+  browseServicesGuidance: "2. Browse services and choose a category",
+  filters: "Filters",
+  dateFilter: "Date Filter",
 };

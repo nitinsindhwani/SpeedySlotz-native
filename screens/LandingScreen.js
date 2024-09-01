@@ -74,7 +74,6 @@ const LandingScreen = ({ route }) => {
 
   const prepareBadgeFilters = () => {
     if (!fetchedBusinesses || fetchedBusinesses.length === 0) {
-      console.log("No businesses fetched yet, or they have no badges.");
       return [];
     }
 
@@ -109,7 +108,6 @@ const LandingScreen = ({ route }) => {
       const locationDetails = await getLocationAndCityState();
 
       if (locationDetails.errorMsg) {
-        console.log(`Error getting location: ${locationDetails.errorMsg}`);
         return;
       }
 
@@ -206,7 +204,6 @@ const LandingScreen = ({ route }) => {
 
   useEffect(() => {
     if (selectedServiceTypeName) {
-      console.log("Fetching data for service:", selectedServiceTypeName);
       fetchData(selectedServiceTypeName);
     }
   }, [
@@ -255,146 +252,90 @@ const LandingScreen = ({ route }) => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, flexDirection: "column" }}>
-      {loader === 3 ? (
-        <View style={styles.container}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      ) : (
-        <>
-          <Header user={user} />
-          <SearchComponent
-            selectedLocation={selectedLocation}
-            setSelectedLocation={setSelectedLocation}
-            setLocationData={setLocationData}
-            handleLoader={handleLoader}
-          />
-          <View
-            style={{ backgroundColor: "white", width: "100%", marginTop: 0 }}
+    <View style={styles.container}>
+      <Header user={user} />
+      <View style={styles.content}>
+        <SearchComponent
+          selectedLocation={selectedLocation}
+          setSelectedLocation={setSelectedLocation}
+          setLocationData={setLocationData}
+          handleLoader={handleLoader}
+        />
+        <View style={styles.categoryContainer}>
+          {userCategories && userCategories.length > 0 && (
+            <CategoryList
+              userCategoriesData={userCategories}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              selectedSubcategory={selectedSubcategory}
+              setSelectedSubcategory={setSelectedSubcategory}
+              selectedServiceTypeName={selectedServiceTypeName}
+              setSelectedServiceTypeName={setSelectedServiceTypeName}
+              rows={3}
+              language={language}
+              translations={translations}
+            />
+          )}
+          {ExpandCat === true && (
+            <>
+              <RadiusSlider radius={radius} setRadius={setRadius} />
+              <View style={styles.filterContainer}>
+                <TouchableOpacity
+                  onPress={() => handleOpenFilterModal()}
+                  style={styles.filterButton}
+                >
+                  <MaterialCommunityIcons
+                    name="filter-variant"
+                    size={24}
+                    color={theme3.secondaryColor}
+                  />
+                  <Text style={styles.filterText}>Filters</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowDateModal(true)}
+                  style={styles.filterButton}
+                >
+                  <MaterialCommunityIcons
+                    name="filter-variant"
+                    size={24}
+                    color={theme3.secondaryColor}
+                  />
+                  <Text style={styles.filterText}>Date Filter</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+          <TouchableOpacity
+            style={styles.expandButton}
+            onPress={() => setExpandCat(!ExpandCat)}
           >
-            {userCategories && userCategories.length > 0 && (
-              <CategoryList
-                userCategoriesData={userCategories}
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                selectedSubcategory={selectedSubcategory}
-                setSelectedSubcategory={setSelectedSubcategory}
-                selectedServiceTypeName={selectedServiceTypeName}
-                setSelectedServiceTypeName={setSelectedServiceTypeName}
-                rows={3}
-                language={language}
-                translations={translations}
+            <Entypo
+              name={ExpandCat ? "chevron-thin-up" : "chevron-thin-down"}
+              size={17}
+              color={theme3.primaryColor}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {loader === true ? (
+          <InLineLoader />
+        ) : fetchedBusinesses.length > 0 ? (
+          <FlatList
+            nestedScrollEnabled={true}
+            data={fetchedBusinesses}
+            keyExtractor={(item) => item.yelpBusiness.id.toString()}
+            ListHeaderComponent={() => <></>}
+            ListFooterComponent={() => (
+              <PopularBusinessList
+                fetchedBusinesses={fetchedBusinesses}
+                navigation={navigation}
               />
             )}
-            {ExpandCat === true && (
-              <>
-                <RadiusSlider radius={radius} setRadius={setRadius} />
-
-                <View
-                  style={{
-                    width: "100%",
-                    justifyContent: "space-between",
-                    flexDirection: "row",
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => handleOpenFilterModal()}
-                    style={{
-                      flexDirection: "row",
-                      marginTop: -15,
-                      margin: 10,
-                      alignItems: "center",
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name="filter-variant"
-                      size={24}
-                      color={theme3.secondaryColor}
-                    />
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        fontWeight: "bold",
-                        color: theme3.secondaryColor,
-                      }}
-                    >
-                      Filters
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setShowDateModal(true)}
-                    style={{
-                      flexDirection: "row",
-                      marginTop: -15,
-                      margin: 10,
-                      alignItems: "center",
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name="filter-variant"
-                      size={24}
-                      color={theme3.secondaryColor}
-                    />
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        fontWeight: "bold",
-                        color: theme3.secondaryColor,
-                      }}
-                    >
-                      Date Filter
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-            {ExpandCat === false ? (
-              <TouchableOpacity
-                style={{ width: 100, alignSelf: "center" }}
-                onPress={() => setExpandCat(true)}
-              >
-                <Entypo
-                  style={{ alignSelf: "center" }}
-                  name="chevron-thin-down"
-                  size={17}
-                  color={theme3.primaryColor}
-                />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={{ width: 100, alignSelf: "center" }}
-                onPress={() => setExpandCat(false)}
-              >
-                <Entypo
-                  style={{ alignSelf: "center" }}
-                  name="chevron-thin-up"
-                  size={17}
-                  color={theme3.primaryColor}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {loader === true ? (
-            <InLineLoader />
-          ) : fetchedBusinesses.length > 0 ? (
-            <FlatList
-              nestedScrollEnabled={true}
-              data={fetchedBusinesses}
-              keyExtractor={(item) => item.yelpBusiness.id.toString()}
-              ListHeaderComponent={() => <></>}
-              ListFooterComponent={() => (
-                <PopularBusinessList
-                  fetchedBusinesses={fetchedBusinesses}
-                  navigation={navigation}
-                />
-              )}
-            />
-          ) : (
-            selectedCategory && <NoDataFound />
-          )}
-        </>
-      )}
+          />
+        ) : (
+          selectedCategory && <NoDataFound />
+        )}
+      </View>
 
       <FilterModal
         show={showFilterModal}
@@ -410,99 +351,50 @@ const LandingScreen = ({ route }) => {
       />
       <LoadingModal show={isLoading} />
       <Image source={yelp} style={styles.yelpLogo} />
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#F5FCFF",
   },
-  yelpLogoContainer: {
-    position: "absolute",
-    top: 20, // Changed this
-    right: 20, // Changed this
-    zIndex: 2,
-    padding: 5, // Added this to make it touch-friendly
-    borderRadius: 20, // Added this for a rounded touch area
-    backgroundColor: "rgba(255, 255, 255, 0.5)", // Added a light background for visibility
+  content: {
+    flex: 1,
+  },
+  categoryContainer: {
+    backgroundColor: "white",
+    width: "100%",
+  },
+  filterContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginTop: 10,
+  },
+  filterButton: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  filterText: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: theme3.secondaryColor,
+    marginLeft: 5,
+  },
+  expandButton: {
+    width: 100,
+    alignSelf: "center",
+    alignItems: "center",
+    paddingVertical: 10,
   },
   yelpLogo: {
     width: 60,
     height: 22,
     position: "absolute",
     bottom: 10,
-    right: 15, // Moved to the right
-  },
-  inputContainer: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-  },
-  iconContainer: {
-    padding: 5,
-  },
-  suggestionText: {
-    fontSize: 16,
-    marginBottom: 5,
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    paddingVertical: 5,
-  },
-  clearIconContainer: {
-    padding: 5,
-  },
-  map: {
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    position: "absolute",
-  },
-  searchbar: {
-    description: {
-      fontWeight: "bold",
-    },
-    predefinedPlacesDescription: {
-      color: "#1faadb",
-    },
-    textInputContainer: {
-      backgroundColor: "rgba(0,0,0,0)",
-      top: 50,
-      width: "100%",
-      borderWidth: 0,
-    },
-    textInput: {
-      marginLeft: 0,
-      marginRight: 0,
-      height: 38,
-      color: "#5d5d5d",
-      fontSize: 16,
-      borderWidth: 0,
-    },
-    listView: {
-      backgroundColor: "rgba(192,192,192,0.9)",
-      top: 23,
-    },
+    right: 15,
   },
 });
 

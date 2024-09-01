@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Styles from "../../assets/branding/GlobalStyles";
 import { theme3 } from "../../assets/branding/themes";
 import { getBadgeDetails } from "../../components/BadgeInfo";
+import { LanguageContext } from "../../api/LanguageContext";
 
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("window").height;
@@ -24,6 +25,7 @@ function FilterModal({
 }) {
   const [tempSelectedFilters, setTempSelectedFilters] =
     useState(selectedFilters);
+  const { translations } = useContext(LanguageContext);
 
   useEffect(() => {
     setTempSelectedFilters(selectedFilters);
@@ -88,7 +90,7 @@ function FilterModal({
                   fontWeight: "bold",
                 }}
               >
-                Filters
+                {translations.filters}
               </Text>
             </View>
             <TouchableOpacity onPress={handleSave}>
@@ -101,14 +103,14 @@ function FilterModal({
                   fontWeight: "bold",
                 }}
               >
-                Save
+                {translations.save}
               </Text>
             </TouchableOpacity>
           </View>
 
           <ScrollView>
             {badgeCodes.map((code, index) => {
-              const badgeDetails = getBadgeDetails(code);
+              const badgeDetails = getBadgeDetails(code, translations);
               if (!badgeDetails) return null;
               return (
                 <TouchableOpacity

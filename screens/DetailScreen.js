@@ -198,7 +198,7 @@ function DetailScreen({ route }) {
     });
 
     if (result.canceled) {
-      console.log("Media picking was cancelled");
+  
       return;
     }
 
@@ -222,7 +222,7 @@ function DetailScreen({ route }) {
               return asset.uri;
             }
           }
-          console.log(`File too large: ${fileInfo.size} bytes`);
+         
           return null;
         } catch (error) {
           console.error("Error processing file:", error);
@@ -363,7 +363,7 @@ function DetailScreen({ route }) {
       (slot) => slot.key.slotId === selectedSlotId
     );
     if (!selectedSlot) {
-      console.log("No slot selected");
+
       return;
     }
 
@@ -397,7 +397,7 @@ function DetailScreen({ route }) {
     try {
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
-        console.log("No token found");
+
         return;
       }
 

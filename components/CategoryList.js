@@ -155,7 +155,6 @@ const CategoryList = ({
   };
 
   const handleServiceTypePress = (serviceType) => {
-    console.log("serviceType", serviceType);
     setSHowService(false);
     setSelectedServiceTypeName(serviceType);
   };

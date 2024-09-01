@@ -20,7 +20,7 @@ const AddFavorite = async (itemId,changeTepFav) => {
       //   [itemId]: false,
       // }));
       changeTepFav(false)
-      console.log("function remove")
+  
 
     } catch (error) {
       changeTepFav(true)

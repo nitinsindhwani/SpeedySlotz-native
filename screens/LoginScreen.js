@@ -29,17 +29,16 @@ const LoginScreen = () => {
   const styles = getStyles(currentTheme);
 
   const languageContext = useContext(LanguageContext);
-  console.log("Language context in LoginScreen:", languageContext);
+
 
   // Check if context is available
   if (!languageContext) {
-    console.log("LanguageContext not available");
+
     return <Text>Loading...</Text>;
   }
 
   const { language, translations } = languageContext;
-  console.log("Current language:", language);
-  console.log("Translations:", translations);
+
   useEffect(() => {
     PushNotification();
   }, []);
@@ -62,7 +61,7 @@ const LoginScreen = () => {
     try {
       const response = await loginUser(username, password);
       if (response) {
-        console.log(response);
+
         if (response.settings && response.settings.preferred_language) {
           await updateLanguageAfterLogin(response.settings.preferred_language);
         }

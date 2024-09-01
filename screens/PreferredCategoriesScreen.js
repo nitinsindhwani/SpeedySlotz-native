@@ -80,11 +80,11 @@ const PreferredCategoriesScreen = () => {
   const [toggleStates, setToggleStates] = useState({});
   const [userData, setUserData] = useState(null);
   const languageContext = useContext(LanguageContext);
-  console.log("Language context in LoginScreen:", languageContext);
+
 
   // Check if context is available
   if (!languageContext) {
-    console.log("LanguageContext not available");
+   
     return <Text>Loading...</Text>;
   }
 

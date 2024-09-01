@@ -33,7 +33,7 @@ const ReferScreen = () => {
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
           // Shared with activity type of result.activityType
-          console.log("Shared with activity type: ", result.activityType);
+        
         } else {
           // Shared
         }

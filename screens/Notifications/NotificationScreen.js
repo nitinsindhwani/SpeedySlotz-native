@@ -36,7 +36,7 @@ const NotificationScreen = ({ route }) => {
         console.log("Error fetching notifications:", error.message);
       });
 
-    console.log("notifications:", notifications);
+   
   }, []);
 
   const handleNotificationClick = async (notificationId) => {

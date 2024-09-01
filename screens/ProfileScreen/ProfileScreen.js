@@ -123,7 +123,6 @@ const ProfileScreen = ({ route }) => {
 
       if (response.ok) {
         const responseData = await response.json();
-        console.log("Response data:", responseData);
 
         if (responseData.success && responseData.payload) {
           const updatedUser = responseData.payload;

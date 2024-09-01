@@ -667,4 +667,11 @@ export default {
   maxVideosReached: "Se alcanzó el número máximo de videos",
   maxProfilesReached: "Se alcanzó el número máximo de perfiles",
   maxProfilesAllowed: "Máximo de perfiles permitidos",
+
+  browseServices: "Explorar Servicios",
+  gettingStartedTitle: "Cómo Empezar",
+  searchLocationGuidance: "1. Busca tu ubicación deseada arriba",
+  browseServicesGuidance: "2. Explora servicios y elige una categoría",
+  filters: "Filtros",
+  dateFilter: "Filtro de Fecha",
 };

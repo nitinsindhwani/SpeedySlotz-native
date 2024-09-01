@@ -99,7 +99,7 @@ const LoginScreen = () => {
           currentPushToken
         );
         if (updateResponse.status === 200) {
-          console.log("Push token updated successfully");
+   
           // Update the stored token if it's different
           if (storedPushToken !== currentPushToken) {
             await SecureStore.setItemAsync(
@@ -124,7 +124,7 @@ const LoginScreen = () => {
     try {
       setLoading(true);
       const response = await loginUser(username, password);
-      console.log(response);
+
       if (response.success) {
         await checkAndUpdatePushToken(response.payload);
         if (response.payload.email_verified) {

@@ -467,11 +467,10 @@ function AppointmentCard({
   };
 
   const handleChatButtonPress = () => {
-    console.log("handleChatButtonPress called");
-    console.log("userData:", userData);
+  
 
     if (!userData) {
-      console.log("userData is null or undefined");
+  
       setErrorMessage(
         translations.userDataMissing ||
           "User data is missing. Please try logging in again."
@@ -490,7 +489,7 @@ function AppointmentCard({
       chatMessages: [],
     };
 
-    console.log("Navigating to ChatScreen with data:", selectedChat);
+
 
     try {
       navigation.navigate("App", {
@@ -645,8 +644,7 @@ function AppointmentCard({
       );
     }
 
-    // Debugging: Log if no condition was met
-    console.log("No button condition met");
+
 
     return null;
   };

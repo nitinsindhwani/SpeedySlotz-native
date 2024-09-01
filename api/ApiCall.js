@@ -100,7 +100,7 @@ export const fetchBusinessesBySubcategory = async (
     .join("&");
 
   const fullURL = `${baseURL}?${queryString}`;
-  console.log("Query String", fullURL);
+
 
   const userToken = await SecureStore.getItemAsync("userToken");
   if (!userToken) {
@@ -150,7 +150,7 @@ export const fetchBusinessesByServiceName = async (
     .join("&");
 
   const fullURL = `${baseURL}?${queryString}`;
-  console.log("Query String", fullURL);
+
 
   const userToken = await SecureStore.getItemAsync("userToken");
   if (!userToken) {
@@ -297,7 +297,7 @@ export const resendVerifyEmail = async (userData) => {
 };
 
 export const forgotPassword = async (email) => {
-  console.log("forgotPassword", email);
+
   const resendEmailUrl = baseApiUrl + "/api/v1/users/forgotPassword";
 
   const response = await axios.post(
@@ -696,14 +696,7 @@ export const fetchBusinessDetailsById = async (businessId) => {
     const requestUrl = `${baseApiUrl}/api/v1/getRegisteredBusinessById?providerId=${businessId}`;
 
     // Log the request details
-    console.log("Fetching business details with the following:");
-    console.log("URL:", requestUrl);
-    console.log("Method: POST");
-    console.log("Provider ID (businessId) in URL:", businessId);
-    console.log("Headers:", {
-      Authorization: `Bearer ${secureToken}`,
-      "Content-Type": "application/json",
-    });
+   
 
     const response = await fetch(requestUrl, {
       method: "POST",
@@ -719,7 +712,7 @@ export const fetchBusinessDetailsById = async (businessId) => {
     }
 
     const responseData = await response.json();
-    console.log("Parsed response data:", responseData);
+
 
     return responseData;
   } catch (error) {
@@ -732,10 +725,7 @@ export const fetchBusinessDetailsById = async (businessId) => {
 
 export const updateUserLanguage = async (userId, preferredLanguage) => {
   try {
-    console.log(
-      "userId, preferredLanguage",
-      userId + " : " + preferredLanguage
-    );
+   
     const secureToken = await getStoredToken();
     if (!secureToken) {
       throw new Error("No authorization token available");
@@ -751,7 +741,7 @@ export const updateUserLanguage = async (userId, preferredLanguage) => {
       },
     });
 
-    console.log("Parsed response data:", response);
+
     return response.data;
   } catch (error) {
     console.error("Error updating user language:", error);
