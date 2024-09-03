@@ -11,7 +11,7 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 
-const UserMedicalHistoryForm = ({ profilesData }) => {
+const UserMedicalHistoryForm = ({ profilesData, onFormValidation }) => {
   const [allergies, setAllergies] = useState("");
   const [currentMedications, setCurrentMedications] = useState("");
   const [pastMedications, setPastMedications] = useState("");
@@ -43,7 +43,57 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
+  // Validate if all fields are filled
+  useEffect(() => {
+    const isFormComplete =
+      allergies.trim() &&
+      currentMedications.trim() &&
+      pastMedications.trim() &&
+      surgicalHistory.trim() &&
+      smokeAlcoholHistory.trim() &&
+      chronicIllnesses.trim() &&
+      familyMedicalHistory.trim() &&
+      recentHospitalVisits.trim() &&
+      immunizationHistory.trim() &&
+      pregnancyChildbirthHistory.trim() &&
+      otherMedicalInfo.trim();
+
+    onFormValidation(isFormComplete);
+  }, [
+    allergies,
+    currentMedications,
+    pastMedications,
+    surgicalHistory,
+    smokeAlcoholHistory,
+    chronicIllnesses,
+    familyMedicalHistory,
+    recentHospitalVisits,
+    immunizationHistory,
+    pregnancyChildbirthHistory,
+    otherMedicalInfo,
+    onFormValidation,
+  ]);
+
   const handleSaveMedicalHistory = async () => {
+    if (
+      !allergies.trim() ||
+      !currentMedications.trim() ||
+      !pastMedications.trim() ||
+      !surgicalHistory.trim() ||
+      !smokeAlcoholHistory.trim() ||
+      !chronicIllnesses.trim() ||
+      !familyMedicalHistory.trim() ||
+      !recentHospitalVisits.trim() ||
+      !immunizationHistory.trim() ||
+      !pregnancyChildbirthHistory.trim() ||
+      !otherMedicalInfo.trim()
+    ) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
     const profileData = {
       userMedicalHistory: {
         allergies,
@@ -202,7 +252,35 @@ const UserMedicalHistoryForm = ({ profilesData }) => {
 
         <TouchableOpacity
           onPress={handleSaveMedicalHistory}
-          style={styles.button}
+          style={[
+            styles.button,
+            !allergies.trim() ||
+            !currentMedications.trim() ||
+            !pastMedications.trim() ||
+            !surgicalHistory.trim() ||
+            !smokeAlcoholHistory.trim() ||
+            !chronicIllnesses.trim() ||
+            !familyMedicalHistory.trim() ||
+            !recentHospitalVisits.trim() ||
+            !immunizationHistory.trim() ||
+            !pregnancyChildbirthHistory.trim() ||
+            !otherMedicalInfo.trim()
+              ? styles.disabledButton
+              : null,
+          ]}
+          disabled={
+            !allergies.trim() ||
+            !currentMedications.trim() ||
+            !pastMedications.trim() ||
+            !surgicalHistory.trim() ||
+            !smokeAlcoholHistory.trim() ||
+            !chronicIllnesses.trim() ||
+            !familyMedicalHistory.trim() ||
+            !recentHospitalVisits.trim() ||
+            !immunizationHistory.trim() ||
+            !pregnancyChildbirthHistory.trim() ||
+            !otherMedicalInfo.trim()
+          }
         >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
@@ -219,6 +297,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "white",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
   iconInputContainer: {
     flexDirection: "row",

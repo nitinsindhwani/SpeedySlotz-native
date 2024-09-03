@@ -654,4 +654,13 @@ export default {
   browseServicesGuidance: "2. Browse services and choose a category",
   filters: "Filters",
   dateFilter: "Date Filter",
+
+  attention: "Attention",
+  maxProfilesReached: "Maximum number of profiles reached.",
+  maxImagesReached: "Maximum number of images reached.",
+  maxVideosReached: "Maximum number of videos reached.",
+  someFilesStillTooLarge: "Some files were too large and couldn't be added.",
+  imagesNotAdded: "Images could not be added.",
+  videoNotAdded: "Video could not be added.",
+  completeSelections: "Please complete all selections",
 };

@@ -12,7 +12,7 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import moment from "moment";
 
-const UserProfileForm = ({ profilesData }) => {
+const UserProfileForm = ({ profilesData, onFormValidation }) => {
   const [profile, setProfile] = useState({
     first_name: "",
     last_name: "",
@@ -35,9 +35,26 @@ const UserProfileForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
-  const formatDateForBackend = (date) => {
-    return date ? moment(date).format("MM-DD-YYYY") : null; // Use moment.js or any other library to format
-  };
+  useEffect(() => {
+    // Check if all fields are filled to enable form validation
+    const isFormComplete =
+      profile.first_name.trim() &&
+      profile.last_name.trim() &&
+      profile.email.trim() &&
+      profile.phoneNumber.trim() &&
+      profile.gender.trim() &&
+      profile.dateOfBirth.trim();
+
+    onFormValidation(isFormComplete);
+  }, [
+    profile.first_name,
+    profile.last_name,
+    profile.email,
+    profile.phoneNumber,
+    profile.gender,
+    profile.dateOfBirth,
+    onFormValidation,
+  ]);
 
   const handleInputChange = (name, value) => {
     setProfile((prevState) => ({
@@ -47,7 +64,20 @@ const UserProfileForm = ({ profilesData }) => {
   };
 
   const handleSave = async () => {
-    // Only send changed fields
+    if (
+      !profile.first_name.trim() ||
+      !profile.last_name.trim() ||
+      !profile.email.trim() ||
+      !profile.phoneNumber.trim() ||
+      !profile.gender.trim() ||
+      !profile.dateOfBirth.trim()
+    ) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
     const updatedFields = {};
     Object.keys(profile).forEach((key) => {
       if (profile[key] !== profilesData[key]) {
@@ -135,7 +165,28 @@ const UserProfileForm = ({ profilesData }) => {
         />
       </View>
 
-      <TouchableOpacity onPress={handleSave} style={styles.button}>
+      <TouchableOpacity
+        onPress={handleSave}
+        style={[
+          styles.button,
+          !profile.first_name.trim() ||
+          !profile.last_name.trim() ||
+          !profile.email.trim() ||
+          !profile.phoneNumber.trim() ||
+          !profile.gender.trim() ||
+          !profile.dateOfBirth.trim()
+            ? styles.disabledButton
+            : null,
+        ]}
+        disabled={
+          !profile.first_name.trim() ||
+          !profile.last_name.trim() ||
+          !profile.email.trim() ||
+          !profile.phoneNumber.trim() ||
+          !profile.gender.trim() ||
+          !profile.dateOfBirth.trim()
+        }
+      >
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </View>
@@ -149,6 +200,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     elevation: 4,
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
   iconInputContainer: {
     flexDirection: "row",

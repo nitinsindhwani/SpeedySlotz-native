@@ -9,10 +9,9 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 
-const UserDentalInsuranceForm = ({ profilesData }) => {
+const UserDentalInsuranceForm = ({ profilesData, onFormValidation }) => {
   const [claimDetails, setClaimDetails] = useState("");
   const [contact, setContact] = useState("");
   const [coverageDetails, setCoverageDetails] = useState("");
@@ -31,7 +30,42 @@ const UserDentalInsuranceForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
+  // Validate if all fields are filled
+  useEffect(() => {
+    const isFormComplete =
+      claimDetails.trim() &&
+      contact.trim() &&
+      coverageDetails.trim() &&
+      exclusions.trim() &&
+      policyNumber.trim() &&
+      provider.trim();
+
+    onFormValidation(isFormComplete);
+  }, [
+    claimDetails,
+    contact,
+    coverageDetails,
+    exclusions,
+    policyNumber,
+    provider,
+    onFormValidation,
+  ]);
+
   const handleSave = async () => {
+    if (
+      !claimDetails.trim() ||
+      !contact.trim() ||
+      !coverageDetails.trim() ||
+      !exclusions.trim() ||
+      !policyNumber.trim() ||
+      !provider.trim()
+    ) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
     const profileData = {
       userDentalInsurance: {
         claimDetails,
@@ -129,7 +163,28 @@ const UserDentalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        <TouchableOpacity onPress={handleSave} style={styles.button}>
+        <TouchableOpacity
+          onPress={handleSave}
+          style={[
+            styles.button,
+            !claimDetails.trim() ||
+            !contact.trim() ||
+            !coverageDetails.trim() ||
+            !exclusions.trim() ||
+            !policyNumber.trim() ||
+            !provider.trim()
+              ? styles.disabledButton
+              : null,
+          ]}
+          disabled={
+            !claimDetails.trim() ||
+            !contact.trim() ||
+            !coverageDetails.trim() ||
+            !exclusions.trim() ||
+            !policyNumber.trim() ||
+            !provider.trim()
+          }
+        >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
@@ -173,6 +228,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
 });
 

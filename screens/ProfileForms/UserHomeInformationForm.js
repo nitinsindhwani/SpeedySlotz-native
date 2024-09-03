@@ -11,7 +11,7 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-const UserHomeInformationForm = ({ profilesData }) => {
+const UserHomeInformationForm = ({ profilesData, onFormValidation }) => {
   const [ceilingType, setCeilingType] = useState("");
   const [homeElevation, setHomeElevation] = useState("");
   const [homeExterior, setHomeExterior] = useState("");
@@ -42,7 +42,60 @@ const UserHomeInformationForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
+  // Validate if all fields are filled
+  useEffect(() => {
+    const isFormComplete =
+      ceilingType.trim() &&
+      homeElevation.trim() &&
+      homeExterior.trim() &&
+      homeSize.trim() &&
+      homeType.trim() &&
+      lastHvacServiceDate.trim() &&
+      lastWindowCleaningDate.trim() &&
+      lightingPreferences.trim() &&
+      mowingFrequency.trim() &&
+      numberOfFloors.trim() &&
+      numberOfRooms.trim() &&
+      treeCount.trim();
+
+    onFormValidation(isFormComplete);
+  }, [
+    ceilingType,
+    homeElevation,
+    homeExterior,
+    homeSize,
+    homeType,
+    lastHvacServiceDate,
+    lastWindowCleaningDate,
+    lightingPreferences,
+    mowingFrequency,
+    numberOfFloors,
+    numberOfRooms,
+    treeCount,
+    onFormValidation,
+  ]);
+
   const handleSave = async () => {
+    if (
+      !ceilingType.trim() ||
+      !homeElevation.trim() ||
+      !homeExterior.trim() ||
+      !homeSize.trim() ||
+      !homeType.trim() ||
+      !lastHvacServiceDate.trim() ||
+      !lastWindowCleaningDate.trim() ||
+      !lightingPreferences.trim() ||
+      !mowingFrequency.trim() ||
+      !numberOfFloors.trim() ||
+      !numberOfRooms.trim() ||
+      !treeCount.trim()
+    ) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
     const profileData = {
       userHomeInformation: {
         ceilingType,
@@ -214,7 +267,40 @@ const UserHomeInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        <TouchableOpacity onPress={handleSave} style={styles.button}>
+        <TouchableOpacity
+          onPress={handleSave}
+          style={[
+            styles.button,
+            !ceilingType.trim() ||
+            !homeElevation.trim() ||
+            !homeExterior.trim() ||
+            !homeSize.trim() ||
+            !homeType.trim() ||
+            !lastHvacServiceDate.trim() ||
+            !lastWindowCleaningDate.trim() ||
+            !lightingPreferences.trim() ||
+            !mowingFrequency.trim() ||
+            !numberOfFloors.trim() ||
+            !numberOfRooms.trim() ||
+            !treeCount.trim()
+              ? styles.disabledButton
+              : null,
+          ]}
+          disabled={
+            !ceilingType.trim() ||
+            !homeElevation.trim() ||
+            !homeExterior.trim() ||
+            !homeSize.trim() ||
+            !homeType.trim() ||
+            !lastHvacServiceDate.trim() ||
+            !lastWindowCleaningDate.trim() ||
+            !lightingPreferences.trim() ||
+            !mowingFrequency.trim() ||
+            !numberOfFloors.trim() ||
+            !numberOfRooms.trim() ||
+            !treeCount.trim()
+          }
+        >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
@@ -230,6 +316,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "white",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
   iconInputContainer: {
     flexDirection: "row",

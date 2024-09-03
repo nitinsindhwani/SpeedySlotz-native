@@ -9,10 +9,9 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 
-const UserDentalInformationForm = ({ profilesData }) => {
+const UserDentalInformationForm = ({ profilesData, onFormValidation }) => {
   const [lastDentalVisit, setLastDentalVisit] = useState("");
   const [dentalAllergies, setDentalAllergies] = useState("");
   const [dentalComplaints, setDentalComplaints] = useState("");
@@ -37,7 +36,51 @@ const UserDentalInformationForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
+  // Validate if all fields are filled
+  useEffect(() => {
+    const isFormComplete =
+      lastDentalVisit.trim() &&
+      dentalAllergies.trim() &&
+      dentalComplaints.trim() &&
+      dentalMedications.trim() &&
+      gumDiseaseHistory.trim() &&
+      lastDentalXray.trim() &&
+      orthodonticHistory.trim() &&
+      otherDentalInfo.trim() &&
+      toothExtractionHistory.trim();
+
+    onFormValidation(isFormComplete);
+  }, [
+    lastDentalVisit,
+    dentalAllergies,
+    dentalComplaints,
+    dentalMedications,
+    gumDiseaseHistory,
+    lastDentalXray,
+    orthodonticHistory,
+    otherDentalInfo,
+    toothExtractionHistory,
+    onFormValidation,
+  ]);
+
   const handleSaveDentalInformation = async () => {
+    if (
+      !lastDentalVisit.trim() ||
+      !dentalAllergies.trim() ||
+      !dentalComplaints.trim() ||
+      !dentalMedications.trim() ||
+      !gumDiseaseHistory.trim() ||
+      !lastDentalXray.trim() ||
+      !orthodonticHistory.trim() ||
+      !otherDentalInfo.trim() ||
+      !toothExtractionHistory.trim()
+    ) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
     const profileData = {
       userDentalInformation: {
         lastDentalVisit,
@@ -174,7 +217,31 @@ const UserDentalInformationForm = ({ profilesData }) => {
 
         <TouchableOpacity
           onPress={handleSaveDentalInformation}
-          style={styles.button}
+          style={[
+            styles.button,
+            !lastDentalVisit.trim() ||
+            !dentalAllergies.trim() ||
+            !dentalComplaints.trim() ||
+            !dentalMedications.trim() ||
+            !gumDiseaseHistory.trim() ||
+            !lastDentalXray.trim() ||
+            !orthodonticHistory.trim() ||
+            !otherDentalInfo.trim() ||
+            !toothExtractionHistory.trim()
+              ? styles.disabledButton
+              : null,
+          ]}
+          disabled={
+            !lastDentalVisit.trim() ||
+            !dentalAllergies.trim() ||
+            !dentalComplaints.trim() ||
+            !dentalMedications.trim() ||
+            !gumDiseaseHistory.trim() ||
+            !lastDentalXray.trim() ||
+            !orthodonticHistory.trim() ||
+            !otherDentalInfo.trim() ||
+            !toothExtractionHistory.trim()
+          }
         >
           <Text style={styles.buttonText}>Save Dental Information</Text>
         </TouchableOpacity>
@@ -186,6 +253,9 @@ const UserDentalInformationForm = ({ profilesData }) => {
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: "white",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
   container: {
     flex: 1,

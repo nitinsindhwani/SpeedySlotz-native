@@ -11,7 +11,7 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-const UserPetInformationForm = ({ profilesData }) => {
+const UserPetInformationForm = ({ profilesData, onFormValidation }) => {
   const [petName, setPetName] = useState("");
   const [petType, setPetType] = useState("");
   const [petBreed, setPetBreed] = useState("");
@@ -40,7 +40,58 @@ const UserPetInformationForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
+  // Validate if all fields are filled
+  useEffect(() => {
+    const isFormComplete =
+      petName.trim() &&
+      petType.trim() &&
+      petBreed.trim() &&
+      petAge.trim() &&
+      petWeight.trim() &&
+      petAllergies.trim() &&
+      petBehavior.trim() &&
+      petFavorites.trim() &&
+      petMicrochipped.trim() &&
+      petSpecialNeeds.trim() &&
+      vetDetails.trim();
+
+    onFormValidation(isFormComplete);
+  }, [
+    petName,
+    petType,
+    petBreed,
+    petAge,
+    petWeight,
+    petAllergies,
+    petBehavior,
+    petFavorites,
+    petMicrochipped,
+    petSpecialNeeds,
+    vetDetails,
+    onFormValidation,
+  ]);
+
   const handleSave = async () => {
+    if (
+      !petName.trim() ||
+      !petType.trim() ||
+      !petBreed.trim() ||
+      !petAge.trim() ||
+      !petWeight.trim() ||
+      !petAllergies.trim() ||
+      !petBehavior.trim() ||
+      !petFavorites.trim() ||
+      !petMicrochipped.trim() ||
+      !petSpecialNeeds.trim() ||
+      !vetDetails.trim()
+    ) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
+
     const profileData = {
       userPetInformation: {
         petName,
@@ -201,7 +252,38 @@ const UserPetInformationForm = ({ profilesData }) => {
           />
         </View>
 
-        <TouchableOpacity onPress={handleSave} style={styles.button}>
+        <TouchableOpacity
+          onPress={handleSave}
+          style={[
+            styles.button,
+            !petName.trim() ||
+            !petType.trim() ||
+            !petBreed.trim() ||
+            !petAge.trim() ||
+            !petWeight.trim() ||
+            !petAllergies.trim() ||
+            !petBehavior.trim() ||
+            !petFavorites.trim() ||
+            !petMicrochipped.trim() ||
+            !petSpecialNeeds.trim() ||
+            !vetDetails.trim()
+              ? styles.disabledButton
+              : null,
+          ]}
+          disabled={
+            !petName.trim() ||
+            !petType.trim() ||
+            !petBreed.trim() ||
+            !petAge.trim() ||
+            !petWeight.trim() ||
+            !petAllergies.trim() ||
+            !petBehavior.trim() ||
+            !petFavorites.trim() ||
+            !petMicrochipped.trim() ||
+            !petSpecialNeeds.trim() ||
+            !vetDetails.trim()
+          }
+        >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
@@ -217,6 +299,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "white",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
   iconInputContainer: {
     flexDirection: "row",

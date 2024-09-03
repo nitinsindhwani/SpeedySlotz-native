@@ -10,7 +10,7 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-const UserPreferredPharmacyForm = ({ profilesData }) => {
+const UserPreferredPharmacyForm = ({ profilesData, onFormValidation }) => {
   const [pharmacyName, setPharmacyName] = useState("");
   const [pharmacyAddress, setPharmacyAddress] = useState("");
   const [pharmacyPhone, setPharmacyPhone] = useState("");
@@ -23,7 +23,26 @@ const UserPreferredPharmacyForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
+  // Validate if all fields are filled
+  useEffect(() => {
+    const isFormComplete =
+      pharmacyName.trim() && pharmacyAddress.trim() && pharmacyPhone.trim();
+
+    onFormValidation(isFormComplete);
+  }, [pharmacyName, pharmacyAddress, pharmacyPhone, onFormValidation]);
+
   const handleSavePreferredPharmacy = async () => {
+    if (
+      !pharmacyName.trim() ||
+      !pharmacyAddress.trim() ||
+      !pharmacyPhone.trim()
+    ) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
     const profileData = {
       userPreferredPharmacy: {
         pharmacyName,
@@ -75,8 +94,20 @@ const UserPreferredPharmacyForm = ({ profilesData }) => {
         />
       </View>
       <TouchableOpacity
-        style={styles.button}
+        style={[
+          styles.button,
+          !pharmacyName.trim() ||
+          !pharmacyAddress.trim() ||
+          !pharmacyPhone.trim()
+            ? styles.disabledButton
+            : null,
+        ]}
         onPress={handleSavePreferredPharmacy}
+        disabled={
+          !pharmacyName.trim() ||
+          !pharmacyAddress.trim() ||
+          !pharmacyPhone.trim()
+        }
       >
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
@@ -87,6 +118,9 @@ const UserPreferredPharmacyForm = ({ profilesData }) => {
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: "white",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
   container: {
     flex: 1,

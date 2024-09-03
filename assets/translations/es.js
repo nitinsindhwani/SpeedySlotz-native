@@ -674,4 +674,14 @@ export default {
   browseServicesGuidance: "2. Explora servicios y elige una categoría",
   filters: "Filtros",
   dateFilter: "Filtro de Fecha",
+
+  attention: "Atención",
+  maxProfilesReached: "Se ha alcanzado el número máximo de perfiles.",
+  maxImagesReached: "Se ha alcanzado el número máximo de imágenes.",
+  maxVideosReached: "Se ha alcanzado el número máximo de videos.",
+  someFilesStillTooLarge:
+    "Algunos archivos eran demasiado grandes y no se pudieron agregar.",
+  imagesNotAdded: "No se pudieron agregar las imágenes.",
+  videoNotAdded: "No se pudo agregar el video.",
+  completeSelections: "Por favor, complete todas las selecciones",
 };

@@ -388,18 +388,16 @@ const NewJobScreen = ({ route }) => {
           </View>
         </View>
         <View style={styles.mostPopularItem}>
-          {userCategories && userCategories.length > 0 && (
-            <CategoryList
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              selectedSubcategory={selectedSubcategory}
-              setSelectedSubcategory={setSelectedSubcategory}
-              selectedServiceTypeName={selectedServiceTypeName}
-              setSelectedServiceTypeName={setSelectedServiceTypeName}
-              language={language}
-              translations={translations}
-            />
-          )}
+          <CategoryList
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            selectedSubcategory={selectedSubcategory}
+            setSelectedSubcategory={setSelectedSubcategory}
+            selectedServiceTypeName={selectedServiceTypeName}
+            setSelectedServiceTypeName={setSelectedServiceTypeName}
+            language={language}
+            translations={translations}
+          />
         </View>
 
         <View style={styles.inputContainer}>

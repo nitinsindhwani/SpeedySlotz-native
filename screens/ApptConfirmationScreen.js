@@ -97,7 +97,10 @@ const ApptConfirmationScreen = ({ route }) => {
     try {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status !== "granted") {
-        alert("Permission to access calendar was denied");
+        showErrorAlert(
+          "Permission Denied",
+          "Permission to access calendar was denied"
+        );
         return;
       }
 
@@ -105,18 +108,51 @@ const ApptConfirmationScreen = ({ route }) => {
         Calendar.EntityTypes.EVENT
       );
       if (!calendars.length) {
-        alert("No calendars found on this device.");
+        showErrorAlert("No Calendars", "No calendars found on this device.");
         return;
       }
 
       const deviceTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+      // Parse and validate start date and time
+      const startDateTime = moment(
+        `${slot.date} ${slot.startTime}`,
+        "YYYY-MM-DD HH:mm"
+      );
+
+      if (!startDateTime.isValid()) {
+        showErrorAlert(
+          "Invalid Date",
+          "The appointment start date or time is invalid."
+        );
+        return;
+      }
+
+      // Set end date and time
+      let endDateTime;
+      if (slot.endTime && slot.endTime.trim() !== "") {
+        endDateTime = moment(
+          `${slot.date} ${slot.endTime}`,
+          "YYYY-MM-DD HH:mm"
+        );
+        if (!endDateTime.isValid()) {
+          showErrorAlert(
+            "Invalid Date",
+            "The appointment end time is invalid."
+          );
+          return;
+        }
+      } else {
+        // If end time is empty or null, set it to 1 hour after start time
+        endDateTime = moment(startDateTime).add(1, "hours");
+      }
+
       const eventDetails = {
         title: businessDetails
           ? `Appointment with ${businessDetails.yelpBusiness.name}`
           : "New Appointment",
-        startDate: new Date(slot.date + "T" + slot.startTime),
-        endDate: new Date(slot.date + "T" + slot.endTime),
+        startDate: startDateTime.toDate(),
+        endDate: endDateTime.toDate(),
         timeZone: deviceTimeZone,
         location: businessDetails
           ? `${businessDetails.yelpBusinessLocation.address1}, ${businessDetails.yelpBusinessLocation.city}`
@@ -128,13 +164,13 @@ const ApptConfirmationScreen = ({ route }) => {
 
       const eventId = await Calendar.createEventAsync(calendarId, eventDetails);
       if (eventId) {
-        alert("Event added to calendar successfully!");
+        showSuccessAlert("Success", "Event added to calendar successfully!");
       } else {
-        alert("Error while adding event to calendar.");
+        showErrorAlert("Error", "Error while adding event to calendar.");
       }
     } catch (error) {
       console.error("Error adding event to calendar:", error);
-      alert("An error occurred. Please try again.");
+      showErrorAlert("Error", `An error occurred: ${error.message}`);
     }
   };
 

@@ -9,10 +9,9 @@ import {
 } from "react-native";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
-import Icon from "react-native-vector-icons/Ionicons";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 
-const UserAddressForm = ({ profilesData }) => {
+const UserAddressForm = ({ profilesData, onFormValidation }) => {
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
@@ -27,7 +26,24 @@ const UserAddressForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
+  useEffect(() => {
+    // Check if all fields are filled
+    const isComplete =
+      street.trim() !== "" &&
+      city.trim() !== "" &&
+      state.trim() !== "" &&
+      zip.trim() !== "";
+    onFormValidation(isComplete); // Pass the form completeness status back to the parent
+  }, [street, city, state, zip, onFormValidation]);
+
   const handleSaveAddress = async () => {
+    if (!street.trim() || !city.trim() || !state.trim() || !zip.trim()) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
     const profileData = {
       userAddress: {
         street,
@@ -89,7 +105,18 @@ const UserAddressForm = ({ profilesData }) => {
           />
         </View>
 
-        <TouchableOpacity onPress={handleSaveAddress} style={styles.button}>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            !street.trim() || !city.trim() || !state.trim() || !zip.trim()
+              ? styles.disabledButton
+              : null,
+          ]}
+          onPress={handleSaveAddress}
+          disabled={
+            !street.trim() || !city.trim() || !state.trim() || !zip.trim()
+          }
+        >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
@@ -100,6 +127,9 @@ const UserAddressForm = ({ profilesData }) => {
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: "white",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
   container: {
     flex: 1,

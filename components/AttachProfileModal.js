@@ -18,14 +18,15 @@ import UserPetInformationForm from "../screens/ProfileForms/UserPetInformationFo
 import UserPetInsuranceForm from "../screens/ProfileForms/UserPetInsuranceForm";
 import UserPersonalInsuranceForm from "../screens/ProfileForms/UserPersonalInsuranceForm";
 import UserDentalInsuranceForm from "../screens/ProfileForms/UserDentalInsuranceForm";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
 import { fetchProfiles } from "../api/ApiCall";
 import { theme3 } from "../assets/branding/themes";
 
 const AttachProfileModal = ({ isVisible, onClose, onAttach, user }) => {
   const [selectedForm, setSelectedForm] = useState("default");
   const [userProfiles, setUserProfiles] = useState([]); // State to store fetched profiles
-
+  const [isFormComplete, setIsFormComplete] = useState(false);
+  const [attachedProfiles, setAttachedProfiles] = useState([]);
   useEffect(() => {
     const loadProfiles = async () => {
       try {
@@ -43,61 +44,98 @@ const AttachProfileModal = ({ isVisible, onClose, onAttach, user }) => {
   }, [isVisible]);
 
   const handleAttach = () => {
-    const profileLabel = profileLabels[selectedForm] || "Unknown Profile"; // Get the label
-    onAttach(profileLabel); // Pass only the label instead of the whole profile object
+    if (attachedProfiles.length >= 5) {
+      Alert.alert("Limit Reached", "You can only attach up to 5 profiles.");
+      return;
+    }
+
+    const profileLabel = profileLabels[selectedForm] || "Unknown Profile";
+    if (!attachedProfiles.includes(profileLabel)) {
+      setAttachedProfiles([...attachedProfiles, profileLabel]);
+      onAttach(profileLabel);
+    } else {
+      Alert.alert(
+        "Profile Already Attached",
+        "This profile is already attached."
+      );
+    }
+  };
+
+  const handleFormValidation = (isComplete) => {
+    setIsFormComplete(isComplete);
   };
 
   const renderForm = () => {
     switch (selectedForm) {
       case "userProfile":
-        return <UserProfileForm profilesData={userProfiles.userProfile} />;
+        return (
+          <UserProfileForm
+            profilesData={userProfiles.userProfile}
+            onFormValidation={handleFormValidation}
+          />
+        );
       case "userAddress":
-        return <UserAddressForm profilesData={userProfiles.userAddress} />;
+        return (
+          <UserAddressForm
+            profilesData={userProfiles.userAddress}
+            onFormValidation={handleFormValidation}
+          />
+        );
       case "userPreferredPharmacy":
         return (
           <UserPreferredPharmacyForm
             profilesData={userProfiles.userPreferredPharmacy}
+            onFormValidation={handleFormValidation}
           />
         );
       case "userMedicalHistory":
         return (
           <UserMedicalHistoryForm
             profilesData={userProfiles.userMedicalHistory}
+            onFormValidation={handleFormValidation}
           />
         );
       case "userDentalInformation":
         return (
           <UserDentalInformationForm
             profilesData={userProfiles.userDentalInformation}
+            onFormValidation={handleFormValidation}
           />
         );
       case "userPersonalInsurance":
         return (
           <UserPersonalInsuranceForm
             profilesData={userProfiles.userPersonalInsurance}
+            onFormValidation={handleFormValidation}
           />
         );
       case "userDentalInsurance":
         return (
           <UserDentalInsuranceForm
             profilesData={userProfiles.userDentalInsurance}
+            onFormValidation={handleFormValidation}
           />
         );
       case "userHomeInformation":
         return (
           <UserHomeInformationForm
             profilesData={userProfiles.userHomeInformation}
+            onFormValidation={handleFormValidation}
           />
         );
       case "userPetInformation":
         return (
           <UserPetInformationForm
             profilesData={userProfiles.userPetInformation}
+            onFormValidation={handleFormValidation}
           />
         );
       case "userPetInsurance":
         return (
-          <UserPetInsuranceForm profilesData={userProfiles.userPetInsurance} />
+          <UserPetInsuranceForm
+            profilesData={userProfiles.userPetInsurance}
+            onFormValidation={handleFormValidation}
+          />
         );
       default:
         return (
@@ -125,7 +163,6 @@ const AttachProfileModal = ({ isVisible, onClose, onAttach, user }) => {
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           <TouchableOpacity onPress={onClose} style={styles.xCloseButton}>
-            {/* <Text style={styles.xCloseButtonText}>X</Text> */}
             <AntDesign name="closecircle" size={24} color="red" />
           </TouchableOpacity>
           <Text style={styles.titleStyle}>Select Profiles</Text>
@@ -150,7 +187,13 @@ const AttachProfileModal = ({ isVisible, onClose, onAttach, user }) => {
           <View style={styles.actionsContainer}>
             <TouchableOpacity
               onPress={handleAttach}
-              style={styles.actionButton}
+              style={[
+                styles.actionButton,
+                (!isFormComplete || attachedProfiles.length >= 5) && {
+                  backgroundColor: "#ccc",
+                },
+              ]}
+              disabled={!isFormComplete || attachedProfiles.length >= 5}
             >
               <Text style={styles.actionButtonText}>Attach</Text>
             </TouchableOpacity>
@@ -161,6 +204,16 @@ const AttachProfileModal = ({ isVisible, onClose, onAttach, user }) => {
               <Text style={styles.actionButtonText}>Skip</Text>
             </TouchableOpacity>
           </View>
+          {!isFormComplete && (
+            <Text style={styles.errorText}>
+              Please complete the profile form before attaching.
+            </Text>
+          )}
+          {attachedProfiles.length >= 5 && (
+            <Text style={styles.errorText}>
+              Maximum number of profiles (5) reached.
+            </Text>
+          )}
         </View>
       </View>
     </Modal>
@@ -223,7 +276,7 @@ const styles = StyleSheet.create({
   pickerItemStyle: {
     height: 120, // Each item's height to match Picker's height
     fontSize: 20, // Font size for Picker items
-    color:theme3.fontColor, // Text color for Picker items
+    color: theme3.fontColor, // Text color for Picker items
     textAlign: "center", // Center text for Picker items
     lineHeight: 120, // Line height to vertically center text, should match height
   },
@@ -296,6 +349,12 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 10,
   },
 });
 

@@ -11,7 +11,7 @@ import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import { FontAwesome5 } from "@expo/vector-icons";
 
-const UserPersonalInsuranceForm = ({ profilesData }) => {
+const UserPersonalInsuranceForm = ({ profilesData, onFormValidation }) => {
   const [provider, setProvider] = useState("");
   const [policyNumber, setPolicyNumber] = useState("");
   const [coverageDetails, setCoverageDetails] = useState("");
@@ -30,7 +30,42 @@ const UserPersonalInsuranceForm = ({ profilesData }) => {
     }
   }, [profilesData]);
 
+  // Validate if all fields are filled
+  useEffect(() => {
+    const isFormComplete =
+      provider.trim() &&
+      policyNumber.trim() &&
+      coverageDetails.trim() &&
+      contact.trim() &&
+      claimDetails.trim() &&
+      exclusions.trim();
+
+    onFormValidation(isFormComplete);
+  }, [
+    provider,
+    policyNumber,
+    coverageDetails,
+    contact,
+    claimDetails,
+    exclusions,
+    onFormValidation,
+  ]);
+
   const handleSave = async () => {
+    if (
+      !provider.trim() ||
+      !policyNumber.trim() ||
+      !coverageDetails.trim() ||
+      !contact.trim() ||
+      !claimDetails.trim() ||
+      !exclusions.trim()
+    ) {
+      Alert.alert(
+        "Incomplete Form",
+        "Please fill in all fields before submitting."
+      );
+      return;
+    }
     const profileData = {
       userPersonalInsurance: {
         provider,
@@ -132,7 +167,28 @@ const UserPersonalInsuranceForm = ({ profilesData }) => {
           />
         </View>
 
-        <TouchableOpacity onPress={handleSave} style={styles.button}>
+        <TouchableOpacity
+          onPress={handleSave}
+          style={[
+            styles.button,
+            !provider.trim() ||
+            !policyNumber.trim() ||
+            !coverageDetails.trim() ||
+            !contact.trim() ||
+            !claimDetails.trim() ||
+            !exclusions.trim()
+              ? styles.disabledButton
+              : null,
+          ]}
+          disabled={
+            !provider.trim() ||
+            !policyNumber.trim() ||
+            !coverageDetails.trim() ||
+            !contact.trim() ||
+            !claimDetails.trim() ||
+            !exclusions.trim()
+          }
+        >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
@@ -148,6 +204,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "white",
+  },
+  disabledButton: {
+    backgroundColor: "#ccc",
   },
   iconInputContainer: {
     flexDirection: "row",

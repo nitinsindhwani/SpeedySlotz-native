@@ -19,6 +19,7 @@ import removeFavorite from "../CallFuncGlobal/removeFavorite";
 import addToFav from "../CallFuncGlobal/addToFav";
 import ChatAnim from "./ChatAnim";
 import DealModal from "../../components/DealModal";
+import DealIcons from "./DealIcons";
 import { getStoredUser } from "../../api/ApiCall";
 import { theme3 } from "../../assets/branding/themes";
 import { getBadgeDetails } from "../../components/BadgeInfo";
@@ -63,7 +64,6 @@ function MainCardDesign({ business }) {
   };
 
   const handleChatButtonPress = async () => {
-  
     try {
       let user = userData;
       if (!user) {
@@ -75,7 +75,6 @@ function MainCardDesign({ business }) {
         }
       }
 
-
       if (business.yelpBusiness.is_registered) {
         const selectedChat = {
           chat_id: uuid.v4(),
@@ -86,7 +85,6 @@ function MainCardDesign({ business }) {
           business_name: business.yelpBusiness.name,
           chatMessages: [],
         };
-
 
         navigation.navigate("App", {
           screen: "ChatMessage",
