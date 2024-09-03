@@ -1,20 +1,19 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Alert,
 } from "react-native";
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 import { theme3 } from "../assets/branding/themes";
 import CategoryModal from "./CaterogryModal";
 import { getIconName } from "./IconsData";
-import { updateUserPreference, getStoredUser } from "../api/ApiCall";
+import { fetchUserCategories, fetchCategories } from "../api/ApiCall";
 
 const CategoryList = ({
-  userCategoriesData,
   selectedCategory,
   setSelectedCategory,
   selectedSubcategory,
@@ -23,15 +22,14 @@ const CategoryList = ({
   setSelectedServiceTypeName,
   language,
   translations,
-  location, // Assuming location data is passed down as a prop
-  date, // Assuming date data is passed down as a prop
-  radius, // Assuming radius data is passed down as a prop
 }) => {
   const scrollViewRef = useRef();
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
-  const [showCatModal, setCatModal] = useState(false); // Initially set to false
+  const [showCatModal, setCatModal] = useState(false);
   const [showSubCat, setShowSubCat] = useState(true);
-  const [showService, setSHowService] = useState(true);
+  const [showService, setShowService] = useState(true);
+  const [userCategoriesData, setUserCategoriesData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getDisplayName = (item, type) => {
     switch (type) {
@@ -49,6 +47,34 @@ const CategoryList = ({
         return "Unknown";
     }
   };
+
+  const loadCategories = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const userCategoriesData = await fetchUserCategories();
+      if (Array.isArray(userCategoriesData) && userCategoriesData.length > 0) {
+        setUserCategoriesData(userCategoriesData);
+      } else {
+        const categoriesData = await fetchCategories();
+        if (Array.isArray(categoriesData) && categoriesData.length > 0) {
+          setUserCategoriesData(categoriesData);
+        } else {
+          console.error("No valid category data fetched");
+          setUserCategoriesData([]);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch categories", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadCategories();
+    }, [loadCategories])
+  );
   const uniqueCategories = Array.from(
     new Set(userCategoriesData?.map((item) => item.categoryName))
   )
@@ -140,8 +166,8 @@ const CategoryList = ({
   }, [selectedServiceTypeName, scrollViewWidth]);
 
   const handleCategoryPress = (category) => {
-    setSelectedCategory(category); // Store the entire category object
-    setSelectedSubcategory(null); // Clear subcategory selection
+    setSelectedCategory(category);
+    setSelectedSubcategory(null);
     setSelectedServiceTypeName(null);
     setCatModal(false);
     setShowSubCat(true);
@@ -150,13 +176,20 @@ const CategoryList = ({
   const handleSubcategoryPress = (subcategory) => {
     setSelectedSubcategory(subcategory);
     setShowSubCat(false);
-    setSelectedServiceTypeName("");
-    setSHowService(true);
+    setSelectedServiceTypeName(null);
+    setShowService(true);
   };
 
   const handleServiceTypePress = (serviceType) => {
-    setSHowService(false);
+    setShowService(false);
     setSelectedServiceTypeName(serviceType);
+  };
+
+  const handleSelectCategoryPress = () => {
+    if (userCategoriesData.length === 0) {
+      loadCategories();
+    }
+    setCatModal(true);
   };
 
   return (
@@ -164,7 +197,7 @@ const CategoryList = ({
       <View style={styles.categories}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TouchableOpacity
-            onPress={() => setCatModal(true)}
+            onPress={handleSelectCategoryPress}
             style={{ flexDirection: "row", alignItems: "center" }}
           >
             <Text
@@ -195,7 +228,7 @@ const CategoryList = ({
           </TouchableOpacity>
           {selectedSubcategory && (
             <TouchableOpacity
-              onPress={() => setShowSubCat((P) => !P)}
+              onPress={() => setShowSubCat((p) => !p)}
               style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -211,7 +244,6 @@ const CategoryList = ({
               >
                 {selectedSubcategory.displayName}
               </Text>
-
               <MaterialIcons
                 name="arrow-forward-ios"
                 size={14}
@@ -221,7 +253,7 @@ const CategoryList = ({
           )}
           {selectedServiceTypeName && (
             <TouchableOpacity
-              onPress={() => setSHowService((P) => !P)}
+              onPress={() => setShowService((p) => !p)}
               style={{ flexDirection: "row", alignItems: "center" }}
             >
               <Text
@@ -231,34 +263,25 @@ const CategoryList = ({
                   fontWeight: "bold",
                 }}
               >
-                {selectedServiceTypeName
-                  ? selectedServiceTypeName.displayName
-                  : translations.selectService}
+                {selectedServiceTypeName.displayName}
               </Text>
             </TouchableOpacity>
           )}
         </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          ref={scrollViewRef}
-          onLayout={(event) =>
-            setScrollViewWidth(event.nativeEvent.layout.width)
-          }
-        >
-          {uniqueCategories.length > 0 && (
-            <CategoryModal
-              uniqueCategories={uniqueCategories}
-              handleCategoryPress={handleCategoryPress}
-              selectedCategory={selectedCategory?.name}
-              showCatModal={showCatModal}
-              onClose={() => setCatModal(false)}
-              language={language}
-            />
-          )}
-        </ScrollView>
       </View>
+
+      {showCatModal && (
+        <CategoryModal
+          uniqueCategories={uniqueCategories}
+          handleCategoryPress={handleCategoryPress}
+          selectedCategory={selectedCategory?.name}
+          showCatModal={showCatModal}
+          onClose={() => setCatModal(false)}
+          language={language}
+          isLoading={isLoading}
+        />
+      )}
+
       {selectedCategory && showSubCat && (
         <View style={styles.subcategories}>
           <ScrollView
@@ -301,6 +324,7 @@ const CategoryList = ({
           </ScrollView>
         </View>
       )}
+
       {selectedSubcategory && showService && (
         <View style={styles.services}>
           <ScrollView

@@ -88,35 +88,6 @@ const NewJobScreen = ({ route }) => {
 
     fetchUserData();
   }, []);
-  useEffect(() => {
-    const fetchCategoriesData = async () => {
-      try {
-        setIsLoading(false);
-        const userCategoriesData = await fetchUserCategories();
-        if (
-          Array.isArray(userCategoriesData) &&
-          userCategoriesData.length > 0
-        ) {
-          setUserCategories(userCategoriesData);
-        } else {
-          const categoriesData = await fetchCategories();
-          if (Array.isArray(categoriesData) && categoriesData.length > 0) {
-            setUserCategories(categoriesData);
-          } else {
-            console.error("No valid category data fetched");
-            setUserCategories([]);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch categories", error);
-        setUserCategories([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCategoriesData();
-  }, []);
 
   const onChangeDate = (event, selectedDate) => {
     setShowDatePicker(Platform.OS === "ios");
@@ -419,14 +390,12 @@ const NewJobScreen = ({ route }) => {
         <View style={styles.mostPopularItem}>
           {userCategories && userCategories.length > 0 && (
             <CategoryList
-              userCategoriesData={userCategories}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
               selectedSubcategory={selectedSubcategory}
               setSelectedSubcategory={setSelectedSubcategory}
               selectedServiceTypeName={selectedServiceTypeName}
               setSelectedServiceTypeName={setSelectedServiceTypeName}
-              rows={3}
               language={language}
               translations={translations}
             />

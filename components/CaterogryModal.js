@@ -7,12 +7,14 @@ import {
   FlatList,
   Modal,
   Dimensions,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
+import Header from "../screens/GlobalComponents/Header";
 
-const width = Dimensions.get("window").width;
-const height = Dimensions.get("window").height;
+const { width, height } = Dimensions.get("window");
 
 const CategoryModal = ({
   uniqueCategories,
@@ -43,23 +45,29 @@ const CategoryModal = ({
           selectedCategory === item.name && styles.selectedCategoryText,
         ]}
       >
-        {item.displayName}
+        {language === "es" ? item.nameEs : item.name}
       </Text>
     </TouchableOpacity>
   );
 
   return (
-    <Modal visible={showCatModal} animationType="fade" transparent={true}>
-      <View style={styles.overlay}>
+    <Modal
+      visible={showCatModal}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <StatusBar
+          backgroundColor={theme3.primaryColor}
+          barStyle="light-content"
+        />
+        <Header
+          title={language === "es" ? "Categorías" : "Categories"}
+          typeModal={true}
+          onPress={onClose}
+        />
         <View style={styles.modalContent}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Ionicons name="close" size={24} color={theme3.fontColor} />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>
-            {language === "es"
-              ? "¡Sumérgete en un mundo de categorías! 🌟"
-              : "Dive into a World of Categories! 🌟"}
-          </Text>
           <FlatList
             data={uniqueCategories}
             numColumns={3}
@@ -72,28 +80,18 @@ const CategoryModal = ({
     </Modal>
   );
 };
+
 const styles = StyleSheet.create({
-  overlay: {
+  modalContainer: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: theme3.primaryColor,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   modalContent: {
-    width: width,
-    height: height,
-    backgroundColor: theme3.light,
-    borderRadius: 0,
-    paddingTop: 60,
-    paddingBottom: 20,
+    flex: 1,
+    backgroundColor: "#f6f6f6",
     paddingHorizontal: 15,
-    alignItems: "center",
-  },
-  closeButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 10,
+    paddingTop: 20,
   },
   headerText: {
     fontSize: 24,
@@ -103,8 +101,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   listContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    paddingBottom: 20,
   },
   categoryItem: {
     alignItems: "center",
@@ -113,7 +110,7 @@ const styles = StyleSheet.create({
     height: 100,
     justifyContent: "center",
     borderRadius: 8,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: theme3.light,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

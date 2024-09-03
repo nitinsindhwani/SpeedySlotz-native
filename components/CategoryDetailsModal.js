@@ -4,247 +4,234 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   ScrollView,
-  SafeAreaView,
-  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
-import { LanguageContext } from "../api/LanguageContext"; // Import the LanguageContext
-
-const { width } = Dimensions.get("window");
+import { LanguageContext } from "../api/LanguageContext";
+import Header from "../screens/GlobalComponents/Header";
 
 const CategoryDetailsModal = ({ visible, onClose, category }) => {
-  const { translations } = useContext(LanguageContext); // Use the translations from context
+  const { translations } = useContext(LanguageContext);
 
   const renderBreadcrumbs = () => {
-    if (!category || typeof category !== "object") {
-      return null;
-    }
-    const categories = Array.isArray(category.categories)
-      ? category.categories
-      : [];
-    const subcategories = Array.isArray(category.subcategories)
-      ? category.subcategories
-      : [];
-    const serviceTypes = Array.isArray(category.serviceTypes)
-      ? category.serviceTypes
-      : [];
+    if (!category) return null;
+    const { categories = [], subcategories = [], serviceTypes = [] } = category;
 
     return (
       <View style={styles.breadcrumbsContainer}>
-        <Text style={styles.breadcrumbsLabel}>
-          {translations.serviceCategory}
-        </Text>
+        <Text style={styles.sectionTitle}>{translations.serviceCategory}</Text>
         <View style={styles.breadcrumbs}>
           <Text style={styles.breadcrumbText}>
-            {categories[0] || translations.category}
-          </Text>
-          <Ionicons
-            name="chevron-forward"
-            size={16}
-            color={theme3.primaryColor}
-          />
-          <Text style={styles.breadcrumbText}>
-            {subcategories[0] || translations.subcategory}
-          </Text>
-          <Ionicons
-            name="chevron-forward"
-            size={16}
-            color={theme3.primaryColor}
-          />
-          <Text style={styles.breadcrumbText}>
-            {serviceTypes[0] || translations.service}
+            {categories[0] || ""} {">"} {subcategories[0] || ""} {">"}{" "}
+            {serviceTypes[0] || ""}
           </Text>
         </View>
       </View>
     );
   };
 
-  const renderCategoryDetails = () => {
-    if (!category || typeof category !== "object") return null;
-
-    const fieldMappings = {
-      details: {
-        label: translations.serviceDetails,
-        icon: "information-outline",
-      },
-      min_price: { label: translations.minimumPrice, icon: "currency-usd" },
-      max_price: { label: translations.maximumPrice, icon: "currency-usd" },
-      duration: { label: translations.duration, icon: "clock-outline" },
-      disclaimer: {
-        label: translations.disclaimer,
-        icon: "alert-circle-outline",
-      },
-      onsiteEstimate: {
-        label: translations.onsiteEstimate,
-        icon: "home-outline",
-      },
-      waivedHired: {
-        label: translations.waivedIfHired,
-        icon: "check-circle-outline",
-      },
-    };
-
-    const fields = Object.keys(category).filter((key) => fieldMappings[key]);
-
-    const renderField = (key, fullWidth = false) => {
-      const value = category[key];
-      const { label, icon } = fieldMappings[key];
-
-      return (
-        <View
-          key={key}
-          style={[styles.detailItem, fullWidth && styles.fullWidthItem]}
-        >
-          <View style={styles.labelContainer}>
-            <MaterialCommunityIcons
-              name={icon}
-              size={24}
-              color={theme3.primaryColor}
-              style={styles.icon}
-            />
-            <Text style={styles.detailLabel}>{label}</Text>
-          </View>
-          <View style={styles.detailValueContainer}>
-            <Text style={styles.detailValue}>
-              {key === "duration"
-                ? `${value || 0} ${translations.minutes}`
-                : key === "min_price" || key === "max_price"
-                ? `$${value || 0}`
-                : String(value || translations.notAvailable)}
-            </Text>
-          </View>
-        </View>
-      );
-    };
-
-    return (
-      <View style={styles.detailsContainer}>
-        {renderField("details", true)}
-        <View style={styles.rowContainer}>
-          {renderField("min_price")}
-          {renderField("max_price")}
-        </View>
-        <View style={styles.rowContainer}>
-          {renderField("duration")}
-          {renderField("onsiteEstimate")}
-        </View>
-        {renderField("disclaimer", true)}
-        {renderField("waivedHired")}
+  const renderDetailSection = (title, content, icon) => (
+    <View style={styles.detailSection}>
+      <View style={styles.detailTitleContainer}>
+        <Ionicons name={icon} size={24} color={theme3.primaryColor} />
+        <Text style={styles.detailTitle}>{title}</Text>
       </View>
-    );
-  };
+      <View style={styles.detailContent}>
+        <Text style={styles.detailText}>
+          {content || translations.notAvailable}
+        </Text>
+      </View>
+    </View>
+  );
 
-  if (!category || typeof category !== "object") {
-    return null;
-  }
+  const renderPriceSection = () => (
+    <View style={styles.priceSection}>
+      <View style={styles.priceItem}>
+        <Ionicons name="cash-outline" size={24} color={theme3.primaryColor} />
+        <Text style={styles.priceLabel}>{translations.minimumPrice}</Text>
+        <Text style={styles.priceValue}>${category?.min_price || 0}</Text>
+      </View>
+      <View style={styles.priceItem}>
+        <Ionicons name="cash-outline" size={24} color={theme3.primaryColor} />
+        <Text style={styles.priceLabel}>{translations.maximumPrice}</Text>
+        <Text style={styles.priceValue}>${category?.max_price || 0}</Text>
+      </View>
+    </View>
+  );
+
+  const renderTimeSection = () => (
+    <View style={styles.timeSection}>
+      <View style={styles.timeItem}>
+        <Ionicons name="time-outline" size={24} color={theme3.primaryColor} />
+        <Text style={styles.timeLabel}>{translations.duration}</Text>
+        <Text style={styles.timeValue}>{category?.duration || 0} min</Text>
+      </View>
+      <View style={styles.timeItem}>
+        <Ionicons name="home-outline" size={24} color={theme3.primaryColor} />
+        <Text style={styles.timeLabel}>{translations.onsiteEstimate}</Text>
+        <Text style={styles.timeValue}>
+          {category?.onsiteEstimate || translations.notAvailable}
+        </Text>
+      </View>
+    </View>
+  );
 
   return (
     <Modal
       animationType="slide"
-      transparent={true}
+      transparent={false}
       visible={visible}
       onRequestClose={onClose}
     >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{translations.serviceDetails}</Text>
-          <View style={{ width: 24 }} />
-        </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <Header
+          title={translations.serviceDetails}
+          typeModal={true}
+          onPress={onClose}
+        />
         <ScrollView style={styles.scrollView}>
           <View style={styles.contentContainer}>
             {renderBreadcrumbs()}
-            {renderCategoryDetails()}
+            {renderDetailSection(
+              translations.serviceDetails,
+              category?.details,
+              "information-circle-outline"
+            )}
+            {renderPriceSection()}
+            {renderTimeSection()}
+            {renderDetailSection(
+              translations.disclaimer,
+              category?.disclaimer,
+              "alert-circle-outline"
+            )}
+            {renderDetailSection(
+              translations.waivedIfHired,
+              category?.waivedHired || translations.notAvailable,
+              "checkmark-circle-outline"
+            )}
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: theme3.primaryColor,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 16,
-    backgroundColor: theme3.primaryColor,
-  },
-  headerTitle: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
-  },
   scrollView: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#f6f6f6",
   },
   contentContainer: {
     padding: 20,
   },
-  breadcrumbsContainer: {
-    marginBottom: 20,
-  },
-  breadcrumbsLabel: {
+  sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
-    marginBottom: 10,
+    marginBottom: 8,
+    color: theme3.fontColor,
+  },
+  breadcrumbsContainer: {
+    marginBottom: 16,
   },
   breadcrumbs: {
-    flexDirection: "row",
-    alignItems: "center",
     backgroundColor: "#F0F0F0",
+    padding: 12,
     borderRadius: 8,
-    padding: 10,
   },
   breadcrumbText: {
-    fontSize: 16,
     color: theme3.primaryColor,
-    fontWeight: "500",
+    fontSize: 16,
   },
-  detailsContainer: {},
-  rowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  detailSection: {
+    backgroundColor: theme3.light,
+    borderRadius: 8,
+    marginBottom: 16,
+    padding: 16,
+    shadowColor: "rgba(0,0,0,0.1)",
+    shadowOpacity: 1,
+    elevation: 2,
   },
-  detailItem: {
-    marginBottom: 15,
-    width: "48%",
-  },
-  fullWidthItem: {
-    width: "100%",
-  },
-  labelContainer: {
+  detailTitleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5,
+    marginBottom: 8,
   },
-  icon: {
-    marginRight: 8,
-  },
-  detailLabel: {
+  detailTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    marginLeft: 8,
+    color: theme3.fontColor,
   },
-  detailValueContainer: {
+  detailContent: {
     backgroundColor: "#F0F0F0",
+    padding: 12,
     borderRadius: 8,
-    padding: 10,
   },
-  detailValue: {
+  detailText: {
     fontSize: 14,
-    color: "#666",
+    color: theme3.fontColor,
+  },
+  priceSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  timeSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  priceItem: {
+    flex: 1,
+    backgroundColor: theme3.light,
+    padding: 16,
+    borderRadius: 8,
+    marginRight: 8,
+    alignItems: "center",
+    shadowColor: "rgba(0,0,0,0.1)",
+    shadowOpacity: 1,
+    elevation: 2,
+  },
+  timeItem: {
+    flex: 1,
+    backgroundColor: theme3.light,
+    padding: 16,
+    borderRadius: 8,
+    marginRight: 8,
+    alignItems: "center",
+    shadowColor: "rgba(0,0,0,0.1)",
+    shadowOpacity: 1,
+    elevation: 2,
+  },
+  priceLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: 8,
+    color: theme3.fontColor,
+  },
+  priceValue: {
+    fontSize: 16,
+    color: theme3.primaryColor,
+    fontWeight: "bold",
+    marginTop: 4,
+  },
+  timeLabel: {
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: 8,
+    color: theme3.fontColor,
+  },
+  timeValue: {
+    fontSize: 16,
+    color: theme3.primaryColor,
+    fontWeight: "bold",
+    marginTop: 4,
   },
 });
 

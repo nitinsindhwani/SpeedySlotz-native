@@ -198,7 +198,6 @@ function DetailScreen({ route }) {
     });
 
     if (result.canceled) {
-  
       return;
     }
 
@@ -222,7 +221,7 @@ function DetailScreen({ route }) {
               return asset.uri;
             }
           }
-         
+
           return null;
         } catch (error) {
           console.error("Error processing file:", error);
@@ -363,7 +362,6 @@ function DetailScreen({ route }) {
       (slot) => slot.key.slotId === selectedSlotId
     );
     if (!selectedSlot) {
-
       return;
     }
 
@@ -397,7 +395,6 @@ function DetailScreen({ route }) {
     try {
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
-
         return;
       }
 
@@ -512,7 +509,13 @@ function DetailScreen({ route }) {
         onPress={onPress}
         style={[styles.CatList, { backgroundColor }]}
       >
-        <Text style={{ color: theme3.light, marginLeft: 0 }}>{item}</Text>
+        <Text style={{ color: theme3.light, marginLeft: 0 }}>{item} </Text>
+        <Ionicons
+          name="duplicate"
+          size={24}
+          color={theme3.light}
+          style={styles.moreInfoIcon}
+        />
       </TouchableOpacity>
     );
   }

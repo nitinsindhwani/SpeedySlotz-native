@@ -5,7 +5,8 @@ import {
   Switch,
   StyleSheet,
   ScrollView,
-  SafeAreaView,
+  StatusBar,
+  Platform,
 } from "react-native";
 import { theme3 } from "../assets/branding/themes";
 import Header from "./GlobalComponents/Header";
@@ -81,10 +82,8 @@ const PreferredCategoriesScreen = () => {
   const [userData, setUserData] = useState(null);
   const languageContext = useContext(LanguageContext);
 
-
   // Check if context is available
   if (!languageContext) {
-   
     return <Text>Loading...</Text>;
   }
 
@@ -235,96 +234,96 @@ const PreferredCategoriesScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Header title={language === "es" ? "Categorías" : "Categories"} />
-        <ScrollView>
-          {categories.map((category) => (
-            <View key={category.categoryId} style={styles.cardWrapper}>
-              <View style={styles.headingContainer}>
-                <Text style={styles.heading}>
-                  {getDisplayName(category, "category")}
-                </Text>
-                <Switch
-                  onValueChange={(newValue) =>
-                    toggleItem(`category-${category.categoryId}`, newValue, {
-                      type: "category",
-                      ...category,
-                    })
-                  }
-                  value={toggleStates[`category-${category.categoryId}`]}
-                />
-              </View>
-              {toggleStates[`category-${category.categoryId}`] &&
-                category.subcategories.map((subcategory) => (
-                  <View
-                    key={subcategory.subcategoryId}
-                    style={styles.subcategoryWrapper}
-                  >
-                    <View style={styles.subcategoryHeader}>
-                      <Text style={styles.subcategoryText}>
-                        {getDisplayName(subcategory, "subcategory")}
-                      </Text>
-                      <Switch
-                        onValueChange={(newValue) =>
-                          toggleItem(
-                            `subcategory-${subcategory.subcategoryId}`,
-                            newValue,
-                            {
-                              type: "subcategory",
-                              ...subcategory,
-                              categoryId: category.categoryId,
-                              categoryName: category.categoryName,
-                              categoryNameEs: category.categoryNameEs,
-                            }
-                          )
-                        }
-                        value={
-                          toggleStates[
-                            `subcategory-${subcategory.subcategoryId}`
-                          ]
-                        }
-                      />
-                    </View>
-                    {toggleStates[`subcategory-${subcategory.subcategoryId}`] &&
-                      subcategory.services.map((service) => (
-                        <View
-                          key={service.serviceTypeId}
-                          style={styles.serviceWrapper}
-                        >
-                          <Text style={styles.serviceText}>
-                            {getDisplayName(service, "service")}
-                          </Text>
-                          <Switch
-                            onValueChange={(newValue) =>
-                              toggleItem(
-                                `service-${service.serviceTypeId}`,
-                                newValue,
-                                {
-                                  type: "service",
-                                  ...service,
-                                  categoryId: category.categoryId,
-                                  categoryName: category.categoryName,
-                                  categoryNameEs: category.categoryNameEs,
-                                  subcategoryId: subcategory.subcategoryId,
-                                  subcategoryName: subcategory.subcategoryName,
-                                  subcategoryNameEs:
-                                    subcategory.subcategoryNameEs,
-                                }
-                              )
-                            }
-                            value={
-                              toggleStates[`service-${service.serviceTypeId}`]
-                            }
-                          />
-                        </View>
-                      ))}
-                  </View>
-                ))}
+    <View style={styles.container}>
+      <StatusBar
+        backgroundColor={theme3.primaryColor}
+        barStyle="light-content"
+      />
+      <Header title={language === "es" ? "Categorías" : "Categories"} />
+      <ScrollView style={styles.scrollView}>
+        {categories.map((category) => (
+          <View key={category.categoryId} style={styles.cardWrapper}>
+            <View style={styles.headingContainer}>
+              <Text style={styles.heading}>
+                {getDisplayName(category, "category")}
+              </Text>
+              <Switch
+                onValueChange={(newValue) =>
+                  toggleItem(`category-${category.categoryId}`, newValue, {
+                    type: "category",
+                    ...category,
+                  })
+                }
+                value={toggleStates[`category-${category.categoryId}`]}
+              />
             </View>
-          ))}
-        </ScrollView>
-      </View>
+            {toggleStates[`category-${category.categoryId}`] &&
+              category.subcategories.map((subcategory) => (
+                <View
+                  key={subcategory.subcategoryId}
+                  style={styles.subcategoryWrapper}
+                >
+                  <View style={styles.subcategoryHeader}>
+                    <Text style={styles.subcategoryText}>
+                      {getDisplayName(subcategory, "subcategory")}
+                    </Text>
+                    <Switch
+                      onValueChange={(newValue) =>
+                        toggleItem(
+                          `subcategory-${subcategory.subcategoryId}`,
+                          newValue,
+                          {
+                            type: "subcategory",
+                            ...subcategory,
+                            categoryId: category.categoryId,
+                            categoryName: category.categoryName,
+                            categoryNameEs: category.categoryNameEs,
+                          }
+                        )
+                      }
+                      value={
+                        toggleStates[`subcategory-${subcategory.subcategoryId}`]
+                      }
+                    />
+                  </View>
+                  {toggleStates[`subcategory-${subcategory.subcategoryId}`] &&
+                    subcategory.services.map((service) => (
+                      <View
+                        key={service.serviceTypeId}
+                        style={styles.serviceWrapper}
+                      >
+                        <Text style={styles.serviceText}>
+                          {getDisplayName(service, "service")}
+                        </Text>
+                        <Switch
+                          onValueChange={(newValue) =>
+                            toggleItem(
+                              `service-${service.serviceTypeId}`,
+                              newValue,
+                              {
+                                type: "service",
+                                ...service,
+                                categoryId: category.categoryId,
+                                categoryName: category.categoryName,
+                                categoryNameEs: category.categoryNameEs,
+                                subcategoryId: subcategory.subcategoryId,
+                                subcategoryName: subcategory.subcategoryName,
+                                subcategoryNameEs:
+                                  subcategory.subcategoryNameEs,
+                              }
+                            )
+                          }
+                          value={
+                            toggleStates[`service-${service.serviceTypeId}`]
+                          }
+                        />
+                      </View>
+                    ))}
+                </View>
+              ))}
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };
@@ -332,8 +331,13 @@ const PreferredCategoriesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
+    backgroundColor: theme3.primaryColor,
+  },
+  scrollView: {
+    flex: 1,
     backgroundColor: "#f0f0f0",
+    paddingTop: 10,
+    paddingHorizontal: 10,
   },
   cardWrapper: {
     backgroundColor: "#fff",
