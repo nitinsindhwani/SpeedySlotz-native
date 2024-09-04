@@ -67,7 +67,7 @@ Notifications.setNotificationHandler({
 const PushNotification = async () => {
   if (!Device.isDevice) {
     console.log("Must use physical device for Push Notifications");
-    return null;
+    return { status: "failed", token: null };
   }
 
   let { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -83,7 +83,7 @@ const PushNotification = async () => {
 
   if (finalStatus !== "granted") {
     console.log("Permission not granted for push notifications");
-    return null;
+    return { status: "denied", token: null };
   }
 
   try {
@@ -107,10 +107,10 @@ const PushNotification = async () => {
     await SecureStore.setItemAsync("push_notification", tokenObject.data);
     console.log("Push token stored in SecureStore");
 
-    return tokenObject.data;
+    return { status: "granted", token: tokenObject.data };
   } catch (error) {
     console.error("Error getting push token:", error);
-    return null;
+    return { status: "error", token: null };
   }
 };
 
@@ -158,19 +158,26 @@ function AppNavigator() {
 export default function App() {
   const notificationListener = useRef();
   const responseListener = useRef();
-  const [isNotificationEnabled, setIsNotificationEnabled] = useState(false);
+  const [notificationStatus, setNotificationStatus] = useState("unknown");
 
   useEffect(() => {
     console.log("App mounted, setting up notifications...");
 
     const setupNotifications = async () => {
-      const token = await PushNotification();
-      if (token) {
-        console.log("Push Token obtained:", token);
-        setIsNotificationEnabled(true);
+      const result = await PushNotification();
+      setNotificationStatus(result.status);
+
+      if (result.status === "granted" && result.token) {
+        console.log("Push Token obtained:", result.token);
+        // Here you can send the token to your server if needed
       } else {
-        console.log("Failed to obtain push token");
-        setIsNotificationEnabled(false);
+        console.log("Failed to obtain push token", result.status);
+        // You might want to show an alert to the user here
+        Alert.alert(
+          "Notification Permission",
+          "To receive important updates, please enable notifications in your device settings.",
+          [{ text: "OK" }]
+        );
       }
     };
 
@@ -179,6 +186,7 @@ export default function App() {
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
         console.log("Notification received:", notification);
+        // Handle received notification
       });
 
     responseListener.current =
