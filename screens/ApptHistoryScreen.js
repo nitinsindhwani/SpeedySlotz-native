@@ -1,43 +1,82 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import UpcomingScreen from "../components/UpcomingScreen";
 import PastScreen from "../components/PastScreen";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import Header from "../components/Header";
 import { LanguageContext } from "../api/LanguageContext";
+import { getStoredUser } from "../api/ApiCall";
 
 const Tab = createMaterialTopTabNavigator();
 
 const ApptHistoryScreen = ({ route }) => {
-  const { user } = route.params;
   const { language, translations } = useContext(LanguageContext); // Use LanguageContext
   const navigation = useNavigation();
+  const [user, setUser] = useState(null);
+  const params = route.params || {};
+  const isFromNotification = params.slotId != null;
+  // Ensure you have a valid userId before making the request
 
   useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Ionicons
-          name="arrow-back"
-          size={24}
-          color="black"
-          style={{ marginLeft: 10 }}
-          onPress={() => navigation.goBack()}
-        />
-      ),
-      headerTitle: translations.appointmentsTitle,
-      headerTitleStyle: {
-        fontWeight: "bold",
-        fontSize: 24,
-        color: "purple",
-      },
-      headerStyle: {
-        backgroundColor: "white",
-      },
-    });
-  }, [navigation, translations]);
+    const fetchUser = async () => {
+      try {
+        const userData = await getStoredUser();
+        if (!userData || !userData.user_id) {
+          throw new Error("User ID is missing");
+        }
+        setUser(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // Handle the error appropriately, e.g., navigate to login screen
+        // navigation.navigate('LoginScreen');
+      }
+    };
 
+    fetchUser();
+
+    if (params.slotId) {
+      console.log("Received params:", JSON.stringify(params, null, 2));
+      // You can add logic here to handle the specific appointment
+    }
+
+    if (!isFromNotification) {
+      navigation.setOptions({
+        headerLeft: () => (
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color="black"
+            style={{ marginLeft: 10 }}
+            onPress={() => navigation.goBack()}
+          />
+        ),
+        headerTitle: translations.appointmentsTitle,
+        headerTitleStyle: {
+          fontWeight: "bold",
+          fontSize: 24,
+          color: "purple",
+        },
+        headerStyle: {
+          backgroundColor: "white",
+        },
+      });
+    } else {
+      // If it's from a notification, hide the header
+      navigation.setOptions({
+        headerShown: false,
+      });
+    }
+  }, [navigation, translations, isFromNotification, params]);
+  if (!user) {
+    // You can return a loading indicator here
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
   return (
     <>
       <Header user={user} />

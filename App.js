@@ -191,13 +191,43 @@ export default function App() {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log("Notification response received:", response);
+        console.log(
+          "Notification response received:",
+          JSON.stringify(response, null, 2)
+        );
         const { data } = response.notification.request.content;
-        if (data && data.screen === "ChatScreen" && data.chatData) {
-          navigationRef.current?.navigate("App", {
-            screen: "ChatScreen",
-            params: { chatData: data.chatData },
-          });
+        console.log("Notification data:", JSON.stringify(data, null, 2));
+
+        if (data) {
+          if (data.screen === "ChatScreen" && data.chatData) {
+            navigationRef.current?.navigate("App", {
+              screen: "ChatScreen",
+              params: { chatData: data.chatData },
+            });
+          } else if (data.screen === "ApptHistoryScreen") {
+            console.log(
+              "Navigating to ApptHistoryScreen with slotId:",
+              data.slotId
+            );
+            navigationRef.current?.navigate("App", {
+              screen: "ApptHistoryScreen",
+              params: {
+                slotId: data.slotId,
+                businessId: data.businessId,
+                businessName: data.businessName,
+                startTime: data.startTime,
+                endTime: data.endTime,
+                date: data.date,
+              },
+            });
+          } else {
+            console.log(
+              "Unhandled notification type:",
+              JSON.stringify(data, null, 2)
+            );
+          }
+        } else {
+          console.log("No data in notification");
         }
       });
 

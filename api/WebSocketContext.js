@@ -24,7 +24,6 @@ export const WebSocketProvider = ({ children }) => {
   }, []);
 
   const broadcastMessage = useCallback((message) => {
-
     setIncomingMessage({ ...message, _timestamp: Date.now() });
 
     Notifications.scheduleNotificationAsync({
@@ -39,7 +38,6 @@ export const WebSocketProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeWebSocket = async () => {
-  
       const authToken = await getStoredToken();
       const userData = await getStoredUser();
       if (!authToken || !userData) {
@@ -54,15 +52,11 @@ export const WebSocketProvider = ({ children }) => {
         connectHeaders: {
           "auth-token": authToken,
         },
-        debug: function (str) {
-          console.log("STOMP: " + str);
-        },
-        onConnect: () => {
 
+        onConnect: () => {
           stompClient.subscribe(
             `/user/${userData.user_id}/queue/private`,
             (message) => {
-         
               const newMessage = JSON.parse(message.body);
               broadcastMessage(newMessage);
             }
@@ -80,7 +74,6 @@ export const WebSocketProvider = ({ children }) => {
       setClient(stompClient);
 
       return () => {
-    
         client?.deactivate();
       };
     };

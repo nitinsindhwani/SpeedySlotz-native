@@ -18,7 +18,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
-      "buildNumber": "20",
+      "buildNumber": "21",
       "developmentClient": true,
       "infoPlist": {
         "UIBackgroundModes": [
@@ -32,7 +32,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.speedyzslotznitinapp.app",
-      "versionCode": 26,
+      "versionCode": 27,
       "developmentClient": true,
       "permissions": [
         "NOTIFICATIONS"
