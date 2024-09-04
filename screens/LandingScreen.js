@@ -155,8 +155,8 @@ const LandingScreen = ({ route }) => {
   const checkAndUpdatePushToken = async () => {
     try {
       const currentPushToken = await PushNotification();
+
       if (!currentPushToken) {
-        console.log("Failed to obtain push token");
         return;
       }
 
@@ -168,29 +168,40 @@ const LandingScreen = ({ route }) => {
         !user.push_notification ||
         user.push_notification !== currentPushToken
       ) {
-        const updateResponse = await updatePushToken(
-          user.username,
-          currentPushToken
-        );
-        if (updateResponse.status === 200) {
-          if (storedPushToken !== currentPushToken) {
-            await SecureStore.setItemAsync(
-              "push_notification",
-              currentPushToken
+        const encodedPushToken = encodeURIComponent(currentPushToken);
+
+        try {
+          const updateResponse = await updatePushToken(
+            user.username,
+            currentPushToken
+          );
+
+          if (updateResponse.status === 200) {
+            if (storedPushToken !== currentPushToken) {
+              await SecureStore.setItemAsync(
+                "push_notification",
+                currentPushToken
+              );
+            }
+          } else {
+            console.error(
+              "Failed to update push token. Status:",
+              updateResponse.status
             );
           }
-          console.log("Push token updated successfully");
-        } else {
-          console.error("Failed to update push token");
-          Alert.alert(
-            "Notification Update",
-            "We couldn't update your notification settings. Some features may be limited.",
-            [{ text: "OK" }]
-          );
+        } catch (updateError) {
+          console.error("Error in updatePushToken:", updateError.message);
+          if (updateError.response) {
+            console.error("Response status:", updateError.response.status);
+            console.error("Response data:", updateError.response.data);
+          }
         }
+      } else {
+        console.log("Push token is up to date");
       }
     } catch (error) {
-      console.error("Error checking/updating push token:", error);
+      console.error("Error in checkAndUpdatePushToken:", error.message);
+      console.error("Full error object:", JSON.stringify(error, null, 2));
     }
   };
   const handleOpenFilterModal = () => {

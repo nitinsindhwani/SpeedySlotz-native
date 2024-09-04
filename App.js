@@ -71,31 +71,23 @@ const PushNotification = async () => {
   }
 
   let { status: existingStatus } = await Notifications.getPermissionsAsync();
-  console.log("Existing notification permission status:", existingStatus);
 
   let finalStatus = existingStatus;
   if (existingStatus !== "granted") {
-    console.log("Requesting push notification permission...");
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
-    console.log("New notification permission status:", finalStatus);
   }
 
   if (finalStatus !== "granted") {
-    console.log("Permission not granted for push notifications");
     return { status: "denied", token: null };
   }
 
   try {
-    console.log("Getting push token...");
     let tokenObject = await Notifications.getExpoPushTokenAsync({
       projectId: "8cdc32df-1dfe-4ba1-b002-d69366d596e4", // Your project ID
     });
 
-    console.log("Push Token:", tokenObject.data);
-
     if (Platform.OS === "android") {
-      console.log("Setting up Android notification channel...");
       await Notifications.setNotificationChannelAsync("default", {
         name: "default",
         importance: Notifications.AndroidImportance.MAX,
@@ -105,7 +97,6 @@ const PushNotification = async () => {
     }
 
     await SecureStore.setItemAsync("push_notification", tokenObject.data);
-    console.log("Push token stored in SecureStore");
 
     return { status: "granted", token: tokenObject.data };
   } catch (error) {
@@ -161,17 +152,13 @@ export default function App() {
   const [notificationStatus, setNotificationStatus] = useState("unknown");
 
   useEffect(() => {
-    console.log("App mounted, setting up notifications...");
-
     const setupNotifications = async () => {
       const result = await PushNotification();
       setNotificationStatus(result.status);
 
       if (result.status === "granted" && result.token) {
-        console.log("Push Token obtained:", result.token);
         // Here you can send the token to your server if needed
       } else {
-        console.log("Failed to obtain push token", result.status);
         // You might want to show an alert to the user here
         Alert.alert(
           "Notification Permission",
@@ -185,18 +172,12 @@ export default function App() {
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
-        console.log("Notification received:", notification);
         // Handle received notification
       });
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(
-          "Notification response received:",
-          JSON.stringify(response, null, 2)
-        );
         const { data } = response.notification.request.content;
-        console.log("Notification data:", JSON.stringify(data, null, 2));
 
         if (data) {
           if (data.screen === "ChatScreen" && data.chatData) {
@@ -205,10 +186,6 @@ export default function App() {
               params: { chatData: data.chatData },
             });
           } else if (data.screen === "ApptHistoryScreen") {
-            console.log(
-              "Navigating to ApptHistoryScreen with slotId:",
-              data.slotId
-            );
             navigationRef.current?.navigate("App", {
               screen: "ApptHistoryScreen",
               params: {

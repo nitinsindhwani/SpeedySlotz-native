@@ -5,7 +5,6 @@ import { Platform } from "react-native";
 
 export const PushNotification = async () => {
   if (!Device.isDevice) {
-    console.log("Must use physical device for Push Notifications");
     return null;
   }
 
@@ -13,26 +12,20 @@ export const PushNotification = async () => {
   let finalStatus = existingStatus;
 
   if (existingStatus !== "granted") {
-    console.log("Requesting push notification permission...");
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
   }
 
   if (finalStatus !== "granted") {
-    console.log("Failed to get push token for push notification!");
     return null;
   }
 
   try {
-    console.log("Getting push token...");
     let tokenObject = await Notifications.getExpoPushTokenAsync({
       projectId: "8cdc32df-1dfe-4ba1-b002-d69366d596e4",
     });
 
-    console.log("Push Token:", tokenObject.data);
-
     if (Platform.OS === "android") {
-      console.log("Setting up Android notification channel...");
       await Notifications.setNotificationChannelAsync("default", {
         name: "default",
         importance: Notifications.AndroidImportance.MAX,
@@ -42,7 +35,6 @@ export const PushNotification = async () => {
     }
 
     await SecureStore.setItemAsync("push_notification", tokenObject.data);
-    console.log("Push token stored in SecureStore");
 
     return tokenObject.data;
   } catch (error) {

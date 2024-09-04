@@ -101,7 +101,6 @@ export const fetchBusinessesBySubcategory = async (
 
   const fullURL = `${baseURL}?${queryString}`;
 
-
   const userToken = await SecureStore.getItemAsync("userToken");
   if (!userToken) {
     throw new Error("Token not found in SecureStore!");
@@ -150,7 +149,6 @@ export const fetchBusinessesByServiceName = async (
     .join("&");
 
   const fullURL = `${baseURL}?${queryString}`;
-
 
   const userToken = await SecureStore.getItemAsync("userToken");
   if (!userToken) {
@@ -297,7 +295,6 @@ export const resendVerifyEmail = async (userData) => {
 };
 
 export const forgotPassword = async (email) => {
-
   const resendEmailUrl = baseApiUrl + "/api/v1/users/forgotPassword";
 
   const response = await axios.post(
@@ -696,7 +693,6 @@ export const fetchBusinessDetailsById = async (businessId) => {
     const requestUrl = `${baseApiUrl}/api/v1/getRegisteredBusinessById?providerId=${businessId}`;
 
     // Log the request details
-   
 
     const response = await fetch(requestUrl, {
       method: "POST",
@@ -713,7 +709,6 @@ export const fetchBusinessDetailsById = async (businessId) => {
 
     const responseData = await response.json();
 
-
     return responseData;
   } catch (error) {
     console.error("Fetching business details failed:", error.message);
@@ -725,7 +720,6 @@ export const fetchBusinessDetailsById = async (businessId) => {
 
 export const updateUserLanguage = async (userId, preferredLanguage) => {
   try {
-   
     const secureToken = await getStoredToken();
     if (!secureToken) {
       throw new Error("No authorization token available");
@@ -740,7 +734,6 @@ export const updateUserLanguage = async (userId, preferredLanguage) => {
         "Content-Type": "application/json",
       },
     });
-
 
     return response.data;
   } catch (error) {
@@ -790,22 +783,36 @@ export const logoutUser = async () => {
 export const updatePushToken = async (username, pushToken) => {
   try {
     const token = await SecureStore.getItemAsync("userToken");
-    const response = await axios.post(
-      `${baseApiUrl}/api/v1/users/updatePushToken`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          username,
-          pushToken,
-        },
-      }
-    );
+
+    // Encode the push token
+    const encodedPushToken = encodeURIComponent(pushToken);
+
+    const config = {
+      method: "post",
+      url: `${baseApiUrl}/api/v1/users/updatePushToken`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      params: {
+        username: username,
+        pushToken: encodedPushToken,
+      },
+    };
+
+    const response = await axios(config);
+    console.log("Push token update response:", response.data);
     return response;
   } catch (error) {
-    console.error("Error updating push token:", error);
+    console.error(
+      "Error updating push token:",
+      error.response ? error.response.data : error.message
+    );
+    if (error.response) {
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    }
+    console.error("Full error object:", JSON.stringify(error, null, 2));
     throw error;
   }
 };

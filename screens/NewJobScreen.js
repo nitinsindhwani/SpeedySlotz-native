@@ -290,6 +290,7 @@ const NewJobScreen = ({ route }) => {
       priorityStatus: priorityStatus,
       profilesAttached: attachedProfiles,
     };
+
     formData.append("slot", JSON.stringify(slotData));
 
     selectedImages.forEach((imageUri, index) => {
@@ -311,6 +312,7 @@ const NewJobScreen = ({ route }) => {
     try {
       const userToken = await getStoredToken("userToken");
       if (!userToken) {
+        console.error("No user token found");
         return;
       }
 
@@ -337,7 +339,17 @@ const NewJobScreen = ({ route }) => {
         });
       }
     } catch (error) {
-      console.error("Error during booking submission:", error);
+      console.error("Error during booking submission:", error.message);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        console.error("Response headers:", error.response.headers);
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+      } else {
+        console.error("Error setting up request:", error.message);
+      }
+      console.error("Error config:", error.config);
     }
   };
 

@@ -19,7 +19,7 @@ export const LanguageProvider = ({ children }) => {
   const loadLanguage = async () => {
     try {
       const savedLanguage = await SecureStore.getItemAsync(LANGUAGE_KEY);
-     
+
       if (savedLanguage) {
         setLanguage(savedLanguage);
         setTranslations(savedLanguage === "es" ? es : en);
@@ -27,7 +27,6 @@ export const LanguageProvider = ({ children }) => {
         // If no language is saved, set it to the default language
         await SecureStore.setItemAsync(LANGUAGE_KEY, DEFAULT_LANGUAGE);
       }
-      console.log("Set language to:", language);
     } catch (error) {
       console.error("Error loading language:", error);
     }
@@ -38,7 +37,6 @@ export const LanguageProvider = ({ children }) => {
       await SecureStore.setItemAsync(LANGUAGE_KEY, lang);
       setLanguage(lang);
       setTranslations(lang === "es" ? es : en);
-      console.log("Changed language to:", lang);
     } catch (error) {
       console.error("Error saving language:", error);
     }
