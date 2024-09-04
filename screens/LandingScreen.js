@@ -10,9 +10,12 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LanguageContext } from "../api/LanguageContext";
+import { PushNotification } from "../api/PushNotification";
+import * as SecureStore from "expo-secure-store";
 import {
   getLocationAndCityState,
   fetchBusinessesByServiceName,
+  updatePushToken,
 } from "../api/ApiCall";
 import Header from "../components/Header";
 import CategoryList from "../components/CategoryList";
@@ -56,6 +59,7 @@ const LandingScreen = ({ route }) => {
 
   useEffect(() => {
     updateLocation();
+    checkAndUpdatePushToken();
   }, []);
 
   useEffect(() => {
@@ -148,7 +152,47 @@ const LandingScreen = ({ route }) => {
     const newDate = date.toISOString().split("T")[0];
     setSelectedDate(newDate);
   };
+  const checkAndUpdatePushToken = async () => {
+    try {
+      const currentPushToken = await PushNotification();
+      if (!currentPushToken) {
+        console.log("Failed to obtain push token");
+        return;
+      }
 
+      const storedPushToken = await SecureStore.getItemAsync(
+        "push_notification"
+      );
+
+      if (
+        !user.push_notification ||
+        user.push_notification !== currentPushToken
+      ) {
+        const updateResponse = await updatePushToken(
+          user.username,
+          currentPushToken
+        );
+        if (updateResponse.status === 200) {
+          if (storedPushToken !== currentPushToken) {
+            await SecureStore.setItemAsync(
+              "push_notification",
+              currentPushToken
+            );
+          }
+          console.log("Push token updated successfully");
+        } else {
+          console.error("Failed to update push token");
+          Alert.alert(
+            "Notification Update",
+            "We couldn't update your notification settings. Some features may be limited.",
+            [{ text: "OK" }]
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error checking/updating push token:", error);
+    }
+  };
   const handleOpenFilterModal = () => {
     const uniqueBadges = prepareBadgeFilters();
     setUniqueBadgeFilters(uniqueBadges);

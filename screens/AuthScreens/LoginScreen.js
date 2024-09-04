@@ -5,24 +5,20 @@ import {
   TextInput,
   Image,
   ImageBackground,
-  Pressable,
   Dimensions,
   TouchableOpacity,
-  KeyboardAvoidingView,
   StyleSheet,
-  Platform,
 } from "react-native";
 import { loginUser, updatePushToken } from "../../api/ApiCall";
 import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import Styles from "../../assets/branding/GlobalStyles";
 import { theme3 } from "../../assets/branding/themes";
 import { PushNotification } from "../../api/PushNotification";
 import LoadingModal from "../GlobalComponents/LoadingModal";
 import ErrorAlert from "../GlobalComponents/ErrorAlert";
-import { LanguageContext } from "../../api/LanguageContext"; // Import LanguageContext
-import * as Notifications from "expo-notifications"; // Import Notifications from expo-notifications
+import { LanguageContext } from "../../api/LanguageContext";
 
 const WindowWidth = Dimensions.get("window").width;
 import eye from "../../assets/newimage/eye.png";
@@ -43,11 +39,7 @@ const LoginScreen = () => {
     "Invalid username or password. Please check your credentials and try again."
   );
   const navigation = useNavigation();
-  const { language, translations } = useContext(LanguageContext); // Use LanguageContext
-
-  useEffect(() => {
-    PushNotification();
-  }, [language, translations]);
+  const { language, translations } = useContext(LanguageContext);
 
   const passwordPolicy = [
     translations.passwordPolicyLength,
@@ -83,39 +75,6 @@ const LoginScreen = () => {
     return !hasError;
   };
 
-  const checkAndUpdatePushToken = async (user) => {
-    try {
-      const currentPushToken = await PushNotification();
-      const storedPushToken = await SecureStore.getItemAsync(
-        "push_notification"
-      );
-
-      if (
-        currentPushToken &&
-        (!user.push_notification || user.push_notification !== currentPushToken)
-      ) {
-        const updateResponse = await updatePushToken(
-          user.username,
-          currentPushToken
-        );
-        if (updateResponse.status === 200) {
-   
-          // Update the stored token if it's different
-          if (storedPushToken !== currentPushToken) {
-            await SecureStore.setItemAsync(
-              "push_notification",
-              currentPushToken
-            );
-          }
-        } else {
-          console.error("Failed to update push token");
-        }
-      }
-    } catch (error) {
-      console.error("Error checking/updating push token:", error);
-    }
-  };
-
   const handleLogin = async () => {
     if (!validateForm()) {
       return;
@@ -126,14 +85,7 @@ const LoginScreen = () => {
       const response = await loginUser(username, password);
 
       if (response.success) {
-        await checkAndUpdatePushToken(response.payload);
-        if (response.payload.email_verified) {
-          navigation.navigate("BottomNavigation", { user: response.payload });
-        } else {
-          navigation.navigate("ResendEmailScreen", {
-            user: response.payload,
-          });
-        }
+        proceedAfterLogin(response.payload);
       } else {
         setErrorModal(true);
         setAlertBody(translations.loginError);
@@ -146,6 +98,13 @@ const LoginScreen = () => {
     }
   };
 
+  const proceedAfterLogin = (user) => {
+    if (user.email_verified) {
+      navigation.navigate("BottomNavigation", { user: user });
+    } else {
+      navigation.navigate("ResendEmailScreen", { user: user });
+    }
+  };
   const handleForgotPassword = () => {
     navigation.navigate("ForgotPasswordScreen");
   };
@@ -167,7 +126,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <Image source={Logo} style={{ width: 160, height: 160 ,marginTop:20}} />
+      <Image source={Logo} style={{ width: 160, height: 160, marginTop: 20 }} />
 
       <View style={[Styles.TopView, { marginTop: -20 }]}>
         <Text style={styles.Text}>{translations.username}</Text>
@@ -241,7 +200,9 @@ const LoginScreen = () => {
         <Text style={Styles.LoginTxt}>{translations.loginButton}</Text>
       </TouchableOpacity>
 
-      <View style={{ flexDirection: "row", alignItems: "center",marginTop:100 }}>
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginTop: 100 }}
+      >
         <Image source={Line} style={{ width: WindowWidth / 2.9, height: 2 }} />
         <Text style={{ color: "#4C4C4C", marginLeft: 10, marginRight: 10 }}>
           {translations.or}

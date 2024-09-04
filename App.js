@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import { Platform } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Platform, Alert } from "react-native";
 import {
   NavigationContainer,
   createNavigationContainerRef,
@@ -9,7 +9,6 @@ import * as Linking from "expo-linking";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import * as SecureStore from "expo-secure-store";
-import Constants from "expo-constants";
 import { LanguageProvider } from "./api/LanguageContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import { WebSocketProvider } from "./api/WebSocketContext";
@@ -66,36 +65,38 @@ Notifications.setNotificationHandler({
 });
 
 const PushNotification = async () => {
-  let previousToken = await SecureStore.getItemAsync("push_notification");
+  if (!Device.isDevice) {
+    console.log("Must use physical device for Push Notifications");
+    return null;
+  }
 
-  if (previousToken) {
-    return previousToken; // Return the previously stored token
-  } else {
-    if (!Device.isDevice) {
-      console.log("Must use physical device for Push Notifications");
-      return null;
-    }
+  let { status: existingStatus } = await Notifications.getPermissionsAsync();
+  console.log("Existing notification permission status:", existingStatus);
 
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
+  let finalStatus = existingStatus;
+  if (existingStatus !== "granted") {
+    console.log("Requesting push notification permission...");
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+    console.log("New notification permission status:", finalStatus);
+  }
 
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
+  if (finalStatus !== "granted") {
+    console.log("Permission not granted for push notifications");
+    return null;
+  }
 
-    if (finalStatus !== "granted") {
-      console.log("Failed to get push token for push notification!");
-      return null;
-    }
-
+  try {
+    console.log("Getting push token...");
     let tokenObject = await Notifications.getExpoPushTokenAsync({
-      projectId: "8cdc32df-1dfe-4ba1-b002-d69366d596e4",
+      projectId: "8cdc32df-1dfe-4ba1-b002-d69366d596e4", // Your project ID
     });
 
+    console.log("Push Token:", tokenObject.data);
+
     if (Platform.OS === "android") {
-      Notifications.setNotificationChannelAsync("default", {
+      console.log("Setting up Android notification channel...");
+      await Notifications.setNotificationChannelAsync("default", {
         name: "default",
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
@@ -104,8 +105,12 @@ const PushNotification = async () => {
     }
 
     await SecureStore.setItemAsync("push_notification", tokenObject.data);
+    console.log("Push token stored in SecureStore");
 
     return tokenObject.data;
+  } catch (error) {
+    console.error("Error getting push token:", error);
+    return null;
   }
 };
 
@@ -153,26 +158,33 @@ function AppNavigator() {
 export default function App() {
   const notificationListener = useRef();
   const responseListener = useRef();
+  const [isNotificationEnabled, setIsNotificationEnabled] = useState(false);
 
   useEffect(() => {
-    PushNotification().then((token) => {
+    console.log("App mounted, setting up notifications...");
+
+    const setupNotifications = async () => {
+      const token = await PushNotification();
       if (token) {
-        console.log("Push Token:", token);
-        // Here you would typically send this token to your backend
+        console.log("Push Token obtained:", token);
+        setIsNotificationEnabled(true);
+      } else {
+        console.log("Failed to obtain push token");
+        setIsNotificationEnabled(false);
       }
-    });
+    };
+
+    setupNotifications();
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
         console.log("Notification received:", notification);
-        // You can handle the notification here, e.g., update app state
       });
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         console.log("Notification response received:", response);
         const { data } = response.notification.request.content;
-
         if (data && data.screen === "ChatScreen" && data.chatData) {
           navigationRef.current?.navigate("App", {
             screen: "ChatScreen",
@@ -182,6 +194,7 @@ export default function App() {
       });
 
     const handleDeepLink = (event) => {
+      console.log("Deep link received:", event.url);
       let data = Linking.parse(event.url);
       if (data.path === "login") {
         navigationRef.current?.navigate("LoginScreen");
@@ -196,6 +209,7 @@ export default function App() {
     const linkingSubscription = Linking.addEventListener("url", handleDeepLink);
 
     return () => {
+      console.log("App unmounting, cleaning up listeners...");
       Notifications.removeNotificationSubscription(
         notificationListener.current
       );
