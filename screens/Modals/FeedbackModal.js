@@ -9,6 +9,7 @@ import {
   TextInput,
   FlatList,
   Platform,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../../assets/branding/themes";
@@ -31,7 +32,6 @@ export default function RemarkModal({
 }) {
   const { translations } = useContext(LanguageContext); // Access translations from context
   const reviewInputRef = useRef(null);
-  // Prepare the badges array dynamically from getBadgeDetails
   const badgeCodes = [
     "TOPR",
     "LOWP",
@@ -58,12 +58,17 @@ export default function RemarkModal({
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const toggleOptions = (badgeCode) => {
-    if (selectedBadge === badgeCode) {
-      setSelectedBadge(null);
-    } else {
-      setSelectedBadge(badgeCode);
+  // This hook will ensure that the keyboard remains open and doesn’t trigger unnecessary re-renders
+  const handleTextInputFocus = () => {
+    if (Platform.OS === "android") {
+      setTimeout(() => {
+        reviewInputRef.current.focus();
+      }, 100); // Add a small delay to focus the input
     }
+  };
+
+  const toggleOptions = (badgeCode) => {
+    setSelectedBadge(selectedBadge === badgeCode ? null : badgeCode);
   };
 
   const handleRating = (badgeCode, rating) => {
@@ -71,7 +76,6 @@ export default function RemarkModal({
     let updatedNegative = [...negativeRatedBadges];
 
     if (rating) {
-      // Thumbs Up
       if (positiveRatedBadges.includes(badgeCode)) {
         updatedPositive = updatedPositive.filter((b) => b !== badgeCode);
       } else {
@@ -79,7 +83,6 @@ export default function RemarkModal({
         updatedNegative = updatedNegative.filter((b) => b !== badgeCode);
       }
     } else {
-      // Thumbs Down
       if (negativeRatedBadges.includes(badgeCode)) {
         updatedNegative = updatedNegative.filter((b) => b !== badgeCode);
       } else {
@@ -103,12 +106,9 @@ export default function RemarkModal({
       }
 
       const reviewData = {
-        key: {
-          slotId: slotId,
-          reviewId: uuid.v4(),
-        },
-        userId: userId,
-        businessId: businessId,
+        key: { slotId, reviewId: uuid.v4() },
+        userId,
+        businessId,
         positiveBadges: positiveRatedBadges,
         negativeBadges: negativeRatedBadges,
         reviewText: review,
@@ -129,41 +129,30 @@ export default function RemarkModal({
       );
 
       if (response.data.success) {
-        if (response.data.warnings && response.data.warnings.length > 0) {
-          setErrorMessage(response.data.warnings.join("\n"));
-          setShowError(true);
-        } else {
-          setSuccessMessage("Review submitted successfully!");
-          setShowSuccess(true);
-          setTimeout(() => {
-            setModalVisible(false);
-            setShowSuccess(false);
-            if (onReviewSubmit) {
-              onReviewSubmit();
-            }
-          }, 2000);
-        }
+        setSuccessMessage("Review submitted successfully!");
+        setShowSuccess(true);
+        setTimeout(() => {
+          setModalVisible(false);
+          setShowSuccess(false);
+          if (onReviewSubmit) {
+            onReviewSubmit();
+          }
+        }, 2000);
       } else {
         setErrorMessage("Failed to submit review. Please try again.");
         setShowError(true);
       }
-      setModalVisible(false);
     } catch (error) {
-      let errorMsg = "An unexpected error occurred. Please try again.";
-
-      if (error.response) {
-        errorMsg = `Error: ${error.response.status} - ${JSON.stringify(
-          error.response.data
-        )}`;
-      } else if (error.request) {
-        errorMsg = "No response received from server";
-      } else {
-        errorMsg = `Error: ${error.message}`;
-      }
-
-      setErrorMessage(errorMsg);
+      setErrorMessage(`Error: ${error.message}`);
       setShowError(true);
     }
+  };
+
+  const calculateRating = () => {
+    const totalBadges = positiveRatedBadges.length + negativeRatedBadges.length;
+    return totalBadges === 0
+      ? 0
+      : (positiveRatedBadges.length / totalBadges) * 5;
   };
 
   const renderBadge = ({ item }) => {
@@ -206,22 +195,6 @@ export default function RemarkModal({
     );
   };
 
-  const calculateRating = () => {
-    const positiveCount = positiveRatedBadges.length;
-    const negativeCount = negativeRatedBadges.length;
-    const totalBadges = positiveCount + negativeCount;
-
-    if (totalBadges === 0) {
-      return 0;
-    }
-
-    const positivePercentage = (positiveCount / totalBadges) * 100;
-    let rating = (positivePercentage / 100) * 5;
-    rating = Math.round(rating * 2) / 2;
-
-    return rating;
-  };
-
   return (
     <View style={styles.container}>
       <Modal animationType="slide" transparent={false} visible={modalVisible}>
@@ -255,23 +228,13 @@ export default function RemarkModal({
                   <TextInput
                     ref={reviewInputRef}
                     value={review}
-                    onChangeText={(e) => setReview(e)}
+                    onChangeText={setReview}
+                    onFocus={handleTextInputFocus} // Added onFocus handler
                     style={styles.textInput}
                     placeholder="Write a review"
                     placeholderTextColor={theme3.placeHolder}
                     multiline={true}
                     textAlignVertical="top"
-                    onFocus={() => {
-                      // Scroll the FlatList to show the TextInput when it's focused
-                      reviewInputRef.current.measure(
-                        (fx, fy, width, height, px, py) => {
-                          this.flatListRef.scrollToOffset({
-                            offset: py,
-                            animated: true,
-                          });
-                        }
-                      );
-                    }}
                   />
                 </View>
 
@@ -284,7 +247,6 @@ export default function RemarkModal({
               </>
             }
             contentContainerStyle={styles.contentContainerStyle}
-            ref={(ref) => (this.flatListRef = ref)}
           />
         </KeyboardAvoidingView>
       </Modal>
@@ -318,12 +280,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 120,
-  },
-  closeIconContainer: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 10,
   },
   title: {
     fontSize: 28,
@@ -384,7 +340,7 @@ const styles = StyleSheet.create({
   ReviewContainer: {
     backgroundColor: theme3.light,
     width: "95%",
-    height: "25%",
+    height: 150,
     borderRadius: 20,
     shadowColor: "rgba(0,0,0,0.1)",
     shadowOpacity: 1,
@@ -411,21 +367,5 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     paddingHorizontal: 15,
-  },
-  ReviewContainer: {
-    backgroundColor: theme3.light,
-    width: "95%",
-    height: 150, // Fixed height instead of percentage
-    borderRadius: 20,
-    shadowColor: "rgba(0,0,0,0.1)",
-    shadowOpacity: 1,
-    elevation: 1,
-    padding: 10,
-  },
-  textInput: {
-    flex: 1,
-    paddingLeft: 10,
-    paddingRight: 10,
-    textAlignVertical: "top",
   },
 });

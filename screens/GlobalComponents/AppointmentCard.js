@@ -28,6 +28,7 @@ import moment from "moment";
 
 import uuid from "react-native-uuid";
 import { LanguageContext } from "../../api/LanguageContext";
+const defaultImageUrl = require("../../assets/images/defaultImage.png");
 
 function AppointmentCard({
   businesss,
@@ -53,6 +54,9 @@ function AppointmentCard({
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedServiceType, setSelectedServiceType] = useState(null);
+  const isOpenForBusiness =
+    localSingleSlot?.business_id === "OPEN_FOR_BUSINESS";
+
   const navigation = useNavigation();
 
   const priorityLabels = [
@@ -467,44 +471,41 @@ function AppointmentCard({
   };
 
   const handleChatButtonPress = () => {
-  
+    if (!isOpenForBusiness) {
+      if (!userData) {
+        setErrorMessage(
+          translations.userDataMissing ||
+            "User data is missing. Please try logging in again."
+        );
+        setShowError(true);
+        return;
+      }
 
-    if (!userData) {
-  
-      setErrorMessage(
-        translations.userDataMissing ||
-          "User data is missing. Please try logging in again."
-      );
-      setShowError(true);
-      return;
-    }
+      const selectedChat = {
+        chat_id: uuid.v4(),
+        project_name: "New Job",
+        user_id: userData.user_id,
+        username: userData.username,
+        business_id: businesss.yelpBusiness.id,
+        business_name: businesss.yelpBusiness.name,
+        chatMessages: [],
+      };
 
-    const selectedChat = {
-      chat_id: uuid.v4(),
-      project_name: "New Job",
-      user_id: userData.user_id,
-      username: userData.username,
-      business_id: businesss.yelpBusiness.id,
-      business_name: businesss.yelpBusiness.name,
-      chatMessages: [],
-    };
-
-
-
-    try {
-      navigation.navigate("App", {
-        screen: "ChatScreen",
-        params: {
-          chatData: selectedChat,
-        },
-      });
-    } catch (error) {
-      console.error("Navigation error:", error);
-      setErrorMessage(
-        translations.navigationError ||
-          "There was an error opening the chat. Please try again."
-      );
-      setShowError(true);
+      try {
+        navigation.navigate("App", {
+          screen: "ChatScreen",
+          params: {
+            chatData: selectedChat,
+          },
+        });
+      } catch (error) {
+        console.error("Navigation error:", error);
+        setErrorMessage(
+          translations.navigationError ||
+            "There was an error opening the chat. Please try again."
+        );
+        setShowError(true);
+      }
     }
   };
 
@@ -644,17 +645,16 @@ function AppointmentCard({
       );
     }
 
-
-
     return null;
   };
   return (
     <View style={styles.mostPopularItem}>
       <Image
-        source={getImageSource(
-          businesss?.yelpBusiness?.name,
-          businesss?.yelpBusiness?.image_url
-        )}
+        source={
+          isOpenForBusiness
+            ? defaultImageUrl
+            : { uri: businesss?.yelpBusiness?.image_url }
+        }
         style={styles.mostPopularImage}
       />
       <View
@@ -775,13 +775,24 @@ function AppointmentCard({
           </View>
 
           <View style={Styles.OneRow}>
-            <View style={{ marginLeft: -6 }}>
+            <View
+              style={[
+                { marginLeft: -6 },
+                isOpenForBusiness && { opacity: 0.5 },
+              ]}
+            >
               <ChatAnim />
             </View>
             <TouchableOpacity
               onPress={() => handleChatButtonPress(businesss.yelpBusiness)}
             >
-              <Text style={[styles.DescText, { marginLeft: 0 }]}>
+              <Text
+                style={[
+                  styles.DescText,
+                  { marginLeft: 0 },
+                  isOpenForBusiness && { opacity: 0.5 }, // Gray out text if disabled
+                ]}
+              >
                 {translations.chatNow}
               </Text>
             </TouchableOpacity>
@@ -789,26 +800,38 @@ function AppointmentCard({
         </View>
         <View style={styles.extraInfoContainer}>
           <TouchableOpacity
-            style={styles.mapIconContainer}
+            style={[
+              styles.mapIconContainer,
+              isOpenForBusiness && { opacity: 0.5 }, // Dim the button if disabled
+            ]}
             onPress={() => {
-              const address1 = businesss.yelpBusinessLocation?.address1
-                ? businesss.yelpBusinessLocation.address1 + ","
-                : "";
-              const city = businesss.yelpBusinessLocation?.city || "";
-              const mapQuery = encodeURIComponent(`${address1}${city}`);
-              if (mapQuery) {
-                Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
-              } else {
-                console.warn("No address available for directions");
+              if (!isOpenForBusiness) {
+                // Disable onPress if OPEN_FOR_BUSINESS
+                const address1 = businesss.yelpBusinessLocation?.address1
+                  ? businesss.yelpBusinessLocation.address1 + ","
+                  : "";
+                const city = businesss.yelpBusinessLocation?.city || "";
+                const mapQuery = encodeURIComponent(`${address1}${city}`);
+                if (mapQuery) {
+                  Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
+                } else {
+                  console.warn("No address available for directions");
+                }
               }
             }}
           >
             <MaterialIcons
               name="directions"
               size={18}
-              color={theme3.primaryColor}
+              color={isOpenForBusiness ? "gray" : theme3.primaryColor} // Gray out if disabled
             />
-            <Text style={[styles.mostPopularCity, { marginTop: 0 }]}>
+            <Text
+              style={[
+                styles.mostPopularCity,
+                { marginTop: 0 },
+                isOpenForBusiness && { color: "gray" }, // Gray out text if disabled
+              ]}
+            >
               {translations.directions}
             </Text>
           </TouchableOpacity>
@@ -848,7 +871,12 @@ function AppointmentCard({
         </View>
       </ScrollView>
 
-      <View style={{ marginTop: 10 }}>{renderButtons()}</View>
+      {!isOpenForBusiness && (
+        <View style={{ marginTop: 10 }}>
+          {/* Render buttons as per your existing logic */}
+          {renderButtons()}
+        </View>
+      )}
 
       <ErrorAlert
         show={showError}
