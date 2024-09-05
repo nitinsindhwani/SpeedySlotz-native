@@ -684,4 +684,7 @@ export default {
   imagesNotAdded: "No se pudieron agregar las imágenes.",
   videoNotAdded: "No se pudo agregar el video.",
   completeSelections: "Por favor, complete todas las selecciones",
+
+  noServiceTypesSelected: "No se seleccionaron tipos de servicio",
+  findingBestMatch: "Encontrando Mejor Opción", // Spanish
 };

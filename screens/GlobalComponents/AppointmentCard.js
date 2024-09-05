@@ -57,6 +57,11 @@ function AppointmentCard({
   const isOpenForBusiness =
     localSingleSlot?.business_id === "OPEN_FOR_BUSINESS";
 
+  const imageSource = getImageSource(
+    businesss?.yelpBusiness?.name,
+    businesss?.yelpBusiness?.image_url
+  );
+
   const navigation = useNavigation();
 
   const priorityLabels = [
@@ -652,8 +657,8 @@ function AppointmentCard({
       <Image
         source={
           isOpenForBusiness
-            ? defaultImageUrl
-            : { uri: businesss?.yelpBusiness?.image_url }
+            ? require("../../assets/images/defaultImage.png")
+            : imageSource
         }
         style={styles.mostPopularImage}
       />
@@ -866,7 +871,9 @@ function AppointmentCard({
         </View>
         <View style={[styles.CatList, { marginLeft: 0, marginRight: 5 }]}>
           <Text style={{ color: theme3.light, marginLeft: 5 }}>
-            {localSingleSlot.selectedServiceTypes.join(", ")}
+            {localSingleSlot?.selectedServiceTypes?.length > 0
+              ? localSingleSlot.selectedServiceTypes.join(", ")
+              : translations.noServiceTypesSelected}
           </Text>
         </View>
       </ScrollView>

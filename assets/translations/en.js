@@ -663,4 +663,7 @@ export default {
   imagesNotAdded: "Images could not be added.",
   videoNotAdded: "Video could not be added.",
   completeSelections: "Please complete all selections",
+
+  noServiceTypesSelected: "No service types selected", 
+  findingBestMatch: "Finding Best Match",
 };

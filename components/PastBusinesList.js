@@ -63,7 +63,6 @@ const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
 
   const formatTime = (timeString) => {
     if (!timeString) {
-      console.error("Received invalid timeString:", timeString);
       return "-";
     }
 
