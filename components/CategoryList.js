@@ -48,7 +48,7 @@ const CategoryList = ({
     }
   };
 
-  const loadCategories = useCallback(async () => {
+  const loadCategories = async () => {
     setIsLoading(true);
     try {
       const userCategoriesData = await fetchUserCategories();
@@ -68,13 +68,8 @@ const CategoryList = ({
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
-  useFocusEffect(
-    useCallback(() => {
-      loadCategories();
-    }, [loadCategories])
-  );
   const uniqueCategories = Array.from(
     new Set(userCategoriesData?.map((item) => item.categoryName))
   )

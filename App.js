@@ -45,7 +45,9 @@ import ChatMessage from "./screens/Chat.js/ChatMessage";
 import BottomNavigation from "./screens/BottomNavigation/BottomNavigation";
 import SignUpDecider from "./screens/AuthScreens/SignUpDescider";
 import LanguageSelectionScreen from "./screens/LanguageSelectionScreen";
+import { app, auth, firestore, logAnalyticsEvent } from './firebaseConfig';
 
+// Use auth, firestore, and logAnalyticsEvent as needed
 import { TextEncoder, TextDecoder } from "text-encoding";
 
 global.TextEncoder = TextEncoder;
@@ -168,6 +170,7 @@ export default function App() {
       }
     };
 
+    
     setupNotifications();
 
     notificationListener.current =

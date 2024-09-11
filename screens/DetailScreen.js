@@ -327,7 +327,7 @@ function DetailScreen({ route }) {
     ];
 
     const selectedChat = {
-      chat_id: uuidv4(),
+      chat_id: uuid.v4(),
       project_name: "New Job",
       user_id: userData.user_id,
       username: userData.username,

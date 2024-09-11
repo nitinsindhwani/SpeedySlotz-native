@@ -62,7 +62,7 @@ const NewJobScreen = ({ route }) => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedVideos, setSelectedVideos] = useState([]);
   const [attachedProfiles, setAttachedProfiles] = useState([]);
-  const [userCategories, setUserCategories] = useState([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [priorityStatus, setPriorityStatus] = useState(null);
   const [zipcodes, setZipcodes] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -71,6 +71,7 @@ const NewJobScreen = ({ route }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const languageContext = useContext(LanguageContext);
   const { translations, language } = useContext(LanguageContext);
+  const [userCategoriesData, setUserCategoriesData] = useState([]);
 
   const MAX_NUMBER_OF_IMAGES = 5;
   const MAX_NUMBER_OF_VIDEOS = 1;
@@ -88,6 +89,32 @@ const NewJobScreen = ({ route }) => {
 
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+    const fetchAllCategories = async () => {
+      try {
+        const categoriesData = await fetchCategories();
+
+        setUserCategoriesData(categoriesData);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchAllCategories();
+  }, []);
+
+  useEffect(() => {
+    if (selectedServiceTypeName && userCategoriesData.length > 0) {
+      const matchingService = userCategoriesData.find(
+        (service) => service.serviceTypeName === selectedServiceTypeName
+      );
+      console.log("matchingServicem", matchingService);
+      if (matchingService) {
+        setSelectedCategoryId(matchingService.category_id);
+      }
+    }
+  }, [selectedServiceTypeName, userCategoriesData]);
 
   const onChangeDate = (event, selectedDate) => {
     setShowDatePicker(Platform.OS === "ios");
@@ -289,8 +316,9 @@ const NewJobScreen = ({ route }) => {
       open: true,
       priorityStatus: priorityStatus,
       profilesAttached: attachedProfiles,
+      categoryId: selectedCategoryId,
     };
-
+    console.log("SlotData", JSON.stringify(slotData));
     formData.append("slot", JSON.stringify(slotData));
 
     selectedImages.forEach((imageUri, index) => {
@@ -590,6 +618,7 @@ const NewJobScreen = ({ route }) => {
         </View>
 
         {selectedServiceTypeName &&
+        zipcodes &&
         jobDescription &&
         priorityStatus !== null &&
         priorityStatus !== undefined ? (
@@ -624,6 +653,7 @@ const NewJobScreen = ({ route }) => {
             <Text style={Styles.LoginTxt}>
               {!selectedServiceTypeName ||
               !jobDescription ||
+              !zipcodes ||
               priorityStatus === null ||
               !profileAttached
                 ? translations.completeSelections
