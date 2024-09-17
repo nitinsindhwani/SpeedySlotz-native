@@ -109,7 +109,7 @@ const NewJobScreen = ({ route }) => {
       const matchingService = userCategoriesData.find(
         (service) => service.serviceTypeName === selectedServiceTypeName
       );
-      console.log("matchingServicem", matchingService);
+      
       if (matchingService) {
         setSelectedCategoryId(matchingService.category_id);
       }

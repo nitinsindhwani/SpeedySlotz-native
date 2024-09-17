@@ -9,6 +9,7 @@ import {
   ScrollView,
   Dimensions,
   Linking,
+  Platform,
 } from "react-native";
 import { AirbnbRating } from "react-native-ratings";
 import MapIcon from "react-native-vector-icons/FontAwesome5";
@@ -22,14 +23,14 @@ import moment from "moment";
 import uuid from "react-native-uuid";
 import { FontAwesome, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import SoftLoadImage from "../components/SoftLoadImage";
-import { baseApiUrl } from "../api/Config";
+import { apiKey, baseApiUrl } from "../api/Config";
 import { theme3 } from "../assets/branding/themes";
 import Styles from "../assets/branding/GlobalStyles";
 import { FlatList } from "react-native-gesture-handler";
 import DealIcons from "../screens/GlobalComponents/DealIcons";
 import DealModal from "./DealModal";
 import ChatAnim from "../screens/GlobalComponents/ChatAnim";
-
+import ReviewModal from "../screens/Modals/ReviewModal";
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
 const defaultImageUrl = require("../assets/images/defaultImage.png");
@@ -50,11 +51,21 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
   const [userData, setUserData] = useState(null);
   const [selectedDeal, setSelectedDeal] = useState([]);
   const { translations } = useContext(LanguageContext);
-
+  const [reviews, setReviews] = useState([]);
+  const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
+  const [selectedBusinessId, setSelectedBusinessId] = useState(null);
+  const [selectedBusinessIsRegistered, setSelectedBusinessIsRegistered] =
+    useState(null);
   const openDealModal = (dealData) => {
     const dealsArray = Array.isArray(dealData) ? dealData : [dealData];
     setSelectedDeal(dealsArray);
     setIsDealModalVisible(true);
+  };
+
+  const openReviewModal = (businessId, isRegistered) => {
+    setSelectedBusinessId(businessId);
+    setSelectedBusinessIsRegistered(isRegistered);
+    setIsReviewModalVisible(true);
   };
 
   const renderBadge = ({ item }) => {
@@ -168,30 +179,47 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     }
   };
 
-  const getImageSource = (businessName, image_url) => {
-    if (
-      typeof image_url === "object" &&
-      image_url !== null &&
-      Object.keys(image_url).length > 0
-    ) {
-      if (image_url.Main && image_url.Main.trim() !== "") {
-        return { uri: image_url.Main };
-      }
-      const firstImageUrl = Object.values(image_url).find(
-        (url) => typeof url === "string" && url.trim() !== ""
-      );
-      if (firstImageUrl) {
-        return { uri: firstImageUrl };
-      }
-    }
+  const getImageSource = (business) => {
+    try {
+      if (business.yelpBusiness && business.yelpBusiness.image_url) {
+        const image_url = business.yelpBusiness.image_url;
 
-    if (typeof image_url === "string" && image_url.trim() !== "") {
-      return { uri: image_url };
-    }
+        if (typeof image_url === "object" && image_url !== null) {
+          if (image_url.Main && image_url.Main.trim() !== "") {
+            return { uri: image_url.Main };
+          }
+          const firstImageUrl = Object.values(image_url).find(
+            (url) => typeof url === "string" && url.trim() !== ""
+          );
+          if (firstImageUrl) {
+            return { uri: firstImageUrl };
+          }
+        }
 
-    return defaultImageUrl;
+        if (typeof image_url === "string" && image_url.trim() !== "") {
+          return { uri: image_url };
+        }
+      }
+
+      // Handle Google photo reference
+      if (
+        business.yelpBusiness &&
+        business.yelpBusiness.photos &&
+        business.yelpBusiness.photos[0] &&
+        business.yelpBusiness.photos[0].name
+      ) {
+        return {
+          uri: `https://places.googleapis.com/v1/${business.yelpBusiness.photos[0].name}/media?key=${apiKey}&maxHeightPx=400&maxWidthPx=400`,
+        };
+      }
+
+      console.log("Using default image for:", business.yelpBusiness.name);
+      return defaultImageUrl;
+    } catch (error) {
+      console.error("Error in getImageSource:", error);
+      return defaultImageUrl;
+    }
   };
-
   function DetailCard({ item, index }) {
     const [ExpandCat, setExpandCat] = useState(false);
     const [showMore, setShowMore] = useState(false);
@@ -267,13 +295,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             />
           </TouchableOpacity>
         </View>
-        <Image
-          source={getImageSource(
-            item.yelpBusiness.name,
-            item.yelpBusiness.image_url
-          )}
-          style={styles.mostPopularImage}
-        />
+        <Image source={getImageSource(item)} style={styles.mostPopularImage} />
 
         <View
           style={{
@@ -282,11 +304,58 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             justifyContent: "space-between",
           }}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-            <View style={styles.businessNameContainer}>
-              <Text style={styles.mostPopularName} numberOfLines={1}>
-                {item.yelpBusiness.name}
-              </Text>
+          <View style={styles.businessInfoContainer}>
+            <Text style={styles.mostPopularName} numberOfLines={1}>
+              {item.yelpBusiness.name}
+            </Text>
+
+            <View style={styles.ratingAndTierContainer}>
+              <View style={styles.ratingsContainer}>
+                <TouchableOpacity
+                  style={styles.ratingItem}
+                  onPress={() =>
+                    openReviewModal(
+                      item.yelpBusiness.id,
+                      item.yelpBusiness.is_registered
+                    )
+                  }
+                >
+                  <Image
+                    source={require("../assets/newimage/google-icon.png")}
+                    style={styles.ratingLogo}
+                  />
+                  <FontAwesome name="star" size={16} color="#FFC107" />
+                  <Text style={styles.ratingText}>
+                    {item.yelpBusiness.google_rating
+                      ? item.yelpBusiness.google_rating.toFixed(1)
+                      : "0.0"}{" "}
+                    ({item.yelpBusiness.google_review_count || 0})
+                  </Text>
+                </TouchableOpacity>
+                {item.yelpBusiness.is_registered && (
+                  <TouchableOpacity
+                    style={styles.ratingItem}
+                    onPress={() =>
+                      openReviewModal(
+                        item.yelpBusiness.id,
+                        item.yelpBusiness.is_registered
+                      )
+                    }
+                  >
+                    <Image
+                      source={require("../assets/icon-new.png")}
+                      style={styles.myRatingLogo}
+                    />
+                    <FontAwesome name="star" size={16} color="#FFC107" />
+                    <Text style={styles.ratingText}>
+                      {item.yelpBusiness.rating
+                        ? item.yelpBusiness.rating.toFixed(1)
+                        : "0.0"}{" "}
+                      ({item.yelpBusiness.review_count || 0})
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
               {item.yelpBusiness.is_registered && (
                 <TierBadge score={item.yelpBusiness.ratingScore} />
               )}
@@ -391,6 +460,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
               />
               <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
                 {item.yelpBusinessLocation.city}
+                {","} {item.yelpBusinessLocation.state}
               </Text>
             </View>
 
@@ -444,13 +514,20 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             <TouchableOpacity
               style={styles.mapIconContainer}
               onPress={() => {
-                const address1 = item.yelpBusinessLocation?.address1
-                  ? item.yelpBusinessLocation.address1 + ","
-                  : "";
-                const city = item.yelpBusinessLocation?.city || "";
-                const mapQuery = encodeURIComponent(`${address1}${city}`);
+                const address = item.yelpBusinessLocation
+                  ? item.yelpBusinessLocation.displayAddress[0]
+                  : item.yelpBusiness.formattedAddress;
+                const mapQuery = address ? encodeURIComponent(address) : "";
+
                 if (mapQuery) {
-                  Linking.openURL(`http://maps.apple.com/?q=${mapQuery}`);
+                  const url =
+                    Platform.OS === "ios"
+                      ? `http://maps.apple.com/?q=${mapQuery}`
+                      : `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+
+                  Linking.openURL(url).catch((err) =>
+                    console.error("An error occurred", err)
+                  );
                 } else {
                   console.warn("No address available for directions");
                 }
@@ -548,6 +625,12 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
           </Text>
         </View>
       )}
+      <ReviewModal
+        isVisible={isReviewModalVisible}
+        onClose={() => setIsReviewModalVisible(false)}
+        businessId={selectedBusinessId}
+        isRegistered={selectedBusinessIsRegistered}
+      />
     </View>
   );
 };
@@ -575,7 +658,7 @@ const getStyles = (currentTheme) =>
       zIndex: 2,
       padding: 5,
       borderRadius: 20,
-      backgroundColor: "rgba(255, 255, 255, 0.5)",
+      backgroundColor: "rgba(255, 255, 255, 0.8)",
     },
     mostPopularImage: {
       width: "100%",
@@ -595,8 +678,7 @@ const getStyles = (currentTheme) =>
       fontSize: 16,
       fontWeight: "bold",
       color: theme3.fontColor,
-      flex: 1,
-      marginRight: 8,
+      marginTop: 8,
     },
     tierBadge: {
       flexDirection: "row",
@@ -738,6 +820,61 @@ const getStyles = (currentTheme) =>
       fontSize: 16,
       fontWeight: "bold",
       color: "#FFFFFF",
+    },
+
+    businessInfoContainer: {
+      marginBottom: 10,
+    },
+    mostPopularName: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: theme3.fontColor,
+      marginBottom: 5,
+    },
+    ratingAndTierContainer: {
+      width: "100%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    ratingsContainer: {
+      width: "20%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+    },
+    ratingItem: {
+      marginBottom: 5,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    ratingLogo: {
+      width: 16,
+      height: 16,
+      marginRight: 5,
+    },
+    myRatingLogo: {
+      width: 26,
+      height: 26,
+      marginRight: 5,
+    },
+    ratingText: {
+      fontSize: 14,
+      color: theme3.fontColor,
+      marginLeft: 3,
+    },
+    tierBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    tierBadgeText: {
+      color: "white",
+      fontSize: 12,
+      fontWeight: "bold",
+      marginLeft: 4,
     },
   });
 

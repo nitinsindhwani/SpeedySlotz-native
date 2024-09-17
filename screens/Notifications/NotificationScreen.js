@@ -19,8 +19,8 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import notificationIcon from "../../assets/newimage/Notification.png";
 import NotifStyle from "./NotifStyle";
 import { theme3 } from "../../assets/branding/themes";
-// import Header from "../GlobalComponents/Header";
-import Header from "../../components/Header";
+import Header from "../GlobalComponents/Header";
+// import Header from "../../components/Header";
 import NoDataFound from "../GlobalComponents/NoDataFound";
 import { format, parseISO } from "date-fns";
 
@@ -35,8 +35,6 @@ const NotificationScreen = ({ route }) => {
       .catch((error) => {
         console.log("Error fetching notifications:", error.message);
       });
-
-   
   }, []);
 
   const handleNotificationClick = async (notificationId) => {
@@ -117,8 +115,8 @@ const NotificationScreen = ({ route }) => {
 
   return (
     <View style={NotifStyle.Container}>
-      {/* <Header title={"Notifications"} /> */}
-      <Header user={user ? user : "--"} />
+      <Header title={"Notifications"} />
+      {/* <Header user={user ? user : "--"} /> */}
 
       {notifications.length < 1 ? (
         <NoDataFound />

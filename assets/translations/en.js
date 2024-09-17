@@ -257,6 +257,11 @@ export default {
     "Try increasing the search radius or choose a different category.",
   callError: "Cannot place the call, please try it from your phone keypad.",
 
+  locationNotAvailable: "Location not available",
+  distanceNotAvailable: "Distance not available",
+  websiteNotAvailable: "Website not available",
+  visitWebsite: "Visit Website",
+
   // CategoryList
   selectCategory: "Select Category",
 
@@ -664,6 +669,15 @@ export default {
   videoNotAdded: "Video could not be added.",
   completeSelections: "Please complete all selections",
 
-  noServiceTypesSelected: "No service types selected", 
+  noServiceTypesSelected: "No service types selected",
   findingBestMatch: "Finding Best Match",
+
+  sortBy: "Sort by",
+  save: "Save",
+  googleRating: "Google Rating",
+  speedySlotzRating: "SpeedySlotz Rating",
+  distance: "Distance",
+  priceLowToHigh: "Price: Low to High",
+  priceHighToLow: "Price: High to Low",
+  sort: "Sort",
 };

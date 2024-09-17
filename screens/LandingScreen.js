@@ -29,7 +29,7 @@ import NoDataFound from "./GlobalComponents/NoDataFound";
 import InLineLoader from "./GlobalComponents/InLineLoader";
 import LoadingModal from "./GlobalComponents/LoadingModal";
 import yelp from "../assets/images/yelp_logo.png";
-
+import SortModal from "../screens/Filters/SortModal";
 const LandingScreen = ({ route }) => {
   const navigation = useNavigation();
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -46,6 +46,8 @@ const LandingScreen = ({ route }) => {
   const [showDateModal, setShowDateModal] = useState(false);
   const [expandCat, setExpandCat] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [showSortModal, setShowSortModal] = useState(false);
+  const [selectedSort, setSelectedSort] = useState(null);
   const [locationData, setLocationData] = useState({
     coordinates: { latitude: undefined, longitude: undefined },
     zipcode: "",
@@ -81,6 +83,33 @@ const LandingScreen = ({ route }) => {
   useEffect(() => {
     applyFilters();
   }, [selectedFilters, allBusinesses]);
+
+  const handleOpenSortModal = () => {
+    setShowSortModal(true);
+  };
+
+  useEffect(() => {
+    if (selectedSort) {
+      // Apply sorting logic here
+      const sortedBusinesses = [...fetchedBusinesses].sort((a, b) => {
+        switch (selectedSort) {
+          case "googleRating":
+            return b.yelpBusiness.google_rating - a.yelpBusiness.google_rating;
+          case "speedySlotzRating":
+            return b.yelpBusiness.rating - a.yelpBusiness.rating;
+          case "distance":
+            return a.yelpBusiness.distance - b.yelpBusiness.distance;
+          case "priceLowToHigh":
+            return a.yelpBusiness.price_level - b.yelpBusiness.price_level;
+          case "priceHighToLow":
+            return b.yelpBusiness.price_level - a.yelpBusiness.price_level;
+          default:
+            return 0;
+        }
+      });
+      setFetchedBusinesses(sortedBusinesses);
+    }
+  }, [selectedSort]);
 
   const updateLocation = async () => {
     try {
@@ -120,6 +149,7 @@ const LandingScreen = ({ route }) => {
           selectedDate,
           radiusInMeters
         );
+
         setAllBusinesses(businesses);
         setFetchedBusinesses(businesses);
       } catch (error) {
@@ -281,20 +311,35 @@ const LandingScreen = ({ route }) => {
                   <MaterialCommunityIcons
                     name="filter-variant"
                     size={24}
-                    color={theme3.secondaryColor}
+                    color={theme3.primaryColor}
                   />
-                  <Text style={styles.filterText}>Filters</Text>
+                  <Text style={styles.filterText}>{translations.filters}</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={handleOpenSortModal}
+                  style={styles.filterButton}
+                >
+                  <MaterialCommunityIcons
+                    name="sort"
+                    size={24}
+                    color={theme3.primaryColor}
+                  />
+                  <Text style={styles.filterText}>{translations.sort}</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={() => setShowDateModal(true)}
                   style={styles.filterButton}
                 >
                   <MaterialCommunityIcons
-                    name="filter-variant"
+                    name="calendar-clock"
                     size={24}
-                    color={theme3.secondaryColor}
+                    color={theme3.primaryColor}
                   />
-                  <Text style={styles.filterText}>Date Filter</Text>
+                  <Text style={styles.filterText}>
+                    {translations.dateFilter}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </>
@@ -326,8 +371,13 @@ const LandingScreen = ({ route }) => {
         HideModal={() => setShowDateModal(false)}
         onDateSelected={handleDateSelect}
       />
+      <SortModal
+        show={showSortModal}
+        onHideModal={() => setShowSortModal(false)}
+        selectedSort={selectedSort}
+        setSelectedSort={setSelectedSort}
+      />
       <LoadingModal show={isLoading} />
-      <Image source={yelp} style={styles.yelpLogo} />
     </View>
   );
 };
@@ -357,7 +407,7 @@ const styles = StyleSheet.create({
   filterText: {
     fontSize: 13,
     fontWeight: "bold",
-    color: theme3.secondaryColor,
+    color: theme3.primaryColor,
     marginLeft: 5,
   },
   expandButton: {

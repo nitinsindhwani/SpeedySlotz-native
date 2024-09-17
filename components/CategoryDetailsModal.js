@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Modal,
   View,
@@ -7,15 +7,63 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
 import { LanguageContext } from "../api/LanguageContext";
 import Header from "../screens/GlobalComponents/Header";
 
+const { width } = Dimensions.get("window");
+
 const CategoryDetailsModal = ({ visible, onClose, category }) => {
   const { translations } = useContext(LanguageContext);
+  const [activeIndex, setActiveIndex] = useState(0);
 
+  const renderImageCarousel = () => {
+    if (!category || !category.imageUrls || category.imageUrls.length === 0) {
+      return null;
+    }
+
+    return (
+      <View style={styles.carouselOuterContainer}>
+        <View style={styles.carouselContainer}>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={({ nativeEvent }) => {
+              const slide = Math.ceil(nativeEvent.contentOffset.x / width);
+              if (slide !== activeIndex) {
+                setActiveIndex(slide);
+              }
+            }}
+            scrollEventThrottle={200}
+          >
+            {category.imageUrls.map((imageUrl, index) => (
+              <Image
+                key={index}
+                source={{ uri: imageUrl }}
+                style={styles.carouselImage}
+              />
+            ))}
+          </ScrollView>
+          <View style={styles.pagination}>
+            {category.imageUrls.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.paginationDot,
+                  index === activeIndex ? styles.paginationDotActive : null,
+                ]}
+              />
+            ))}
+          </View>
+        </View>
+      </View>
+    );
+  };
   const renderBreadcrumbs = () => {
     if (!category) return null;
     const { categories = [], subcategories = [], serviceTypes = [] } = category;
@@ -96,6 +144,7 @@ const CategoryDetailsModal = ({ visible, onClose, category }) => {
           onPress={onClose}
         />
         <ScrollView style={styles.scrollView}>
+          {renderImageCarousel()}
           <View style={styles.contentContainer}>
             {renderBreadcrumbs()}
             {renderDetailSection(
@@ -130,6 +179,39 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: 20,
   },
+  carouselOuterContainer: {
+    padding: 10,
+    backgroundColor: "#fff",
+  },
+  carouselContainer: {
+    height: 220,
+    width: "100%",
+    borderRadius: 10,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: theme3.primaryColor,
+  },
+  carouselImage: {
+    width: width - 20,
+    height: 220,
+    resizeMode: "cover",
+  },
+  pagination: {
+    flexDirection: "row",
+    position: "absolute",
+    bottom: 10,
+    alignSelf: "center",
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
+  },
+  paginationDotActive: {
+    backgroundColor: theme3.primaryColor,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
@@ -154,8 +236,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     padding: 16,
     shadowColor: "rgba(0,0,0,0.1)",
-    shadowOpacity: 1,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 3,
   },
   detailTitleContainer: {
     flexDirection: "row",
@@ -176,6 +260,7 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 14,
     color: theme3.fontColor,
+    lineHeight: 20,
   },
   priceSection: {
     flexDirection: "row",
@@ -195,8 +280,10 @@ const styles = StyleSheet.create({
     marginRight: 8,
     alignItems: "center",
     shadowColor: "rgba(0,0,0,0.1)",
-    shadowOpacity: 1,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 3,
   },
   timeItem: {
     flex: 1,
@@ -206,8 +293,10 @@ const styles = StyleSheet.create({
     marginRight: 8,
     alignItems: "center",
     shadowColor: "rgba(0,0,0,0.1)",
-    shadowOpacity: 1,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 3,
   },
   priceLabel: {
     fontSize: 14,
@@ -216,7 +305,7 @@ const styles = StyleSheet.create({
     color: theme3.fontColor,
   },
   priceValue: {
-    fontSize: 16,
+    fontSize: 18,
     color: theme3.primaryColor,
     fontWeight: "bold",
     marginTop: 4,
@@ -228,7 +317,7 @@ const styles = StyleSheet.create({
     color: theme3.fontColor,
   },
   timeValue: {
-    fontSize: 16,
+    fontSize: 18,
     color: theme3.primaryColor,
     fontWeight: "bold",
     marginTop: 4,

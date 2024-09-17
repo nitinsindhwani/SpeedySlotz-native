@@ -11,15 +11,19 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "scheme": "speedyslotz",
     "ios": {
       "supportsTablet": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
-      "buildNumber": "25",
+      "buildNumber": "27",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -29,8 +33,10 @@
       },
       "googleServicesFile": "./google-services.json",
       "package": "com.speedyzslotznitinapp.app",
-      "versionCode": 32,
-      "permissions": ["NOTIFICATIONS"]
+      "versionCode": 34,
+      "permissions": [
+        "NOTIFICATIONS"
+      ]
     },
     "plugins": [
       "expo-secure-store",

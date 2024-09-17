@@ -27,6 +27,7 @@ export default function RemarkModal({
   setModalVisible,
   slotId,
   userId,
+  username,
   businessId,
   onReviewSubmit,
 }) {
@@ -108,6 +109,7 @@ export default function RemarkModal({
       const reviewData = {
         key: { slotId, reviewId: uuid.v4() },
         userId,
+        username,
         businessId,
         positiveBadges: positiveRatedBadges,
         negativeBadges: negativeRatedBadges,

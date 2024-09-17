@@ -197,7 +197,7 @@ const CategoryList = ({
           >
             <Text
               style={{
-                color: theme3.secondaryColor,
+                color: theme3.fontColor,
                 fontSize: 14,
                 fontWeight: "bold",
               }}
@@ -210,14 +210,14 @@ const CategoryList = ({
               <FontAwesome
                 name="exchange"
                 size={14}
-                color={theme3.secondaryColor}
+                color={theme3.fontColor}
                 style={{ paddingLeft: 5 }}
               />
             ) : (
               <MaterialIcons
                 name="arrow-forward-ios"
                 size={14}
-                color={theme3.secondaryColor}
+                color={theme3.fontColor}
               />
             )}
           </TouchableOpacity>
@@ -232,7 +232,7 @@ const CategoryList = ({
             >
               <Text
                 style={{
-                  color: theme3.secondaryColor,
+                  color: theme3.fontColor,
                   fontSize: 14,
                   fontWeight: "bold",
                 }}
@@ -242,7 +242,7 @@ const CategoryList = ({
               <MaterialIcons
                 name="arrow-forward-ios"
                 size={14}
-                color={theme3.secondaryColor}
+                color={theme3.fontColor}
               />
             </TouchableOpacity>
           )}
@@ -253,7 +253,7 @@ const CategoryList = ({
             >
               <Text
                 style={{
-                  color: theme3.secondaryColor,
+                  color: theme3.fontColor,
                   fontSize: 14,
                   fontWeight: "bold",
                 }}
@@ -299,7 +299,7 @@ const CategoryList = ({
                     size={30}
                     color={
                       selectedSubcategory?.name === subcategory.name
-                        ? theme3.secondaryColor
+                        ? theme3.fontColor
                         : theme3.primaryColor
                     }
                   />
@@ -342,7 +342,7 @@ const CategoryList = ({
                     size={30}
                     color={
                       selectedServiceTypeName?.id === serviceType.id
-                        ? theme3.secondaryColor
+                        ? theme3.fontColor
                         : theme3.primaryColor
                     }
                   />
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   selectedSubcategoryText: {
-    color: theme3.secondaryColor,
+    color: theme3.fontColor,
     fontWeight: "700",
   },
   services: {
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   selectedServiceNameText: {
-    color: theme3.secondaryColor,
+    color: theme3.fontColor,
     fontWeight: "700",
   },
 });

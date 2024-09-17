@@ -76,7 +76,7 @@ const SearchComponent = ({
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Search your Business name"
+          placeholder="Search your city"
           value={searchText}
           onChangeText={handleSearchChange}
         />

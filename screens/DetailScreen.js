@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   View,
   TouchableOpacity,
@@ -44,6 +44,7 @@ import { LanguageContext } from "../api/LanguageContext";
 import ErrorAlert from "./GlobalComponents/ErrorAlert";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as FileSystem from "expo-file-system";
+import ReviewModal from "../screens/Modals/ReviewModal";
 const defaultImageUrl = require("../assets/images/defaultImage.png");
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
@@ -75,7 +76,10 @@ function DetailScreen({ route }) {
   const [priorityStatus, setPriorityStatus] = useState(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [showMore, setShowMore] = useState(false); // State for toggling description
-
+  const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
+  const [selectedBusinessId, setSelectedBusinessId] = useState(null);
+  const [selectedBusinessIsRegistered, setSelectedBusinessIsRegistered] =
+    useState(null);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const MAX_NUMBER_OF_IMAGES = 5;
@@ -85,6 +89,56 @@ function DetailScreen({ route }) {
   const MAX_NUMBER_OF_PROFILES = 5; // You can adjust this number as needed
   const IMAGE_TYPES = ["image/jpeg", "image/png"];
   const VIDEO_TYPES = ["video/mp4"];
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const scrollViewRef = useRef(null);
+
+  const renderImageCarousel = () => {
+    const imageUrls = prepareImageUrls();
+
+    if (imageUrls.length === 0) {
+      return null;
+    }
+
+    return (
+      <View style={styles.carouselOuterContainer}>
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={({ nativeEvent }) => {
+            const slide = Math.round(nativeEvent.contentOffset.x / WindowWidth);
+            if (slide !== activeImageIndex) {
+              setActiveImageIndex(slide);
+            }
+          }}
+          scrollEventThrottle={200}
+        >
+          {imageUrls.map((item, index) => (
+            <Image key={index} source={item} style={styles.carouselImage} />
+          ))}
+        </ScrollView>
+        <View style={styles.pagination}>
+          {imageUrls.map((_, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.paginationDot,
+                index === activeImageIndex ? styles.paginationDotActive : null,
+              ]}
+              onPress={() => {
+                scrollViewRef.current.scrollTo({
+                  x: index * WindowWidth,
+                  animated: true,
+                });
+                setActiveImageIndex(index);
+              }}
+            />
+          ))}
+        </View>
+      </View>
+    );
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -100,6 +154,11 @@ function DetailScreen({ route }) {
     setIsDealModalVisible(true);
   };
 
+  const openReviewModal = (businessId, isRegistered) => {
+    setSelectedBusinessId(businessId);
+    setSelectedBusinessIsRegistered(isRegistered);
+    setIsReviewModalVisible(true);
+  };
   const FileSizeNote = ({ fileType }) => (
     <View style={styles.noteBubble}>
       <Text style={styles.noteText}>
@@ -119,26 +178,43 @@ function DetailScreen({ route }) {
   const handlePress = async (item) => {
     const time = new Date().getTime();
     const delta = time - lastPress;
-
     const doublePressDelay = 300;
+
+
+
+    // Find the matching category
     const matchedCategory = business.yelpBusinessCategory.find((category) =>
       category.serviceTypes.includes(item)
     );
+
+
     if (delta < doublePressDelay) {
+     
       if (matchedCategory) {
         setModalCategory(matchedCategory);
         setCategoryModalVisible(true);
+       
         await updateSelectedCategoryId(matchedCategory.category_id);
+       
+      } else {
+        console.error("No matched category found on double-click.");
       }
     } else {
+   
       setSelectedServiceType(item);
-      await updateSelectedCategoryId(matchedCategory.category_id);
+      if (matchedCategory) {
+        await updateSelectedCategoryId(matchedCategory.category_id);
+       
+      } else {
+        console.error("No matched category found on single click.");
+      }
     }
     lastPress = time;
   };
 
   const updateSelectedCategoryId = async (categoryId) => {
     setSelectedCategoryId(categoryId);
+  
   };
 
   const renderCarouselItem = ({ item }) => {
@@ -295,7 +371,31 @@ function DetailScreen({ route }) {
       </View>
     );
   };
+  const getTierLevel = (score) => {
+    if (score < 100)
+      return { name: "Trailblazer", color: "#B8860B", icon: "trail-sign" };
+    if (score >= 100 && score <= 249)
+      return { name: "Rookie", color: "#32CD32", icon: "fitness" };
+    if (score >= 250 && score <= 499)
+      return { name: "Ace", color: "#1E90FF", icon: "diamond" };
+    if (score >= 500 && score <= 749)
+      return { name: "Pro", color: "#9370DB", icon: "medal" };
+    if (score >= 750 && score <= 999)
+      return { name: "Elite", color: "#FF4500", icon: "star" };
+    if (score >= 1000)
+      return { name: "Champion", color: "#FFD700", icon: "trophy" };
+    return { name: "Unranked", color: "#808080", icon: "shield" };
+  };
 
+  const TierBadge = ({ score }) => {
+    const tier = getTierLevel(score);
+    return (
+      <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
+        <Ionicons name={tier.icon} size={14} color="white" />
+        <Text style={styles.tierBadgeText}>{tier.name}</Text>
+      </View>
+    );
+  };
   const removeMedia = (mediaType, uri) => {
     if (mediaType === "image") {
       setSelectedImages(selectedImages.filter((imageUri) => imageUri !== uri));
@@ -530,21 +630,7 @@ function DetailScreen({ route }) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.mostPopularItem}>
-          <ScrollView
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.carouselContainer}
-          >
-            {imageUrls.length > 0 ? (
-              imageUrls.map((item, index) => (
-                <View key={index} style={styles.carouselItem}>
-                  <Image source={item} style={styles.carouselImage} />
-                </View>
-              ))
-            ) : (
-              <Image source={defaultImageUrl} style={styles.carouselImage} />
-            )}
-          </ScrollView>
+          {renderImageCarousel()}
 
           <View
             style={{
@@ -553,11 +639,62 @@ function DetailScreen({ route }) {
               justifyContent: "space-between",
             }}
           >
-            <Text style={styles.mostPopularName}>
-              {business.yelpBusiness.name}
-            </Text>
-          </View>
+            <View style={styles.businessInfoContainer}>
+              <Text style={styles.mostPopularName}>
+                {business.yelpBusiness.name}
+              </Text>
+              <View style={styles.ratingAndTierContainer}>
+                <View style={styles.ratingsContainer}>
+                  <TouchableOpacity
+                    style={styles.ratingItem}
+                    onPress={() =>
+                      openReviewModal(
+                        business.yelpBusiness.id,
+                        business.yelpBusiness.is_registered
+                      )
+                    }
+                  >
+                    <Image
+                      source={require("../assets/newimage/google-icon.png")}
+                      style={styles.ratingLogo}
+                    />
+                    <FontAwesome name="star" size={16} color="#FFC107" />
+                    <Text style={styles.ratingText}>
+                      {business.yelpBusiness.google_rating
+                        ? business.yelpBusiness.google_rating.toFixed(1)
+                        : "0.0"}{" "}
+                      ({business.yelpBusiness.google_review_count || 0})
+                    </Text>
+                  </TouchableOpacity>
+                  {business.yelpBusiness.is_registered && (
+                    <TouchableOpacity
+                      style={styles.ratingItem}
+                      onPress={() =>
+                        openReviewModal(
+                          business.yelpBusiness.id,
+                          business.yelpBusiness.is_registered
+                        )
+                      }
+                    >
+                      <Image
+                        source={require("../assets/icon-new.png")}
+                        style={styles.myRatingLogo}
+                      />
+                      <FontAwesome name="star" size={16} color="#FFC107" />
+                      <Text style={styles.ratingText}>
+                        {business.yelpBusiness.rating
+                          ? business.yelpBusiness.rating.toFixed(1)
+                          : "0.0"}{" "}
+                        ({business.yelpBusiness.review_count || 0})
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
 
+                <TierBadge score={business.yelpBusiness.ratingScore} />
+              </View>
+            </View>
+          </View>
           {showMore ? (
             <Text style={styles.DescText}>
               {business.yelpBusiness.details}
@@ -973,6 +1110,12 @@ function DetailScreen({ route }) {
         onBack={setShowSuccess}
         title={translations.bookedSuccessfully}
       />
+      <ReviewModal
+        isVisible={isReviewModalVisible}
+        onClose={() => setIsReviewModalVisible(false)}
+        businessId={selectedBusinessId}
+        isRegistered={selectedBusinessIsRegistered}
+      />
       <CategoryDetailsModal
         visible={categoryModalVisible}
         onClose={() => setCategoryModalVisible(false)}
@@ -1343,6 +1486,77 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.5,
+  },
+  ratingAndTierContainer: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  ratingsContainer: {
+    width: "20%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  ratingItem: {
+    marginBottom: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  ratingLogo: {
+    width: 16,
+    height: 16,
+    marginRight: 5,
+  },
+  myRatingLogo: {
+    width: 26,
+    height: 26,
+    marginRight: 5,
+  },
+  ratingText: {
+    fontSize: 14,
+    color: theme3.fontColor,
+    marginLeft: 3,
+  },
+  tierBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  tierBadgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginLeft: 4,
+  },
+  carouselOuterContainer: {
+    width: WindowWidth,
+    height: 200,
+    marginBottom: 10,
+  },
+  carouselImage: {
+    width: WindowWidth,
+    height: 200,
+    resizeMode: "cover",
+  },
+  pagination: {
+    flexDirection: "row",
+    position: "absolute",
+    bottom: 10,
+    alignSelf: "center",
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
+  },
+  paginationDotActive: {
+    backgroundColor: theme3.primaryColor,
   },
 });
 

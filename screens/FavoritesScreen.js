@@ -7,7 +7,6 @@ import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import { LanguageContext } from "../api/LanguageContext";
 
-
 const FavoritesScreen = ({ route }) => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();

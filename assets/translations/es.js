@@ -687,4 +687,13 @@ export default {
 
   noServiceTypesSelected: "No se seleccionaron tipos de servicio",
   findingBestMatch: "Encontrando Mejor Opción", // Spanish
+
+  sortBy: "Ordenar por",
+  save: "Guardar",
+  googleRating: "Calificación de Google",
+  speedySlotzRating: "Calificación de SpeedySlotz",
+  distance: "Distancia",
+  priceLowToHigh: "Precio: de menor a mayor",
+  priceHighToLow: "Precio: de mayor a menor",
+  sort: "Ordenar",
 };

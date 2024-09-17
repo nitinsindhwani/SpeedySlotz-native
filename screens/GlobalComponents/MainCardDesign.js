@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Image,
   FlatList,
+  Dimensions,
   Linking,
 } from "react-native";
 import { Ionicons, MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -26,6 +27,10 @@ import { getBadgeDetails } from "../../components/BadgeInfo";
 import Styles from "../../assets/branding/GlobalStyles";
 import MapIcon from "react-native-vector-icons/FontAwesome5";
 import uuid from "react-native-uuid";
+import ReviewModal from "../Modals/ReviewModal";
+
+const WindowWidth = Dimensions.get("window").width;
+const WindowHeight = Dimensions.get("screen").height;
 
 function MainCardDesign({ business }) {
   const navigation = useNavigation();
@@ -39,6 +44,10 @@ function MainCardDesign({ business }) {
   const [selectedDeal, setSelectedDeal] = useState([]);
   const [isDealModalVisible, setIsDealModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [isReviewModalVisible, setIsReviewModalVisible] = useState(false);
+  const [selectedBusinessId, setSelectedBusinessId] = useState(null);
+  const [selectedBusinessIsRegistered, setSelectedBusinessIsRegistered] =
+    useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -48,7 +57,11 @@ function MainCardDesign({ business }) {
 
     fetchUserData();
   }, []);
-
+  const openReviewModal = (businessId, isRegistered) => {
+    setSelectedBusinessId(businessId);
+    setSelectedBusinessIsRegistered(isRegistered);
+    setIsReviewModalVisible(true);
+  };
   const toggleFavorite = () => {
     if (isFav) {
       removeFavorite(business.yelpBusiness.id, setIsFav);
@@ -56,7 +69,31 @@ function MainCardDesign({ business }) {
       addToFav(business.yelpBusiness.id, setIsFav);
     }
   };
+  const getTierLevel = (score) => {
+    if (score < 100)
+      return { name: "Trailblazer", color: "#B8860B", icon: "trail-sign" };
+    if (score >= 100 && score <= 249)
+      return { name: "Rookie", color: "#32CD32", icon: "fitness" };
+    if (score >= 250 && score <= 499)
+      return { name: "Ace", color: "#1E90FF", icon: "diamond" };
+    if (score >= 500 && score <= 749)
+      return { name: "Pro", color: "#9370DB", icon: "medal" };
+    if (score >= 750 && score <= 999)
+      return { name: "Elite", color: "#FF4500", icon: "star" };
+    if (score >= 1000)
+      return { name: "Champion", color: "#FFD700", icon: "trophy" };
+    return { name: "Unranked", color: "#808080", icon: "shield" };
+  };
 
+  const TierBadge = ({ score }) => {
+    const tier = getTierLevel(score);
+    return (
+      <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
+        <Ionicons name={tier.icon} size={14} color="white" />
+        <Text style={styles.tierBadgeText}>{tier.name}</Text>
+      </View>
+    );
+  };
   const openDealModal = (dealData) => {
     const dealsArray = Array.isArray(dealData) ? dealData : [dealData];
     setSelectedDeal(dealsArray);
@@ -132,21 +169,82 @@ function MainCardDesign({ business }) {
         style={styles.mostPopularImage}
       />
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={[styles.mostPopularName, { width: "70%" }]}>
-          {business.yelpBusiness.name}
-        </Text>
-
-        {business?.slots?.length > 0 && (
-          <View style={Styles.OneRow}>
-            <View style={{ marginLeft: -20 }}>
-              <ChatAnim />
+      <View
+        style={{
+          width: "100%",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <View style={styles.businessInfoContainer}>
+          <Text style={styles.mostPopularName} numberOfLines={2}>
+            {business.yelpBusiness.name}
+          </Text>
+          <View style={styles.ratingAndTierContainer}>
+            <View style={styles.ratingsContainer}>
+              <TouchableOpacity
+                style={styles.ratingItem}
+                onPress={() =>
+                  openReviewModal(
+                    business.yelpBusiness.id,
+                    business.yelpBusiness.is_registered
+                  )
+                }
+              >
+                <Image
+                  source={require("../../assets/newimage/google-icon.png")}
+                  style={styles.ratingLogo}
+                />
+                <FontAwesome name="star" size={16} color="#FFC107" />
+                <Text style={styles.ratingText}>
+                  {business.yelpBusiness.google_rating
+                    ? business.yelpBusiness.google_rating.toFixed(1)
+                    : "0.0"}{" "}
+                  ({business.yelpBusiness.google_review_count || 0})
+                </Text>
+              </TouchableOpacity>
+              {business.yelpBusiness.is_registered && (
+                <TouchableOpacity
+                  style={styles.ratingItem}
+                  onPress={() =>
+                    openReviewModal(
+                      business.yelpBusiness.id,
+                      business.yelpBusiness.is_registered
+                    )
+                  }
+                >
+                  <Image
+                    source={require("../../assets/icon-new.png")}
+                    style={styles.myRatingLogo}
+                  />
+                  <FontAwesome name="star" size={16} color="#FFC107" />
+                  <Text style={styles.ratingText}>
+                    {business.yelpBusiness.rating
+                      ? business.yelpBusiness.rating.toFixed(1)
+                      : "0.0"}{" "}
+                    ({business.yelpBusiness.review_count || 0})
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
-            <Text style={[styles.DescText, { marginLeft: 0 }]}>
-              {translations.slotsAvailable}
-            </Text>
           </View>
-        )}
+        </View>
+
+        <View style={styles.tierAndSlotsContainer}>
+          {business?.slots?.length > 0 && (
+            <View style={Styles.OneRow}>
+              <View style={{ marginLeft: -6 }}>
+                <ChatAnim />
+              </View>
+              <Text style={[styles.DescText, { marginLeft: 0 }]}>
+                {translations.slotsAvailable}
+              </Text>
+            </View>
+          )}
+          {business.yelpBusiness.is_registered && (
+            <TierBadge score={business.yelpBusiness.ratingScore} />
+          )}
+        </View>
       </View>
 
       {business.yelpBusiness.is_registered && (
@@ -332,7 +430,12 @@ function MainCardDesign({ business }) {
           </TouchableOpacity>
         )}
       </View>
-
+      <ReviewModal
+        isVisible={isReviewModalVisible}
+        onClose={() => setIsReviewModalVisible(false)}
+        businessId={selectedBusinessId}
+        isRegistered={selectedBusinessIsRegistered}
+      />
       <DealModal
         isVisible={isDealModalVisible}
         deals={selectedDeal}
@@ -455,6 +558,90 @@ const styles = StyleSheet.create({
     zIndex: 2,
     padding: 5,
     borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+  },
+  businessInfoContainer: {
+    marginBottom: 10,
+  },
+  mostPopularName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: theme3.fontColor,
+    marginBottom: 5,
+  },
+  ratingAndTierContainer: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginRight: "5px",
+  },
+  ratingsContainer: {
+    width: "40%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  tierAndSlotsContainer: {
+    alignItems: "flex-end",
+  },
+  ratingItem: {
+    marginBottom: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  ratingLogo: {
+    width: 16,
+    height: 16,
+    marginRight: 5,
+  },
+  myRatingLogo: {
+    width: 26,
+    height: 26,
+    marginRight: 5,
+  },
+  ratingText: {
+    fontSize: 14,
+    color: theme3.fontColor,
+    marginLeft: 3,
+  },
+  tierBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  tierBadgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginLeft: 4,
+  },
+  carouselOuterContainer: {
+    width: WindowWidth,
+    height: 200,
+    marginBottom: 10,
+  },
+  carouselImage: {
+    width: WindowWidth,
+    height: 200,
+    resizeMode: "cover",
+  },
+  pagination: {
+    flexDirection: "row",
+    position: "absolute",
+    bottom: 10,
+    alignSelf: "center",
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.92)",
+  },
+  paginationDotActive: {
+    backgroundColor: theme3.primaryColor,
   },
 });

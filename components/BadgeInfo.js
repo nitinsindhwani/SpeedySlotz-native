@@ -92,6 +92,11 @@ const badgesInfo = {
     descriptionKey: "emergencyServiceDescription",
     icon: "warning-outline",
   },
+  LOCL: {
+    nameKey: "localBusiness",
+    descriptionKey: "localBusinessDescription",
+    icon: "location-outline",
+  },
 };
 
 // Function to get badge details by code with translations
