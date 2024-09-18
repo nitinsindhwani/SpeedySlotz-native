@@ -21,10 +21,11 @@ import Header from "../GlobalComponents/Header";
 
 const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
   const [activeTab, setActiveTab] = useState("google");
-  const [googleReviews, setGoogleReviews] = useState([]);
-  const [appReviews, setAppReviews] = useState([]);
+  const [allReviews, setAllReviews] = useState({
+    google: { reviews: [], overallRating: 0, totalReviewCount: 0 },
+    app: { reviews: [], overallRating: 0, totalReviewCount: 0 },
+  });
   const [loading, setLoading] = useState(true);
-  const [averageRating, setAverageRating] = useState(0);
   const [error, setError] = useState(null);
   const [expandedReviews, setExpandedReviews] = useState({});
 
@@ -45,27 +46,24 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
         }
       );
 
-      // Separate the reviews based on whether they are Google or App reviews
-      const allReviews = response.data?.payload || [];
+      // Extract both Google and App reviews from the response
+      const [googleReviewsResponse, appReviewsResponse] =
+        response.data?.payload || [];
 
-      // Assuming that Google reviews have no `userId`, and App reviews have `userId` set
-      const googleReviews = allReviews.filter((review) => !review.userId);
-      const appReviews = allReviews.filter(
-        (review) => review.userId === "368880cc-0b52-4a9e-b88f-030262efad58"
-      ); // Example App user ID or adjust as needed
+      // Set the reviews for Google and App
+      setAllReviews({
+        google: {
+          reviews: googleReviewsResponse.reviews || [],
+          overallRating: googleReviewsResponse.overallRating || 0,
+          totalReviewCount: googleReviewsResponse.totalReviewCount || 0,
+        },
+        app: {
+          reviews: appReviewsResponse.reviews || [],
+          overallRating: appReviewsResponse.overallRating || 0,
+          totalReviewCount: appReviewsResponse.totalReviewCount || 0,
+        },
+      });
 
-      setGoogleReviews(googleReviews);
-      setAppReviews(appReviews);
-
-      // Calculate average rating, handling empty review lists
-      const combinedReviews = [...googleReviews, ...appReviews];
-      const avgRating =
-        combinedReviews.length > 0
-          ? combinedReviews.reduce((sum, review) => sum + review.rating, 0) /
-            combinedReviews.length
-          : 0;
-
-      setAverageRating(avgRating);
       setLoading(false);
       setError(null);
     } catch (error) {
@@ -73,6 +71,19 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
       setLoading(false);
       setError("Failed to load reviews. Please try again.");
     }
+  };
+
+  const calculateCombinedRating = () => {
+    const totalReviews =
+      allReviews.google.totalReviewCount + allReviews.app.totalReviewCount;
+    const totalRatingSum =
+      allReviews.google.overallRating * allReviews.google.totalReviewCount +
+      allReviews.app.overallRating * allReviews.app.totalReviewCount;
+
+    return {
+      overallRating: totalReviews > 0 ? totalRatingSum / totalReviews : 0,
+      totalReviewCount: totalReviews,
+    };
   };
 
   const toggleReviewExpansion = (reviewId) => {
@@ -129,21 +140,30 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
     );
   };
 
-  const currentReviews = activeTab === "google" ? googleReviews : appReviews;
+  const combinedRating = calculateCombinedRating();
+  const currentReviews =
+    activeTab === "google" ? allReviews.google.reviews : allReviews.app.reviews;
+  const currentRating =
+    activeTab === "google"
+      ? allReviews.google.overallRating
+      : allReviews.app.overallRating;
   const reviewCount = currentReviews.length;
 
   const ListHeaderComponent = () => (
     <>
-      <View style={styles.averageRatingContainer}>
-        <Text style={styles.averageRatingNumber}>
-          {averageRating.toFixed(1)}
+      {/* Combined Rating and Review Count */}
+      <View style={styles.combinedRatingContainer}>
+        <Text style={styles.combinedRatingNumber}>
+          {combinedRating.overallRating.toFixed(1)}
         </Text>
         <StarRating
-          rating={averageRating}
+          rating={combinedRating.overallRating}
           size={24}
           color={theme3.secondaryColor}
         />
-        <Text style={styles.reviewCount}>({reviewCount} reviews)</Text>
+        <Text style={styles.combinedReviewCount}>
+          ({combinedRating.totalReviewCount} total reviews)
+        </Text>
       </View>
 
       <View style={styles.tabContainer}>
@@ -161,10 +181,10 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
               activeTab === "google" && styles.activeTabText,
             ]}
           >
-            Google Reviews ({googleReviews.length})
+            Google ({allReviews.google.totalReviewCount})
           </Text>
         </TouchableOpacity>
-        {isRegistered && appReviews.length > 0 && (
+        {isRegistered && allReviews.app.totalReviewCount > 0 && (
           <TouchableOpacity
             style={[styles.tab, activeTab === "app" && styles.activeTab]}
             onPress={() => setActiveTab("app")}
@@ -179,7 +199,7 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
                 activeTab === "app" && styles.activeTabText,
               ]}
             >
-              SpeedySlotz Reviews ({appReviews.length})
+              SpeedySlotz ({allReviews.app.totalReviewCount})
             </Text>
           </TouchableOpacity>
         )}
@@ -198,7 +218,7 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
-        <Header title="Customer Feedback" typeModal={true} onPress={onClose} />
+        <Header title="Customer Reviews" typeModal={true} onPress={onClose} />
         {loading ? (
           <ActivityIndicator size="large" color={theme3.primaryColor} />
         ) : error ? (
@@ -225,7 +245,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f6f6f6",
   },
-  averageRatingContainer: {
+  combinedRatingContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -233,8 +253,28 @@ const styles = StyleSheet.create({
     backgroundColor: theme3.primaryColor,
     padding: 20,
     borderRadius: 15,
-    marginHorizontal: 20,
     marginTop: 20,
+  },
+  combinedRatingNumber: {
+    fontSize: 48,
+    fontWeight: "bold",
+    color: "white",
+    marginRight: 15,
+  },
+  combinedReviewCount: {
+    fontSize: 16,
+    color: "white",
+    marginLeft: 10,
+  },
+  averageRatingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+    backgroundColor: theme3.secondaryColor,
+    padding: 20,
+    borderRadius: 15,
+    marginHorizontal: 20,
   },
   averageRatingNumber: {
     fontSize: 48,
@@ -251,7 +291,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
   },
   tab: {
     flexDirection: "row",

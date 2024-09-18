@@ -10,6 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LanguageContext } from "../api/LanguageContext";
+import { FontAwesome } from "@expo/vector-icons";
 import { PushNotification } from "../api/PushNotification";
 import * as SecureStore from "expo-secure-store";
 import {
@@ -30,6 +31,8 @@ import InLineLoader from "./GlobalComponents/InLineLoader";
 import LoadingModal from "./GlobalComponents/LoadingModal";
 import yelp from "../assets/images/yelp_logo.png";
 import SortModal from "../screens/Filters/SortModal";
+import Svg, { Path } from "react-native-svg";
+
 const LandingScreen = ({ route }) => {
   const navigation = useNavigation();
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -348,10 +351,10 @@ const LandingScreen = ({ route }) => {
             style={styles.expandButton}
             onPress={() => setExpandCat(!expandCat)}
           >
-            <Entypo
-              name={expandCat ? "chevron-thin-up" : "chevron-thin-down"}
-              size={17}
-              color={theme3.primaryColor}
+            <FontAwesome
+              name={expandCat ? "caret-up" : "caret-down"}
+              size={24}
+              color={theme3.fontColor}
             />
           </TouchableOpacity>
         </View>

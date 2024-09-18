@@ -10,6 +10,7 @@ import {
   Dimensions,
   Linking,
   Platform,
+  Share,
 } from "react-native";
 import { AirbnbRating } from "react-native-ratings";
 import MapIcon from "react-native-vector-icons/FontAwesome5";
@@ -19,7 +20,7 @@ import { ThemeContext } from "../components/ThemeContext";
 import { getStoredToken, getStoredUser } from "../api/ApiCall";
 import { getBadgeDetails } from "../components/BadgeInfo";
 import { LanguageContext } from "../api/LanguageContext";
-import moment from "moment";
+import ShareIcon from "../screens/GlobalComponents/ShareIcon";
 import uuid from "react-native-uuid";
 import { FontAwesome, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import SoftLoadImage from "../components/SoftLoadImage";
@@ -286,16 +287,23 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
 
     return (
       <View key={index} style={styles.mostPopularItem}>
-        <View style={styles.favoriteIconContainer}>
-          <TouchableOpacity onPress={() => handleFav(item.yelpBusiness.id)}>
-            <HeartIcon
-              name={isFav ? "heart" : "hearto"}
-              size={25}
-              color={isFav ? "#FF0000" : "#FFA500"}
-            />
-          </TouchableOpacity>
+        <View style={styles.imageContainer}>
+          <Image
+            source={getImageSource(item)}
+            style={styles.mostPopularImage}
+          />
+          <View style={styles.favoriteIconContainer}>
+            <TouchableOpacity onPress={() => handleFav(item.yelpBusiness.id)}>
+              <HeartIcon
+                name={isFav ? "heart" : "hearto"}
+                size={25}
+                color={isFav ? "#FF0000" : "#FFA500"}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <ShareIcon business={item} />
         </View>
-        <Image source={getImageSource(item)} style={styles.mostPopularImage} />
 
         <View
           style={{
@@ -651,22 +659,27 @@ const getStyles = (currentTheme) =>
       borderRadius: 10,
       backgroundColor: theme3.GlobalBg,
     },
+    imageContainer: {
+      position: "relative",
+      width: "100%",
+      marginBottom: 10,
+    },
+    mostPopularImage: {
+      width: "100%",
+      height: 200,
+      borderRadius: 10,
+      resizeMode: "cover",
+    },
     favoriteIconContainer: {
       position: "absolute",
-      top: 20,
-      right: 20,
+      top: 10,
+      right: 10,
       zIndex: 2,
       padding: 5,
       borderRadius: 20,
       backgroundColor: "rgba(255, 255, 255, 0.8)",
     },
-    mostPopularImage: {
-      width: "100%",
-      height: 200,
-      marginBottom: 10,
-      borderRadius: 10,
-      resizeMode: "cover",
-    },
+
     businessNameContainer: {
       flexDirection: "row",
       alignItems: "center",

@@ -1,33 +1,39 @@
-import React, { useState, useEffect, useContext } from "react";
-import { View, Text, FlatList } from "react-native";
+import React, { useState, useContext, useCallback, useEffect } from "react";
+import { View } from "react-native";
 import FavoriteBusinesList from "../components/FavoriteBusinesList";
 import { fetchFavorites } from "../api/ApiCall";
-import { useNavigation, useIsFocused } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import { LanguageContext } from "../api/LanguageContext";
 
 const FavoritesScreen = ({ route }) => {
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
   const { user } = route.params;
   const { translations } = useContext(LanguageContext);
-
   const [fetchedBusinesses, setFetchedBusinesses] = useState([]);
 
-  useEffect(() => {
-    if (isFocused) {
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
       fetchFavorites()
         .then((businesses) => {
-          setFetchedBusinesses(businesses);
+          if (isActive) {
+            setFetchedBusinesses(businesses);
+          }
         })
         .catch((error) => {
           console.log(
             `${translations.errorFetchingBusinesses} ${error.message}`
           );
         });
-    }
-  }, [isFocused]);
+
+      // Cleanup function to prevent setting state if the component is unmounted
+      return () => {
+        isActive = false;
+      };
+    }, []) // Empty dependency array to fetch data each time the screen is focused
+  );
 
   useEffect(() => {
     navigation.setOptions({

@@ -28,7 +28,7 @@ import Styles from "../../assets/branding/GlobalStyles";
 import MapIcon from "react-native-vector-icons/FontAwesome5";
 import uuid from "react-native-uuid";
 import ReviewModal from "../Modals/ReviewModal";
-
+import ShareIcon from "./ShareIcon";
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
 
@@ -151,23 +151,25 @@ function MainCardDesign({ business }) {
 
   return (
     <View style={styles.mostPopularItem}>
-      <View style={styles.favoriteIconContainer}>
-        <TouchableOpacity onPress={toggleFavorite}>
-          <HeartIcon
-            name={isFav ? "heart" : "hearto"}
-            size={25}
-            color={isFav ? "#FF0000" : "#FFA500"}
-          />
-        </TouchableOpacity>
+      <View style={styles.imageContainer}>
+        <View style={styles.favoriteIconContainer}>
+          <TouchableOpacity onPress={toggleFavorite}>
+            <HeartIcon
+              name={isFav ? "heart" : "hearto"}
+              size={25}
+              color={isFav ? "#FF0000" : "#FFA500"}
+            />
+          </TouchableOpacity>
+        </View>
+        <ShareIcon business={business.yelpBusiness} />
+        <Image
+          source={getImageSource(
+            business?.yelpBusiness?.name,
+            business?.yelpBusiness?.image_url
+          )}
+          style={styles.mostPopularImage}
+        />
       </View>
-
-      <Image
-        source={getImageSource(
-          business?.yelpBusiness?.name,
-          business?.yelpBusiness?.image_url
-        )}
-        style={styles.mostPopularImage}
-      />
 
       <View
         style={{
@@ -349,7 +351,11 @@ function MainCardDesign({ business }) {
               color={theme3.primaryColor}
             />
             <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
-              {metersToMiles(business.yelpBusiness.distance)} miles
+              {metersToMiles(business.yelpBusiness.distance) === "0.00"
+                ? "N/A"
+                : `${metersToMiles(business.yelpBusiness.distance)} ${
+                    translations.miles
+                  }`}
             </Text>
           </View>
           {business.yelpBusiness.is_registered && (
@@ -453,12 +459,26 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f4f4f4",
   },
+
   mostPopularImage: {
     width: "100%",
     height: 200,
-    marginBottom: 10,
     borderRadius: 10,
     resizeMode: "cover",
+  },
+  imageContainer: {
+    position: "relative",
+    width: "100%",
+    marginBottom: 10,
+  },
+  favoriteIconContainer: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    padding: 5,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
   mostPopularItem: {
     marginBottom: 16,
@@ -551,15 +571,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFFFFF",
   },
-  favoriteIconContainer: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    zIndex: 2,
-    padding: 5,
-    borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-  },
+
   businessInfoContainer: {
     marginBottom: 10,
   },
