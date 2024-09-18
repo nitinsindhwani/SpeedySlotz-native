@@ -364,13 +364,13 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                   </TouchableOpacity>
                 )}
               </View>
-              {item.yelpBusiness.is_registered && (
-                <TierBadge score={item.yelpBusiness.ratingScore} />
-              )}
             </View>
           </View>
 
           <View style={styles.slotsAvailableContainer}>
+            {item.yelpBusiness.is_registered && (
+              <TierBadge score={item.yelpBusiness.ratingScore} />
+            )}
             {item?.slots?.length > 0 && (
               <View style={Styles.OneRow}>
                 <View style={{ marginRight: 4 }}>
@@ -709,6 +709,7 @@ const getStyles = (currentTheme) =>
     },
     slotsAvailableContainer: {
       marginLeft: "auto",
+      marginTop: 5,
     },
     slotsAvailableText: {
       fontSize: 12,

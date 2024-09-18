@@ -180,31 +180,24 @@ function DetailScreen({ route }) {
     const delta = time - lastPress;
     const doublePressDelay = 300;
 
-
-
     // Find the matching category
     const matchedCategory = business.yelpBusinessCategory.find((category) =>
       category.serviceTypes.includes(item)
     );
 
-
     if (delta < doublePressDelay) {
-     
       if (matchedCategory) {
         setModalCategory(matchedCategory);
         setCategoryModalVisible(true);
-       
+
         await updateSelectedCategoryId(matchedCategory.category_id);
-       
       } else {
         console.error("No matched category found on double-click.");
       }
     } else {
-   
       setSelectedServiceType(item);
       if (matchedCategory) {
         await updateSelectedCategoryId(matchedCategory.category_id);
-       
       } else {
         console.error("No matched category found on single click.");
       }
@@ -214,7 +207,6 @@ function DetailScreen({ route }) {
 
   const updateSelectedCategoryId = async (categoryId) => {
     setSelectedCategoryId(categoryId);
-  
   };
 
   const renderCarouselItem = ({ item }) => {

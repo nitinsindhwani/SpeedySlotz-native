@@ -11,20 +11,53 @@ const ShareIcon = ({
 }) => {
   const shareContact = () => {
     const { yelpBusiness } = business;
-    const message = `Check out ${yelpBusiness.name}!
+
+    const yearFoundText = yelpBusiness.yearFound
+      ? `In business since ${yelpBusiness.yearFound}.`
+      : "";
+    const googleRating =
+      yelpBusiness.googleRating != null
+        ? yelpBusiness.googleRating.toFixed(1)
+        : "N/A";
+    const speedySlotzRating =
+      yelpBusiness.rating != null ? yelpBusiness.rating.toFixed(1) : "N/A";
+
+    const message = `
+📣 Check out ${yelpBusiness.name}!
 
 📞 Phone: ${yelpBusiness.phone || "Not available"}
 📍 Address: ${business.yelpBusinessLocation?.city || "N/A"}, ${
       business.yelpBusinessLocation?.state || "N/A"
     }
 
-To view more details and book services, download the SpeedySlotz app now!`;
+⭐ Google Rating: ${googleRating} (${
+      yelpBusiness.googleReviewCount || 0
+    } reviews)
+⭐ SpeedySlotz Rating: ${speedySlotzRating} (${
+      yelpBusiness.reviewCount || 0
+    } reviews)
+
+${yearFoundText}
+${yelpBusiness.details || ""}
+
+🏆 Achievements: ${
+      yelpBusiness.badges ? yelpBusiness.badges.join(", ") : "None yet"
+    }
+
+To view more details and book services, download the SpeedySlotz app now!
+
+📱 Android: 🤖
+📱 iOS: 🍎
+
+Looking forward to helping you!
+`;
+
+    console.log("Share Content:", message);
 
     Share.share({ message })
       .then((result) => console.log("Share result:", result))
       .catch((error) => console.log("Error sharing:", error));
   };
-
   return (
     <TouchableOpacity onPress={shareContact} style={[styles.container, style]}>
       <FontAwesome name="share-alt" size={size} color={color} />

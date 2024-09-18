@@ -161,7 +161,7 @@ function MainCardDesign({ business }) {
             />
           </TouchableOpacity>
         </View>
-        <ShareIcon business={business.yelpBusiness} />
+        <ShareIcon business={business} />
         <Image
           source={getImageSource(
             business?.yelpBusiness?.name,
@@ -233,18 +233,18 @@ function MainCardDesign({ business }) {
         </View>
 
         <View style={styles.tierAndSlotsContainer}>
+          {business.yelpBusiness.is_registered && (
+            <TierBadge score={business.yelpBusiness.ratingScore} />
+          )}
           {business?.slots?.length > 0 && (
             <View style={Styles.OneRow}>
               <View style={{ marginLeft: -6 }}>
                 <ChatAnim />
               </View>
-              <Text style={[styles.DescText, { marginLeft: 0 }]}>
+              <Text style={[styles.DescText, { fontSize: 12, marginLeft: 0 }]}>
                 {translations.slotsAvailable}
               </Text>
             </View>
-          )}
-          {business.yelpBusiness.is_registered && (
-            <TierBadge score={business.yelpBusiness.ratingScore} />
           )}
         </View>
       </View>
@@ -595,6 +595,7 @@ const styles = StyleSheet.create({
   },
   tierAndSlotsContainer: {
     alignItems: "flex-end",
+    marginTop: 5,
   },
   ratingItem: {
     marginBottom: 5,

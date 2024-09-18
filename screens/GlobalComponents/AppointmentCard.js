@@ -921,7 +921,7 @@ function AppointmentCard({
         setModalVisible={setRemarkModalVisible}
         slotId={localSingleSlot.key.slotId}
         userId={userData?.user_id}
-        username={`${userData?.firstName} ${userData?.lastName}`}
+        username={`${userData?.first_name} ${userData?.last_name}`}
         businessId={businesss?.yelpBusiness?.id}
         onReviewSubmit={handleReviewSubmit}
       />
