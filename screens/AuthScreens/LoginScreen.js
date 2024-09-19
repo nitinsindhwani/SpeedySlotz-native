@@ -92,6 +92,7 @@ const LoginScreen = () => {
         setAlertBody(translations.loginError);
       }
     } catch (error) {
+      console.error("Login error:", error.message);
       setErrorModal(true);
     } finally {
       setLoading(false);
