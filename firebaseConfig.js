@@ -5,16 +5,16 @@ import { Platform } from "react-native";
 
 const firebaseConfig = {
   apiKey: Platform.select({
-    ios: "AIzaSyDRYNojHfCwpGHyDByB1PIGDhgtyqbMnV4",
-    android: "AIzaSyCj3MsSLBwoWpKGsVA2pFPu8LJUqtT6yxA",
+    ios: "AIzaSyCVQHv16LZv3AfMWLJ0x_0Rx43th7d_WIg",
+    android: "AIzaSyBdUKuAs1HUJHZ-3i35PFozJEuJaFRv8gY",
   }),
-  authDomain: "speedyslotz-89875.firebaseapp.com",
-  projectId: "speedyslotz-89875",
-  storageBucket: "speedyslotz-89875.appspot.com",
-  messagingSenderId: "474377974561",
+  authDomain: "speedyslotz-native.firebaseapp.com",
+  projectId: "speedyslotz-native",
+  storageBucket: "speedyslotz-native.appspot.com",
+  messagingSenderId: "30165942284",
   appId: Platform.select({
-    ios: "1:474377974561:ios:4c5da6a11a5e1559210460",
-    android: "1:474377974561:android:8198a2da07de0a8e210460",
+    ios: "1:30165942284:ios:d93179c0b2c3cba90c6e29",
+    android: "1:30165942284:android:fdac503d0bc2328c0c6e29",
   }),
   // Note: measurementId is not provided in the given configurations
 };

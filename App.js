@@ -154,7 +154,6 @@ export default function App() {
   const [notificationStatus, setNotificationStatus] = useState("unknown");
 
   useEffect(() => {
-    logAnalyticsEvent("app_open");
     const setupNotifications = async () => {
       const result = await PushNotification();
       setNotificationStatus(result.status);
@@ -171,6 +170,7 @@ export default function App() {
       }
     };
 
+    
     setupNotifications();
 
     notificationListener.current =
