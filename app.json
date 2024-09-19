@@ -19,7 +19,7 @@
       "supportsTablet": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
-      "buildNumber": "29",
+      "buildNumber": "33",
       "infoPlist": {
         "UIBackgroundModes": [
           "remote-notification"
@@ -33,7 +33,7 @@
       },
       "googleServicesFile": "./google-services.json",
       "package": "com.speedyzslotznitinapp.app",
-      "versionCode": 36,
+      "versionCode": 41,
       "permissions": [
         "NOTIFICATIONS"
       ]

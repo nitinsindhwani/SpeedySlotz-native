@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyCVQHv16LZv3AfMWLJ0x_0Rx43th7d_WIg</string>
+	<string>AIzaSyDRYNojHfCwpGHyDByB1PIGDhgtyqbMnV4</string>
 	<key>GCM_SENDER_ID</key>
-	<string>30165942284</string>
+	<string>474377974561</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.speedyzslotznitinapp.app</string>
 	<key>PROJECT_ID</key>
-	<string>speedyslotz-native</string>
+	<string>speedyslotz-89875</string>
 	<key>STORAGE_BUCKET</key>
-	<string>speedyslotz-native.appspot.com</string>
+	<string>speedyslotz-89875.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:30165942284:ios:d93179c0b2c3cba90c6e29</string>
+	<string>1:474377974561:ios:4c5da6a11a5e1559210460</string>
 </dict>
 </plist>
