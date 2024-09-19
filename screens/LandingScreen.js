@@ -31,7 +31,7 @@ import InLineLoader from "./GlobalComponents/InLineLoader";
 import LoadingModal from "./GlobalComponents/LoadingModal";
 import yelp from "../assets/images/yelp_logo.png";
 import SortModal from "../screens/Filters/SortModal";
-import Svg, { Path } from "react-native-svg";
+import { logAnalyticsEvent } from "../firebaseConfig";
 
 const LandingScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -186,6 +186,7 @@ const LandingScreen = ({ route }) => {
     setSelectedDate(newDate);
   };
   const checkAndUpdatePushToken = async () => {
+    logAnalyticsEvent("landingScreen", { method: "checkAndUpdatePushToken" });
     try {
       const currentPushToken = await PushNotification();
 
@@ -197,12 +198,13 @@ const LandingScreen = ({ route }) => {
         "push_notification"
       );
 
+      // Ensure that the token is encoded properly before using it
+      const encodedPushToken = encodeURIComponent(currentPushToken);
+
       if (
         !user.push_notification ||
         user.push_notification !== currentPushToken
       ) {
-        const encodedPushToken = encodeURIComponent(currentPushToken);
-
         try {
           const updateResponse = await updatePushToken(
             user.username,
@@ -237,6 +239,7 @@ const LandingScreen = ({ route }) => {
       console.error("Full error object:", JSON.stringify(error, null, 2));
     }
   };
+
   const handleOpenFilterModal = () => {
     const uniqueBadges = prepareBadgeFilters();
     setUniqueBadgeFilters(uniqueBadges);

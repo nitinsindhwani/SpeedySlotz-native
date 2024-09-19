@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "30165942284",
-    "project_id": "speedyslotz-native",
-    "storage_bucket": "speedyslotz-native.appspot.com"
+    "project_number": "474377974561",
+    "project_id": "speedyslotz-89875",
+    "storage_bucket": "speedyslotz-89875.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:30165942284:android:fdac503d0bc2328c0c6e29",
+        "mobilesdk_app_id": "1:474377974561:android:8198a2da07de0a8e210460",
         "android_client_info": {
           "package_name": "com.speedyzslotznitinapp.app"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBdUKuAs1HUJHZ-3i35PFozJEuJaFRv8gY"
+          "current_key": "AIzaSyCj3MsSLBwoWpKGsVA2pFPu8LJUqtT6yxA"
         }
       ],
       "services": {
