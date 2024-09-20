@@ -45,7 +45,7 @@ import ChatMessage from "./screens/Chat.js/ChatMessage";
 import BottomNavigation from "./screens/BottomNavigation/BottomNavigation";
 import SignUpDecider from "./screens/AuthScreens/SignUpDescider";
 import LanguageSelectionScreen from "./screens/LanguageSelectionScreen";
-import { app, auth, firestore, logAnalyticsEvent } from './firebaseConfig';
+import { app, auth, firestore, logAnalyticsEvent } from "./firebaseConfig";
 
 // Use auth, firestore, and logAnalyticsEvent as needed
 import { TextEncoder, TextDecoder } from "text-encoding";
@@ -81,6 +81,14 @@ const PushNotification = async () => {
   }
 
   if (finalStatus !== "granted") {
+    Alert.alert(
+      "Notification Permission Required",
+      "SpeedySlotz needs notification permissions to keep you updated on your service requests and appointments. You can enable this in your device settings.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Open Settings", onPress: () => Linking.openSettings() },
+      ]
+    );
     return { status: "denied", token: null };
   }
 

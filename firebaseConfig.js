@@ -24,31 +24,54 @@ let analytics;
 let auth;
 let firestore;
 
-if (getApps().length === 0) {
-  app = initializeApp(firebaseConfig);
-  firestore = initializeFirestore(app, {
-    experimentalForceLongPolling: true,
-  });
+const initializeFirebase = async () => {
+  try {
+    console.log("Initializing Firebase...");
+    if (getApps().length === 0) {
+      app = initializeApp(firebaseConfig);
+      console.log("Firebase app initialized");
 
-  // Initialize Analytics only if it's supported (not available in Expo Go)
-  isSupported().then((supported) => {
-    if (supported) {
-      analytics = getAnalytics(app);
+      firestore = initializeFirestore(app, {
+        experimentalForceLongPolling: true,
+      });
+      console.log("Firestore initialized");
+
+      const supported = await isSupported();
+      if (supported) {
+        analytics = getAnalytics(app);
+        console.log("Analytics initialized");
+      } else {
+        console.log("Analytics not supported on this platform");
+      }
+    } else {
+      app = getApps()[0];
+      console.log("Using existing Firebase app");
+
+      firestore = initializeFirestore(app, {
+        experimentalForceLongPolling: true,
+      });
+      console.log("Firestore initialized");
     }
-  });
-} else {
-  app = getApps()[0];
-  firestore = initializeFirestore(app, {
-    experimentalForceLongPolling: true,
-  });
-}
-
-export const logAnalyticsEvent = (eventName, eventParams) => {
-  if (analytics) {
-    logEvent(analytics, eventName, eventParams);
-  } else {
-    console.log("Analytics not available:", eventName, eventParams);
+  } catch (error) {
+    console.error("Error initializing Firebase:", error);
+    // You might want to show an error message to the user here
   }
 };
+
+export const logAnalyticsEvent = (eventName, eventParams) => {
+  try {
+    if (analytics) {
+      logEvent(analytics, eventName, eventParams);
+      console.log("Analytics event logged:", eventName, eventParams);
+    } else {
+      console.log("Analytics not available:", eventName, eventParams);
+    }
+  } catch (error) {
+    console.error("Error logging analytics event:", error);
+  }
+};
+
+// Initialize Firebase when this module is imported
+initializeFirebase();
 
 export { app, auth, firestore };
