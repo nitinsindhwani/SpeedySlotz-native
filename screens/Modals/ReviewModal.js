@@ -49,16 +49,16 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
       // Extract both Google and App reviews from the response
       const [googleReviewsResponse, appReviewsResponse] =
         response.data?.payload || [];
-
-      // Set the reviews for Google and App
+      const filterReviews = (reviews) =>
+        reviews.filter((review) => review.reviewText.trim() !== "");
       setAllReviews({
         google: {
-          reviews: googleReviewsResponse.reviews || [],
+          reviews: filterReviews(googleReviewsResponse.reviews || []),
           overallRating: googleReviewsResponse.overallRating || 0,
           totalReviewCount: googleReviewsResponse.totalReviewCount || 0,
         },
         app: {
-          reviews: appReviewsResponse.reviews || [],
+          reviews: filterReviews(appReviewsResponse.reviews || []),
           overallRating: appReviewsResponse.overallRating || 0,
           totalReviewCount: appReviewsResponse.totalReviewCount || 0,
         },
@@ -100,7 +100,7 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
 
   const renderReview = ({ item, index }) => {
     const isExpanded = expandedReviews[item.businessId + index];
-    const shouldTruncate = item.reviewText.length > 150;
+    const shouldTruncate = item.reviewText && item.reviewText.length > 150;
 
     return (
       <View style={styles.reviewItem}>
@@ -122,19 +122,23 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
           />
           <Text style={styles.ratingDate}>{formatDate(item.createdAt)}</Text>
         </View>
-        <Text style={styles.reviewText}>
-          {shouldTruncate && !isExpanded
-            ? `${item.reviewText.slice(0, 150)}...`
-            : item.reviewText}
-        </Text>
-        {shouldTruncate && (
-          <TouchableOpacity
-            onPress={() => toggleReviewExpansion(item.businessId + index)}
-          >
-            <Text style={styles.readMoreLess}>
-              {isExpanded ? "Read Less" : "Read More"}
+        {item.reviewText && (
+          <>
+            <Text style={styles.reviewText}>
+              {shouldTruncate && !isExpanded
+                ? `${item.reviewText.slice(0, 150)}...`
+                : item.reviewText}
             </Text>
-          </TouchableOpacity>
+            {shouldTruncate && (
+              <TouchableOpacity
+                onPress={() => toggleReviewExpansion(item.businessId + index)}
+              >
+                <Text style={styles.readMoreLess}>
+                  {isExpanded ? "Read Less" : "Read More"}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </>
         )}
       </View>
     );
@@ -239,7 +243,6 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
     </Modal>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -291,7 +294,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20,
-    paddingHorizontal: 24,
   },
   tab: {
     flexDirection: "row",

@@ -852,7 +852,7 @@ const getStyles = (currentTheme) =>
       alignItems: "center",
     },
     ratingsContainer: {
-      width: "20%",
+      width: "30%",
       flexDirection: "row",
       justifyContent: "space-between",
     },

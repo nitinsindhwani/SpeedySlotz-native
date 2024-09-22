@@ -1,6 +1,8 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics, logEvent, isSupported } from "firebase/analytics";
-import { initializeFirestore } from "firebase/firestore";
+import { initializeFirestore, getFirestore } from "firebase/firestore";
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 
 const firebaseConfig = {
@@ -16,7 +18,6 @@ const firebaseConfig = {
     ios: "1:474377974561:ios:4c5da6a11a5e1559210460",
     android: "1:474377974561:android:8198a2da07de0a8e210460",
   }),
-  // Note: measurementId is not provided in the given configurations
 };
 
 let app;
@@ -36,6 +37,16 @@ const initializeFirebase = async () => {
       });
       console.log("Firestore initialized");
 
+      auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+      });
+
+      // Only connect to the Auth Emulator in development mode and if it's available
+      if (__DEV__ && typeof connectAuthEmulator === "function") {
+        connectAuthEmulator(auth, "http://localhost:9099");
+        console.log("Connected to Auth Emulator");
+      }
+
       const supported = await isSupported();
       if (supported) {
         analytics = getAnalytics(app);
@@ -45,16 +56,14 @@ const initializeFirebase = async () => {
       }
     } else {
       app = getApps()[0];
-      console.log("Using existing Firebase app");
-
-      firestore = initializeFirestore(app, {
-        experimentalForceLongPolling: true,
+      firestore = getFirestore(app);
+      auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(ReactNativeAsyncStorage),
       });
-      console.log("Firestore initialized");
+      console.log("Using existing Firebase app with persistence");
     }
   } catch (error) {
     console.error("Error initializing Firebase:", error);
-    // You might want to show an error message to the user here
   }
 };
 
