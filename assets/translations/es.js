@@ -698,10 +698,16 @@ export default {
   sort: "Ordenar",
   continue: "Continuar",
 
-  funnyWelcomeTitle: "¿Listo para una aventura loca?",
-  step1: "Dinos dónde estás (o dónde desearías estar)",
-  step2: "Elige tu veneno de nuestra lista de categorías geniales",
+  funnyWelcomeTitle: "¿Listo para una aventura salvaje?",
+  step1: "Dinos dónde estás (o dónde te gustaría estar)",
+  step2: "Elige tu opción favorita de nuestra lista de categorías increíbles",
   step3:
-    "Reserva citas más rápido que decir 'supercalifragilisticoespialidoso'",
-  funnyStartExploring: "¡Despega hacia la diversión!",
+    "Reserva citas más rápido de lo que puedes decir 'supercalifragilisticoespialidoso'",
+  funFactTitle: "Mientras estás aquí, disfruta de estos datos divertidos:",
+  funFact1:
+    "¿Sabías que? La persona promedio pasa 6 meses de su vida esperando en fila. ¡No con nosotros!",
+  funFact2:
+    "Dato curioso: La palabra 'cita' proviene del latín 'appointare', que significa 'fijar una hora'. ¡Nosotros preferimos 'cita divertida'!",
+  funFact3:
+    "Acertijo: ¿Qué está siempre frente a ti pero no puedes ver? ¡El futuro! Y estamos aquí para hacerlo increíble.",
 };

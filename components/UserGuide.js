@@ -15,7 +15,7 @@ import { LanguageContext } from "../api/LanguageContext";
 const { width, height } = Dimensions.get("window");
 
 const UserGuide = ({ onCategorySelect }) => {
-  const { translations } = useContext(LanguageContext);
+  const { translations } = useContext(LanguageContext); // Use translations from LanguageContext
   const [modalVisible, setModalVisible] = useState(false);
 
   const steps = [
@@ -25,9 +25,9 @@ const UserGuide = ({ onCategorySelect }) => {
   ];
 
   const funFacts = [
-    "Did you know? The average person spends 6 months of their life waiting in line. Not with us!",
-    "Fun fact: The word 'appointment' comes from the Latin 'appointare', meaning 'to fix a time'. We prefer 'funpointment'!",
-    "Riddle me this: What's always in front of you but can't be seen? The future! And we're here to make it awesome!",
+    translations.funFact1,
+    translations.funFact2,
+    translations.funFact3,
   ];
 
   return (
@@ -49,9 +49,7 @@ const UserGuide = ({ onCategorySelect }) => {
         ))}
       </View>
       <View style={styles.funFactContainer}>
-        <Text style={styles.funFactTitle}>
-          While you're here, enjoy these fun facts:
-        </Text>
+        <Text style={styles.funFactTitle}>{translations.funFactTitle}</Text>
         {funFacts.map((fact, index) => (
           <Text key={index} style={styles.funFact}>
             • {fact}

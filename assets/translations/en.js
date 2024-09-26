@@ -687,5 +687,11 @@ export default {
   step2: "Pick your poison from our list of awesome categories",
   step3:
     "Book appointments faster than you can say 'supercalifragilisticexpialidocious'",
-  funnyStartExploring: "Blast off into awesomeness!",
+  funFactTitle: "While you're here, enjoy these fun facts:",
+  funFact1:
+    "Did you know? The average person spends 6 months of their life waiting in line. Not with us!",
+  funFact2:
+    "Fun fact: The word 'appointment' comes from the Latin 'appointare', meaning 'to fix a time'. We prefer 'funpointment'!",
+  funFact3:
+    "Riddle me this: What's always in front of you but can't be seen? The future! And we're here to make it awesome!",
 };
