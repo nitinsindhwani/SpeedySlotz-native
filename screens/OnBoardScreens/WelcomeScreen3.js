@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { LanguageContext } from "../../api/LanguageContext"; // Import LanguageContext
+import { LanguageContext } from "../../api/LanguageContext";
 import TopImg from "../../assets/newimage/Ellipse4.png";
 import Logo from "../../assets/images/welcome3.png";
 import OnBoard from "../../assets/newimage/onBoard1.png";
@@ -18,9 +18,14 @@ import { theme3 } from "../../assets/branding/themes";
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
 
-const WelcomeScreen3 = () => {
+const WelcomeScreen3 = ({ onComplete }) => {
   const navigation = useNavigation();
-  const { translations } = useContext(LanguageContext); // Access translations from context
+  const { translations } = useContext(LanguageContext);
+
+  const handleNavigation = (screen) => {
+    onComplete(); // Mark welcome as seen
+    navigation.navigate(screen);
+  };
 
   return (
     <ImageBackground
@@ -41,13 +46,13 @@ const WelcomeScreen3 = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("LoginScreen")}
+          onPress={() => handleNavigation("LoginScreen")}
           style={styles.loginBtn}
         >
           <Text style={styles.loginTxt}>{translations.login}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("SignUpScreen")}
+          onPress={() => handleNavigation("SignUpScreen")}
           style={[styles.loginBtn, styles.skipBtn]}
         >
           <Text style={styles.loginTxt}>{translations.signup}</Text>

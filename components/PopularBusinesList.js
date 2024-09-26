@@ -214,7 +214,6 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         };
       }
 
-      console.log("Using default image for:", business.yelpBusiness.name);
       return defaultImageUrl;
     } catch (error) {
       console.error("Error in getImageSource:", error);

@@ -696,4 +696,12 @@ export default {
   priceLowToHigh: "Precio: de menor a mayor",
   priceHighToLow: "Precio: de mayor a menor",
   sort: "Ordenar",
+  continue: "Continuar",
+
+  funnyWelcomeTitle: "¿Listo para una aventura loca?",
+  step1: "Dinos dónde estás (o dónde desearías estar)",
+  step2: "Elige tu veneno de nuestra lista de categorías geniales",
+  step3:
+    "Reserva citas más rápido que decir 'supercalifragilisticoespialidoso'",
+  funnyStartExploring: "¡Despega hacia la diversión!",
 };

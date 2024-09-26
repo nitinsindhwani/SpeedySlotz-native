@@ -32,6 +32,7 @@ import LoadingModal from "./GlobalComponents/LoadingModal";
 import yelp from "../assets/images/yelp_logo.png";
 import SortModal from "../screens/Filters/SortModal";
 import { logAnalyticsEvent } from "../firebaseConfig";
+import UserGuide from "../components/UserGuide";
 
 const LandingScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -281,8 +282,11 @@ const LandingScreen = ({ route }) => {
       );
     } else if (selectedCategory) {
       return <NoDataFound />;
+    } else if (!expandCat) {
+      return <UserGuide />;
+    } else {
+      return null; // Return null when filters are expanded
     }
-    return null;
   };
 
   return (
@@ -307,7 +311,7 @@ const LandingScreen = ({ route }) => {
             translations={translations}
           />
           {expandCat && (
-            <>
+            <View style={styles.expandedContent}>
               <RadiusSlider radius={radius} setRadius={setRadius} />
               <View style={styles.filterContainer}>
                 <TouchableOpacity
@@ -348,7 +352,7 @@ const LandingScreen = ({ route }) => {
                   </Text>
                 </TouchableOpacity>
               </View>
-            </>
+            </View>
           )}
           <TouchableOpacity
             style={styles.expandButton}
@@ -415,6 +419,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: theme3.primaryColor,
     marginLeft: 5,
+  },
+  expandedContent: {
+    backgroundColor: "white",
+    paddingBottom: 10,
   },
   expandButton: {
     width: 100,

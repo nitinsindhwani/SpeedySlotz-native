@@ -9,7 +9,11 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import { loginUser, updatePushToken } from "../../api/ApiCall";
+import {
+  loginUser,
+  updatePushToken,
+  updateUserLanguage,
+} from "../../api/ApiCall";
 import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -86,6 +90,7 @@ const LoginScreen = () => {
       const response = await loginUser(username, password);
 
       if (response.success) {
+        await updateLanguagePreference(response.payload);
         proceedAfterLogin(response.payload);
       } else {
         setErrorModal(true);
@@ -98,6 +103,19 @@ const LoginScreen = () => {
     }
   };
 
+  const updateLanguagePreference = async (user) => {
+    try {
+      const storedLanguage = await SecureStore.getItemAsync("selectedLanguage");
+      if (storedLanguage) {
+        const parsedLanguage = JSON.parse(storedLanguage);
+        await updateUserLanguage(user.user_id, parsedLanguage.code);
+        // Optionally, you can update the app's language here if needed
+        // changeLanguage(parsedLanguage.code);
+      }
+    } catch (error) {
+      console.error("Error updating language preference:", error);
+    }
+  };
   const proceedAfterLogin = (user) => {
     if (user.email_verified) {
       navigation.navigate("BottomNavigation", { user: user });
@@ -138,6 +156,7 @@ const LoginScreen = () => {
             value={username}
             onChangeText={(e) => setUsername(e)}
             autoCapitalize="none"
+            autoCompleteType="username"
           />
         </View>
         {usernameError && (
@@ -165,6 +184,7 @@ const LoginScreen = () => {
             onChangeText={(e) => setPassword(e)}
             secureTextEntry={securetext}
             autoCapitalize="none"
+            autoCompleteType="password"
           />
           <TouchableOpacity onPress={() => setSecureText((prev) => !prev)}>
             <Image

@@ -45,6 +45,7 @@ import ChatMessage from "./screens/Chat.js/ChatMessage";
 import BottomNavigation from "./screens/BottomNavigation/BottomNavigation";
 import SignUpDecider from "./screens/AuthScreens/SignUpDescider";
 import LanguageSelectionScreen from "./screens/LanguageSelectionScreen";
+import InitialSettingsScreen from "./screens/InitialSettingsScreen";
 import { app, auth, firestore, logAnalyticsEvent } from "./firebaseConfig";
 
 // Use auth, firestore, and logAnalyticsEvent as needed
@@ -115,7 +116,7 @@ const PushNotification = async () => {
   }
 };
 
-function WelcomeStack() {
+function WelcomeStack({ onComplete }) {
   const swiperRef = useRef(null);
   const handleNextButtonPress = () => {
     if (swiperRef.current) {
@@ -126,7 +127,7 @@ function WelcomeStack() {
     <Swiper loop={false} showsButtons={false} ref={swiperRef}>
       <WelcomeScreen1 handleNextButtonPress={handleNextButtonPress} />
       <WelcomeScreen2 handleNextButtonPress={handleNextButtonPress} />
-      <WelcomeScreen3 />
+      <WelcomeScreen3 onComplete={onComplete} />
     </Swiper>
   );
 }
@@ -160,6 +161,8 @@ export default function App() {
   const notificationListener = useRef();
   const responseListener = useRef();
   const [notificationStatus, setNotificationStatus] = useState("unknown");
+  const [isFirstLaunch, setIsFirstLaunch] = useState(null);
+  const [hasSeenWelcome, setHasSeenWelcome] = useState(null);
 
   useEffect(() => {
     logAnalyticsEvent("app_open");
@@ -244,6 +247,57 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    checkFirstLaunch();
+  }, []);
+
+  const checkFirstLaunch = async () => {
+    try {
+      const hasLaunched = await SecureStore.getItemAsync("hasLaunched");
+      const welcomeSeen = await SecureStore.getItemAsync("welcomeSeen");
+
+      if (hasLaunched === null) {
+        console.log("First launch detected");
+        setIsFirstLaunch(true);
+        setHasSeenWelcome(false);
+      } else {
+        console.log("Not first launch");
+        setIsFirstLaunch(false);
+        setHasSeenWelcome(welcomeSeen === "true");
+      }
+    } catch (error) {
+      console.error("Error checking first launch:", error);
+      setIsFirstLaunch(false);
+      setHasSeenWelcome(true);
+    }
+  };
+
+  const markWelcomeAsSeen = async () => {
+    try {
+      await SecureStore.setItemAsync("welcomeSeen", "true");
+      setHasSeenWelcome(true);
+    } catch (error) {
+      console.error("Error marking welcome as seen:", error);
+    }
+  };
+
+  if (isFirstLaunch === null || hasSeenWelcome === null) {
+    return null; // or a loading screen
+  }
+
+  console.log("isFirstLaunch:", isFirstLaunch);
+  console.log("hasSeenWelcome:", hasSeenWelcome);
+
+  const getInitialRouteName = () => {
+    if (isFirstLaunch) {
+      return "InitialSettings";
+    } else if (!hasSeenWelcome) {
+      return "Welcome";
+    } else {
+      return "LoginScreen"; // or whatever your main screen is
+    }
+  };
+
   return (
     <LanguageProvider>
       <ThemeProvider>
@@ -272,10 +326,19 @@ export default function App() {
             }}
           >
             <Stack.Navigator
-              initialRouteName="Welcome"
+              initialRouteName={getInitialRouteName()}
               screenOptions={{ headerShown: false }}
             >
-              <Stack.Screen name="Welcome" component={WelcomeStack} />
+              <Stack.Screen
+                name="InitialSettings"
+                component={InitialSettingsScreen}
+              />
+              <Stack.Screen
+                name="Welcome"
+                children={(props) => (
+                  <WelcomeStack {...props} onComplete={markWelcomeAsSeen} />
+                )}
+              />
               <Stack.Screen name="DetailScreen" component={DetailScreen} />
               <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
               <Stack.Screen name="LoginScreen" component={LoginScreen} />

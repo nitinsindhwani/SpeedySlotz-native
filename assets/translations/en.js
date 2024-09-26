@@ -680,4 +680,12 @@ export default {
   priceLowToHigh: "Price: Low to High",
   priceHighToLow: "Price: High to Low",
   sort: "Sort",
+  continue: "Continue",
+
+  funnyWelcomeTitle: "Ready for a wild ride?",
+  step1: "Tell us where you're at (or where you wish you were)",
+  step2: "Pick your poison from our list of awesome categories",
+  step3:
+    "Book appointments faster than you can say 'supercalifragilisticexpialidocious'",
+  funnyStartExploring: "Blast off into awesomeness!",
 };
