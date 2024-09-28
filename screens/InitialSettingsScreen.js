@@ -203,7 +203,8 @@ const styles = StyleSheet.create({
   bottomContainer: {
     marginTop: "auto",
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 80, // Increased from 20 to 40
+    marginBottom: 20, // Added this line to move the button up
   },
 });
 

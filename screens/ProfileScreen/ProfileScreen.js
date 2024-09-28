@@ -40,6 +40,7 @@ const ProfileScreen = ({ route }) => {
   const { translations } = useContext(LanguageContext);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const iconColor = theme3.fontColor;
 
   useEffect(() => {
@@ -70,19 +71,32 @@ const ProfileScreen = ({ route }) => {
   };
   const handleLogout = async () => {
     try {
+      setLoading(true); // Show loading indicator
       const logoutSuccess = await logoutUser();
+
       if (logoutSuccess) {
+        // Successful logout
         navigation.reset({
           index: 0,
           routes: [{ name: "LoginScreen" }],
         });
       } else {
-        setErrorMessage(translations.logoutFailed);
+        // Logout failed
+        setErrorMessage(translations.logoutFailedMessage);
         setShowError(true);
       }
     } catch (error) {
-      setErrorMessage(translations.logoutFailedMessage);
+      console.error("Logout error:", error);
+
+      // Check if the error is due to network issues
+      if (error.message === "Network Error") {
+        setErrorMessage(translations.networkErrorMessage);
+      } else {
+        setErrorMessage(translations.generalErrorMessage);
+      }
       setShowError(true);
+    } finally {
+      setLoading(false); // Hide loading indicator
     }
   };
 

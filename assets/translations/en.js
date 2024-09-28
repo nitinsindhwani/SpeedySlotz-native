@@ -694,4 +694,16 @@ export default {
     "Fun fact: The word 'appointment' comes from the Latin 'appointare', meaning 'to fix a time'. We prefer 'funpointment'!",
   funFact3:
     "Riddle me this: What's always in front of you but can't be seen? The future! And we're here to make it awesome!",
+
+  logOut: "Log Out",
+  logoutError: "Logout Error",
+  logoutFailedMessage: "Logout failed. Please try again.",
+  networkErrorMessage:
+    "Network error. Please check your internet connection and try again.",
+  generalErrorMessage: "An error occurred during logout. Please try again.",
+  settings: "Settings",
+  version: "Version",
+  loading: "Loading...",
+  okay: "Okay",
+  cancel: "Cancel",
 };

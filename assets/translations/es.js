@@ -710,4 +710,18 @@ export default {
     "Dato curioso: La palabra 'cita' proviene del latín 'appointare', que significa 'fijar una hora'. ¡Nosotros preferimos 'cita divertida'!",
   funFact3:
     "Acertijo: ¿Qué está siempre frente a ti pero no puedes ver? ¡El futuro! Y estamos aquí para hacerlo increíble.",
+
+  logOut: "Cerrar Sesión",
+  logoutError: "Error de Cierre de Sesión",
+  logoutFailedMessage:
+    "El cierre de sesión falló. Por favor, intente de nuevo.",
+  networkErrorMessage:
+    "Error de red. Por favor, verifique su conexión a internet e intente de nuevo.",
+  generalErrorMessage:
+    "Ocurrió un error durante el cierre de sesión. Por favor, intente de nuevo.",
+  settings: "Ajustes",
+  version: "Versión",
+  loading: "Cargando...",
+  okay: "Aceptar",
+  cancel: "Cancelar",
 };
