@@ -33,7 +33,7 @@ import yelp from "../assets/images/yelp_logo.png";
 import SortModal from "../screens/Filters/SortModal";
 import { logAnalyticsEvent } from "../firebaseConfig";
 import UserGuide from "../components/UserGuide";
-
+import DealsList from "../components/DealsList";
 const LandingScreen = ({ route }) => {
   const navigation = useNavigation();
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -62,7 +62,7 @@ const LandingScreen = ({ route }) => {
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
-
+  const [deals, setDeals] = useState([]);
   useEffect(() => {
     updateLocation();
     checkAndUpdatePushToken();
@@ -262,6 +262,24 @@ const LandingScreen = ({ route }) => {
     return Array.from(new Set(allBadges));
   };
 
+  useEffect(() => {
+    if (fetchedBusinesses.length > 0) {
+      const extractedDeals = fetchedBusinesses
+        .filter(
+          (business) =>
+            business.yelpBusinessDeal && business.yelpBusinessDeal.length > 0
+        )
+        .map((business) => ({
+          ...business.yelpBusinessDeal[0],
+          businessId: business.yelpBusiness.id,
+          businessName: business.yelpBusiness.name,
+          business: business,
+          imageUrl: business.yelpBusinessDeal[0].imageUrl || null, // Add this line for deal images
+        }));
+      setDeals(extractedDeals);
+    }
+  }, [fetchedBusinesses]);
+
   const renderContent = () => {
     if (loader) {
       return <InLineLoader />;
@@ -271,7 +289,11 @@ const LandingScreen = ({ route }) => {
           nestedScrollEnabled={true}
           data={fetchedBusinesses}
           keyExtractor={(item) => item.yelpBusiness.id.toString()}
-          ListHeaderComponent={() => <></>}
+          ListHeaderComponent={() => (
+            <>
+              <DealsList deals={deals} navigation={navigation} />
+            </>
+          )}
           ListFooterComponent={() => (
             <PopularBusinessList
               fetchedBusinesses={fetchedBusinesses}
@@ -285,7 +307,7 @@ const LandingScreen = ({ route }) => {
     } else if (!expandCat) {
       return <UserGuide />;
     } else {
-      return null; // Return null when filters are expanded
+      return null;
     }
   };
 
@@ -310,6 +332,12 @@ const LandingScreen = ({ route }) => {
             language={language}
             translations={translations}
           />
+          <TouchableOpacity
+            style={styles.expandHandle}
+            onPress={() => setExpandCat(!expandCat)}
+          >
+            <View style={styles.handle} />
+          </TouchableOpacity>
           {expandCat && (
             <View style={styles.expandedContent}>
               <RadiusSlider radius={radius} setRadius={setRadius} />
@@ -354,16 +382,6 @@ const LandingScreen = ({ route }) => {
               </View>
             </View>
           )}
-          <TouchableOpacity
-            style={styles.expandButton}
-            onPress={() => setExpandCat(!expandCat)}
-          >
-            <FontAwesome
-              name={expandCat ? "caret-up" : "caret-down"}
-              size={24}
-              color={theme3.fontColor}
-            />
-          </TouchableOpacity>
         </View>
 
         {renderContent()}
@@ -403,6 +421,19 @@ const styles = StyleSheet.create({
   categoryContainer: {
     backgroundColor: "white",
     width: "100%",
+    paddingVertical: 8, // Reduced padding
+  },
+  expandHandle: {
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    backgroundColor: "#E0E0E0",
+    borderRadius: 2,
   },
   filterContainer: {
     flexDirection: "row",

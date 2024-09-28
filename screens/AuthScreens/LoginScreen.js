@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import axios from "axios";
 import {
   View,
   Text,
@@ -11,7 +12,7 @@ import {
 } from "react-native";
 import {
   loginUser,
-  updatePushToken,
+  socialLoginUser,
   updateUserLanguage,
 } from "../../api/ApiCall";
 import * as SecureStore from "expo-secure-store";
@@ -29,6 +30,16 @@ import eye from "../../assets/newimage/eye.png";
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Logo from "../../assets/newimage/Logo1.png";
 import Line from "../../assets/newimage/Line.png";
+import * as AuthSession from "expo-auth-session";
+import { useAuthRequest, makeRedirectUri } from "expo-auth-session";
+import * as Crypto from "expo-crypto";
+import SocialButton from "../../components/SocialButton";
+import {
+  keycloakTokenCompleteUrl,
+  clientId,
+  redirectUri,
+  baseKeyCloakCompleteUrl,
+} from "../../api/Config";
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
@@ -44,6 +55,87 @@ const LoginScreen = () => {
   );
   const navigation = useNavigation();
   const { language, translations } = useContext(LanguageContext);
+  const [isGoogleLoginInitiated, setIsGoogleLoginInitiated] = useState(false);
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: clientId,
+      redirectUri: makeRedirectUri({ useProxy: true }),
+      scopes: ["openid", "email", "profile"],
+      responseType: "code",
+      codeChallengeMethod: AuthSession.CodeChallengeMethod.S256, // Enable PKCE
+    },
+    {
+      authorizationEndpoint: baseKeyCloakCompleteUrl,
+    }
+  );
+
+  useEffect(() => {
+    if (
+      isGoogleLoginInitiated &&
+      response?.type === "success" &&
+      response.params?.code
+    ) {
+      exchangeCodeForToken(response.params.code);
+      setIsGoogleLoginInitiated(false); // Reset the flag
+    }
+  }, [response, isGoogleLoginInitiated]);
+
+  const handleGoogleLogin = async () => {
+    setIsGoogleLoginInitiated(true);
+    await promptAsync();
+  };
+
+  const handleSocialLogin = (platform) => {};
+
+  // Function to exchange the authorization code for an access token
+  const exchangeCodeForToken = async (code) => {
+    const data = new URLSearchParams();
+    data.append("grant_type", "authorization_code");
+    data.append("code", code);
+    data.append("redirect_uri", redirectUri);
+    data.append("client_id", clientId);
+    data.append("code_verifier", request?.codeVerifier);
+
+    try {
+      const tokenResponse = await axios.post(keycloakTokenCompleteUrl, data, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+
+      const token = tokenResponse.data.access_token;
+
+      if (token) {
+        await SecureStore.setItemAsync("userToken", token);
+        const socialLoginResponse = await socialLoginUser(token);
+
+        if (socialLoginResponse.data && socialLoginResponse.data.success) {
+          const userData = socialLoginResponse.data.payload;
+
+          // Serialize userData before storing
+          await SecureStore.setItemAsync("userData", JSON.stringify(userData));
+
+          await updateLanguagePreference(userData);
+          navigation.navigate("BottomNavigation", { user: userData });
+        } else {
+          console.error("Social login failed:", socialLoginResponse.data);
+          setErrorModal(true);
+          setAlertBody("Social login failed. Please try again.");
+        }
+      } else {
+        console.error("No token received in response:", tokenResponse.data);
+        setErrorModal(true);
+        setAlertBody(
+          "Failed to receive authentication token. Please try again."
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Error in authentication process:",
+        error.response ? error.response.data : error.message
+      );
+      setErrorModal(true);
+      setAlertBody("Authentication failed. Please try again.");
+    }
+  };
 
   const passwordPolicy = [
     translations.passwordPolicyLength,
@@ -105,17 +197,24 @@ const LoginScreen = () => {
 
   const updateLanguagePreference = async (user) => {
     try {
+      if (!user || !user.user_id) {
+        console.warn("Invalid user data, skipping language update");
+        return;
+      }
+
       const storedLanguage = await SecureStore.getItemAsync("selectedLanguage");
       if (storedLanguage) {
         const parsedLanguage = JSON.parse(storedLanguage);
+
         await updateUserLanguage(user.user_id, parsedLanguage.code);
-        // Optionally, you can update the app's language here if needed
-        // changeLanguage(parsedLanguage.code);
+      } else {
+        console.log("No stored language preference found");
       }
     } catch (error) {
       console.error("Error updating language preference:", error);
     }
   };
+
   const proceedAfterLogin = (user) => {
     if (user.email_verified) {
       navigation.navigate("BottomNavigation", { user: user });
@@ -221,7 +320,7 @@ const LoginScreen = () => {
       </TouchableOpacity>
 
       <View
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 100 }}
+        style={{ flexDirection: "row", alignItems: "center", marginTop: 40 }}
       >
         <Image source={Line} style={{ width: WindowWidth / 2.9, height: 2 }} />
         <Text style={{ color: "#4C4C4C", marginLeft: 10, marginRight: 10 }}>
@@ -230,6 +329,9 @@ const LoginScreen = () => {
         <Image source={Line} style={{ width: WindowWidth / 2.6, height: 2 }} />
       </View>
 
+      <View style={styles.socialButtonsContainer}>
+        <SocialButton platform="Google" onPress={() => handleGoogleLogin()} />
+      </View>
       <Text style={{ color: theme3.LightTxtClr, marginTop: 20 }}>
         {translations.dontHaveAccount}{" "}
         <Text
@@ -243,7 +345,6 @@ const LoginScreen = () => {
           {translations.signUp}
         </Text>
       </Text>
-
       <LoadingModal show={loading} />
       <ErrorAlert
         show={errorModal}
@@ -267,6 +368,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: WindowWidth / 1.08,
     justifyContent: "space-between",
+  },
+  socialButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 20,
   },
 });
 

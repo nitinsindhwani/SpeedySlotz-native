@@ -224,6 +224,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     const [ExpandCat, setExpandCat] = useState(false);
     const [showMore, setShowMore] = useState(false);
     const [isFav, setIsFav] = useState(item.favorite);
+
     useEffect(() => {
       setIsFav(item.favorite);
     }, [item.favorite]);
@@ -232,15 +233,47 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       setIsFav(val);
     }
 
-    function handleFav(itemId) {
-      const newFavStatus = !isFav;
-      setIsFav(newFavStatus);
-      if (newFavStatus) {
-        addFavorite(itemId, changeTepFav);
-      } else {
-        removeFavorite(itemId, changeTepFav);
-      }
-    }
+    const getEarliestSlot = (slots) => {
+      if (!slots || slots.length === 0) return null;
+
+      return slots.reduce((earliest, slot) => {
+        const slotDate = new Date(`${slot.date}T${slot.startTime}`);
+        if (!earliest || slotDate < earliest) {
+          return slotDate;
+        }
+        return earliest;
+      }, null);
+    };
+
+    const formatSlotDateTime = (date) => {
+      if (!date) return "";
+      const monthNames = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const month = monthNames[date.getMonth()];
+      const day = date.getDate();
+      const time = date.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+      return `${month} ${day} - ${time}`;
+    };
+
+    const earliestSlot = getEarliestSlot(item.slots);
+    const bookButtonText = earliestSlot
+      ? `Book | ${formatSlotDateTime(earliestSlot)}`
+      : translations.bookNow; // Changed this line
 
     const getTierLevel = (score) => {
       if (score < 100)
@@ -312,9 +345,11 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
           }}
         >
           <View style={styles.businessInfoContainer}>
-            <Text style={styles.mostPopularName} numberOfLines={1}>
-              {item.yelpBusiness.name}
-            </Text>
+            <View style={styles.nameAndHiredContainer}>
+              <Text style={styles.mostPopularName} numberOfLines={1}>
+                {item.yelpBusiness.name}
+              </Text>
+            </View>
 
             <View style={styles.ratingAndTierContainer}>
               <View style={styles.ratingsContainer}>
@@ -382,7 +417,20 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
             )}
           </View>
         </View>
-
+        {item.completedSlots > 0 && (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <MaterialIcons name="people" size={20} color={theme3.fontColor} />
+            <Text style={styles.previouslyHiredText}>
+              Previously hired by {item.completedSlots} neighbor
+              {item.completedSlots !== 1 ? "s" : ""}
+            </Text>
+          </View>
+        )}
         {item.yelpBusiness.is_registered && (
           <>
             {showMore ? (
@@ -573,10 +621,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 navigation.navigate("DetailScreen", { business: item })
               }
             >
-              <Text style={styles.bookButtonText}>
-                {translations.bookNow}{" "}
-                {/* Use translation for the button text */}
-              </Text>
+              <Text style={styles.bookButtonText}>{bookButtonText}</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -648,6 +693,25 @@ const getStyles = (currentTheme) =>
       height: WindowHeight,
       width: WindowWidth,
     },
+    nameAndJobsContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    completedJobsBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 128, 0, 0.1)", // Light green background
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    completedJobsText: {
+      fontSize: 12,
+      color: theme3.primaryColor,
+      marginLeft: 4,
+      fontWeight: "600",
+    },
     mostPopularItem: {
       marginTop: 16,
       width: WindowWidth / 1.03,
@@ -683,7 +747,7 @@ const getStyles = (currentTheme) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 8,
+
       flex: 1,
     },
     mostPopularName: {
@@ -835,28 +899,28 @@ const getStyles = (currentTheme) =>
       color: "#FFFFFF",
     },
 
-    businessInfoContainer: {
-      marginBottom: 10,
-    },
+    businessInfoContainer: {},
     mostPopularName: {
       fontSize: 18,
       fontWeight: "bold",
       color: theme3.fontColor,
-      marginBottom: 5,
     },
     ratingAndTierContainer: {
-      width: "100%",
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
     },
     ratingsContainer: {
-      width: "30%",
       flexDirection: "row",
-      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    previouslyHiredText: {
+      fontSize: 14,
+      color: theme3.fontColor,
+      fontStyle: "italic",
+      padding: 5,
     },
     ratingItem: {
-      marginBottom: 5,
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",

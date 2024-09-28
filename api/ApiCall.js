@@ -275,6 +275,21 @@ export const loginUser = async (username, password) => {
   }
 };
 
+export const socialLoginUser = async (token) => {
+  const socialLoginUrl = baseApiUrl + "/api/v1/users/socialLogin";
+  const response = await axios.post(
+    socialLoginUrl,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response;
+};
+
 // Function to sign up a new user
 export const signupUser = async (userData) => {
   const signUpApiUrl = baseApiUrl + "/api/v1/users/signup";
