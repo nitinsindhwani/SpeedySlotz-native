@@ -27,6 +27,7 @@ import Header from "../GlobalComponents/Header";
 import { LanguageContext } from "../../api/LanguageContext";
 import LanguageSwitcher from "../../api/LanguageSwitcher";
 import LanguageSelectionScreen from "../LanguageSelectionScreen";
+import LoadingModal from "../GlobalComponents/LoadingModal";
 import ErrorAlert from "../GlobalComponents/ErrorAlert";
 import { logoutUser } from "../../api/ApiCall";
 import { Platform } from "react-native";
@@ -533,6 +534,7 @@ const ProfileScreen = ({ route }) => {
         title={translations.logoutError}
         body={errorMessage}
       />
+      <LoadingModal show={loading} />
     </View>
   );
 };
