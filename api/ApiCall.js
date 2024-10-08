@@ -15,7 +15,6 @@ export const getLocationAndCityState = async (query) => {
 
   if (query) {
     // Use Google Places API to convert query to coordinates (latitude and longitude)
-    // This is a placeholder URL, you'll need to use the actual Google Places API endpoint
     const placesResponse = await axios.get(
       `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(
         query
@@ -134,7 +133,7 @@ export const fetchBusinessesByServiceName = async (
   const intRadius = parseInt(radius, 10);
 
   const params = {
-    term: serviceType?.name, // Updated to use term instead of subcategory
+    term: serviceType, // Use serviceType directly as the term
     location: location,
     latitude: latitude,
     longitude: longitude,
@@ -145,7 +144,7 @@ export const fetchBusinessesByServiceName = async (
 
   const baseURL = baseApiUrl + "/api/v1/businesses";
   const queryString = Object.keys(params)
-    .map((key) => key + "=" + params[key])
+    .map((key) => `${key}=${encodeURIComponent(params[key])}`)
     .join("&");
 
   const fullURL = `${baseURL}?${queryString}`;
@@ -291,18 +290,21 @@ export const socialLoginUser = async (token) => {
 };
 
 // Function to sign up a new user
-export const signupUser = async (userData) => {
-  const signUpApiUrl = baseApiUrl + "/api/v1/users/signup";
+// Function to sign up a new user
+export const signupUser = async (userData, referralCode) => {
+  let signUpApiUrl = `${baseApiUrl}/api/v1/users/signup`;
+  if (referralCode) {
+    signUpApiUrl += `?referralCode=${encodeURIComponent(referralCode)}`;
+  }
+
   try {
     const response = await axios.post(signUpApiUrl, userData);
-
     return response.data;
   } catch (error) {
     console.error("Signup failed:", error.message);
     throw new Error("Signup failed. Please check your data and try again.");
   }
 };
-
 export const resendVerifyEmail = async (userData) => {
   const resendEmailUrl = baseApiUrl + "/api/v1/users/resendEmail";
   const response = await axios.post(resendEmailUrl, userData);
@@ -829,5 +831,182 @@ export const updatePushToken = async (username, pushToken) => {
     }
     console.error("Full error object:", JSON.stringify(error, null, 2));
     throw error;
+  }
+};
+
+export const fetchHomeScreenData = async (
+  location,
+  latitude,
+  longitude,
+  zipcode,
+  date,
+  radius
+) => {
+  const intRadius = parseInt(radius, 10);
+
+  const params = {
+    location: location,
+    latitude: latitude,
+    longitude: longitude,
+    zipcode: zipcode,
+    date: date,
+    radius: intRadius,
+  };
+
+  const baseURL = baseApiUrl + "/api/v1/dashboardContent";
+  const queryString = Object.keys(params)
+    .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+    .join("&");
+
+  const fullURL = `${baseURL}?${queryString}`;
+
+  const userToken = await SecureStore.getItemAsync("userToken");
+  if (!userToken) {
+    throw new Error("Token not found in SecureStore!");
+  }
+
+  const headers = {
+    Authorization: `Bearer ${userToken}`,
+  };
+
+  const response = await axios.get(baseURL, {
+    params,
+    headers,
+  });
+
+  if (response.data) {
+    return response.data;
+  } else {
+    throw new Error("Businesses not found in response data");
+  }
+};
+
+export const deleteUser = async () => {
+  try {
+    // Step 1: Get the current access token
+    const token = await SecureStore.getItemAsync("userToken");
+
+    // Log the token to confirm retrieval
+    console.log("Retrieved token:", token);
+
+    if (!token) {
+      throw new Error("No access token found in SecureStore");
+    }
+
+    // Step 2: Define the delete endpoint URL
+    const deleteUrl = `${baseApiUrl}/api/user-profile/delete`;
+
+    // Step 3: Call the delete API using axios
+    const apiResponse = await axios.delete(deleteUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      params: {
+        accessToken: token, // Pass the token in the query params
+      },
+    });
+
+    // Step 4: Handle the response
+    if (apiResponse.status === 200) {
+      console.log("User deleted successfully");
+
+      // Step 5: Clear SecureStore after successful deletion
+      await SecureStore.deleteItemAsync("userToken");
+      await SecureStore.deleteItemAsync("userData");
+
+      return true; // Deletion successful
+    } else {
+      console.error("API Response Error:", apiResponse.data);
+      throw new Error("Failed to delete user");
+    }
+  } catch (error) {
+    // Log the error details for debugging
+    console.error("Error deleting user:", error.message || error);
+    return false; // Indicate deletion failure
+  }
+};
+
+export const fetchReferralCode = async (referrerId, referrerType) => {
+  try {
+    const token = await SecureStore.getItemAsync("userToken");
+
+    // Log the token to confirm retrieval
+    console.log("Retrieved token:", token);
+
+    if (!token) {
+      throw new Error("No access token found in SecureStore");
+    }
+    const requestUrl = `${baseApiUrl}/api/referral/generate-code?referrerId=${referrerId}&referrerType=${referrerType}`;
+
+    const response = await fetch(requestUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch referral code");
+    }
+
+    const data = await response.text();
+    return data; // This will be the referral code returned from the backend
+  } catch (error) {
+    console.error("Error fetching referral code:", error);
+    return null;
+  }
+};
+
+export const getUserPoints = async (userId) => {
+  try {
+    const token = await SecureStore.getItemAsync("userToken");
+    if (!token) {
+      throw new Error("No access token found in SecureStore");
+    }
+
+    const requestUrl = `${baseApiUrl}/api/referral/summary?entityId=${userId}&entityType=USER`;
+
+    const response = await fetch(requestUrl, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user points");
+    }
+
+    const data = await response.json();
+    return data; // This will be the PointSummary object returned from the backend
+  } catch (error) {
+    console.error("Error fetching user points:", error);
+    throw error;
+  }
+};
+
+export const redeemUserPoints = async (userId, pointsToRedeem) => {
+  try {
+    const token = await SecureStore.getItemAsync("userToken");
+    if (!token) {
+      throw new Error("No access token found");
+    }
+
+    const requestUrl = `${baseApiUrl}/api/referral/redeem?userId=${userId}&pointsToRedeem=${pointsToRedeem}`;
+
+    const response = await axios.post(requestUrl, null, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data; // Success message from the backend
+  } catch (error) {
+    console.error("Error redeeming points:", error);
+    throw new Error("Failed to redeem points. Please try again.");
   }
 };

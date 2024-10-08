@@ -30,11 +30,6 @@ const PastBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
     translations.all,
     translations.reviewed,
     translations.completed,
-    translations.booked,
-    translations.confirmed,
-    translations.cancelled,
-    translations.accepted,
-    translations.rescheduled,
   ];
 
   useEffect(() => {

@@ -29,7 +29,7 @@ import LanguageSwitcher from "../../api/LanguageSwitcher";
 import LanguageSelectionScreen from "../LanguageSelectionScreen";
 import LoadingModal from "../GlobalComponents/LoadingModal";
 import ErrorAlert from "../GlobalComponents/ErrorAlert";
-import { logoutUser } from "../../api/ApiCall";
+import { logoutUser, deleteUser } from "../../api/ApiCall";
 import { Platform } from "react-native";
 import { baseApiUrl } from "../../api/Config";
 const ProfileScreen = ({ route }) => {
@@ -43,6 +43,7 @@ const ProfileScreen = ({ route }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const iconColor = theme3.fontColor;
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State for delete confirmation
 
   useEffect(() => {
     setLocalUser(user);
@@ -72,38 +73,61 @@ const ProfileScreen = ({ route }) => {
   };
   const handleLogout = async () => {
     try {
-      setLoading(true); // Show loading indicator
+      setLoading(true);
       const logoutSuccess = await logoutUser();
 
       if (logoutSuccess) {
-        // Successful logout
         navigation.reset({
           index: 0,
           routes: [{ name: "LoginScreen" }],
         });
       } else {
-        // Logout failed
         setErrorMessage(translations.logoutFailedMessage);
         setShowError(true);
       }
     } catch (error) {
-      console.error("Logout error:", error);
-
-      // Check if the error is due to network issues
-      if (error.message === "Network Error") {
-        setErrorMessage(translations.networkErrorMessage);
-      } else {
-        setErrorMessage(translations.generalErrorMessage);
-      }
+      const errorText = error.message || translations.generalErrorMessage;
+      setErrorMessage(errorText);
       setShowError(true);
     } finally {
-      setLoading(false); // Hide loading indicator
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDeleteAccount = async () => {
+    try {
+      setLoading(true);
+      setShowDeleteConfirmation(false); // Close the confirmation modal
+      const deleteSuccess = await deleteUser();
+
+      if (deleteSuccess) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "LoginScreen" }],
+        });
+      } else {
+        setErrorMessage(
+          translations.deleteFailedMessage || "Failed to delete your account."
+        );
+        setShowError(true);
+      }
+    } catch (error) {
+      const errorText = error.message || translations.generalErrorMessage;
+      setErrorMessage(errorText);
+      setShowError(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCloseError = () => {
     setShowError(false);
   };
+
   const uploadImage = async (uri) => {
     const apiUrl = `${baseApiUrl}/api/v1/users/update`;
     const userToken = await SecureStore.getItemAsync("userToken");
@@ -505,6 +529,25 @@ const ProfileScreen = ({ route }) => {
         <View style={Styles.CardWrapperALL}>
           <TouchableOpacity
             style={Styles.CardWrapperBottom}
+            onPress={handleDeleteAccount}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Ionicons
+                name="trash-outline"
+                color={theme3.danger}
+                size={22}
+                style={Styles.IconWrapper}
+              />
+              <Text style={[Styles.textStyle, { color: theme3.danger }]}>
+                {translations.deleteAccount}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={theme3.danger} />
+          </TouchableOpacity>
+        </View>
+        <View style={Styles.CardWrapperALL}>
+          <TouchableOpacity
+            style={Styles.CardWrapperBottom}
             onPress={handleLogout}
           >
             <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -528,10 +571,23 @@ const ProfileScreen = ({ route }) => {
 
         <View style={{ width: 100, height: 200 }}></View>
       </ScrollView>
+      {/* ErrorAlert for confirmation */}
+      <ErrorAlert
+        show={showDeleteConfirmation}
+        onAction={confirmDeleteAccount}
+        title={translations.confirmDeleteTitle || "Confirm Deletion"}
+        body={
+          translations.confirmDeleteMessage ||
+          "Are you sure you want to delete your account? This action cannot be undone."
+        }
+        confirmButton={true} // Enable confirm button
+        onCancel={() => setShowDeleteConfirmation(false)} // Cancel action
+      />
+
       <ErrorAlert
         show={showError}
         onAction={handleCloseError}
-        title={translations.logoutError}
+        title={translations.errorTitle || "Error"}
         body={errorMessage}
       />
       <LoadingModal show={loading} />

@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
 import Header from "../screens/GlobalComponents/Header";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const CategoryModal = ({
   uniqueCategories,
@@ -32,13 +32,23 @@ const CategoryModal = ({
       ]}
       onPress={() => handleCategoryPress(item)}
     >
-      <Ionicons
-        name={item.iconName}
-        size={30}
-        color={
-          selectedCategory === item.name ? theme3.light : theme3.primaryColor
-        }
-      />
+      <View
+        style={[
+          styles.categoryIconContainer,
+          selectedCategory === item.name &&
+            styles.selectedCategoryIconContainer,
+        ]}
+      >
+        <Ionicons
+          name={item.iconName}
+          size={30}
+          color={
+            selectedCategory === item.name
+              ? theme3.primaryColor
+              : theme3.primaryColor
+          }
+        />
+      </View>
       <Text
         style={[
           styles.categoryName,
@@ -74,6 +84,7 @@ const CategoryModal = ({
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.listContainer}
+            columnWrapperStyle={styles.columnWrapper}
           />
         </View>
       </View>
@@ -90,45 +101,61 @@ const styles = StyleSheet.create({
   modalContent: {
     flex: 1,
     backgroundColor: "#f6f6f6",
-    paddingHorizontal: 15,
-    paddingTop: 20,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: theme3.fontColor,
-    marginBottom: 30,
-    textAlign: "center",
+    paddingTop: 10,
+    paddingHorizontal: 10, // Added padding for left and right spacing
   },
   listContainer: {
     paddingBottom: 20,
   },
+  columnWrapper: {
+    justifyContent: "space-between",
+  },
   categoryItem: {
     alignItems: "center",
-    margin: 6,
-    width: width / 3.5,
-    height: 100,
+    margin: 2, // Horizontal and vertical gaps set to 2
+    width: (width - 36) / 3, // Adjusted to account for padding and space between items
+    height: 120,
     justifyContent: "center",
-    borderRadius: 8,
-    backgroundColor: theme3.light,
+    borderRadius: 12,
+    backgroundColor: "#ffffff", // Ensure it matches home screen
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
+    borderColor: "#e0e0e0",
+    borderWidth: 1,
+  },
+  categoryIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25, // Circular container behind the icon
+    backgroundColor: "#f0f0f0", // Light background similar to home screen
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
     elevation: 4,
   },
-  selectedCategory: {
-    backgroundColor: theme3.primaryColor,
+  selectedCategoryIconContainer: {
+    backgroundColor: theme3.secondaryColor, // Fill the background with secondary color when selected
   },
   categoryName: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "500",
     color: theme3.fontColor,
     textAlign: "center",
-    marginTop: 5,
+    marginTop: 8,
+  },
+  selectedCategory: {
+    backgroundColor: theme3.primaryColor, // Keep the background white for selected item
   },
   selectedCategoryText: {
-    color: theme3.light,
+    color: "#ffffff", // Text color becomes primary color when selected
     fontWeight: "600",
   },
 });

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import {
   View,
   FlatList,
@@ -7,7 +8,6 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LanguageContext } from "../api/LanguageContext";
 import { FontAwesome } from "@expo/vector-icons";
@@ -63,26 +63,51 @@ const LandingScreen = ({ route }) => {
     new Date().toISOString().split("T")[0]
   );
   const [deals, setDeals] = useState([]);
-  useEffect(() => {
-    updateLocation();
-    checkAndUpdatePushToken();
-  }, []);
+  const latestServiceTypeRef = useRef(null);
+  useFocusEffect(
+    React.useCallback(() => {
+      const initializeScreen = async () => {
+        console.log("Initializing screen");
+        await updateLocation();
+        await checkAndUpdatePushToken();
 
+        if (route.params) {
+          const {
+            selectedCategory,
+            selectedSubcategory,
+            selectedServiceType,
+            selectedLocation: routeSelectedLocation,
+            locationData: routeLocationData,
+          } = route.params;
+
+          // Update states in a specific order
+          if (selectedCategory) setSelectedCategory(selectedCategory);
+          if (selectedSubcategory) setSelectedSubcategory(selectedSubcategory);
+          if (selectedServiceType) {
+            setSelectedServiceTypeName(selectedServiceType);
+            latestServiceTypeRef.current = selectedServiceType.name;
+          }
+
+          if (routeSelectedLocation) setSelectedLocation(routeSelectedLocation);
+          if (routeLocationData) setLocationData(routeLocationData);
+
+          // Fetch data only if we have a service type
+          if (selectedServiceType && selectedServiceType.name) {
+            fetchData(selectedServiceType.name);
+          }
+        }
+      };
+
+      initializeScreen();
+
+      return () => {
+        console.log("Cleanup function called");
+      };
+    }, [route.params, fetchData])
+  );
   useEffect(() => {
     setRadiusInMeters(radius * 1609.34);
   }, [radius]);
-
-  useEffect(() => {
-    if (selectedServiceTypeName) {
-      fetchData(selectedServiceTypeName);
-    }
-  }, [
-    selectedServiceTypeName,
-    selectedLocation,
-    locationData,
-    selectedDate,
-    radiusInMeters,
-  ]);
 
   useEffect(() => {
     applyFilters();
@@ -117,53 +142,119 @@ const LandingScreen = ({ route }) => {
 
   const updateLocation = async () => {
     try {
-      const locationDetails = await getLocationAndCityState();
-      if (locationDetails.errorMsg) {
-        console.error("Error getting location:", locationDetails.errorMsg);
-        return;
+      const savedLocation = await SecureStore.getItemAsync("selectedLocation");
+      const savedLocationData = await SecureStore.getItemAsync("locationData");
+
+      if (savedLocation && savedLocationData) {
+        setSelectedLocation(savedLocation);
+        setLocationData(JSON.parse(savedLocationData));
+      } else {
+        const locationDetails = await getLocationAndCityState();
+        if (locationDetails.errorMsg) {
+          console.error("Error getting location:", locationDetails.errorMsg);
+          return;
+        }
+        console.log("Location details:", locationDetails);
+        const newLocationData = {
+          coordinates: {
+            latitude: locationDetails?.location?.coords.latitude,
+            longitude: locationDetails?.location?.coords.longitude,
+          },
+          zipcode: locationDetails?.zipcode,
+        };
+        setSelectedLocation(locationDetails.cityState);
+        setLocationData(newLocationData);
+
+        // Save the new location data
+        await SecureStore.setItemAsync(
+          "selectedLocation",
+          locationDetails.cityState
+        );
+        await SecureStore.setItemAsync(
+          "locationData",
+          JSON.stringify(newLocationData)
+        );
       }
-      setSelectedLocation(locationDetails.cityState);
-      setLocationData({
-        coordinates: {
-          latitude: locationDetails?.location?.coords.latitude,
-          longitude: locationDetails?.location?.coords.longitude,
-        },
-        zipcode: locationDetails?.zipcode,
-      });
     } catch (error) {
       console.error("Error updating location:", error.message);
     }
   };
-
-  const fetchData = async (serviceName) => {
-    if (
-      selectedLocation &&
-      locationData.coordinates.latitude &&
-      locationData.coordinates.longitude &&
-      locationData.zipcode
-    ) {
-      setLoader(true);
-      try {
-        const businesses = await fetchBusinessesByServiceName(
-          serviceName,
-          selectedLocation,
-          locationData.coordinates.latitude,
-          locationData.coordinates.longitude,
-          locationData.zipcode,
-          selectedDate,
-          radiusInMeters
-        );
-
-        setAllBusinesses(businesses);
-        setFetchedBusinesses(businesses);
-      } catch (error) {
-        console.error("Error fetching businesses:", error.message);
-      } finally {
-        setLoader(false);
-      }
-    }
+  const setSelectedLocationAndSave = async (location) => {
+    setSelectedLocation(location);
+    await SecureStore.setItemAsync("selectedLocation", location);
   };
 
+  const setLocationDataAndSave = async (data) => {
+    setLocationData(data);
+    await SecureStore.setItemAsync("locationData", JSON.stringify(data));
+  };
+  const fetchData = React.useCallback(
+    async (serviceName) => {
+      console.log("fetchData called with serviceName:", serviceName);
+
+      // Check if this is still the latest service type
+      if (serviceName !== latestServiceTypeRef.current) {
+        console.log("Skipping fetch for outdated service type");
+        return;
+      }
+
+      const serviceNameString =
+        typeof serviceName === "object" ? serviceName.name : serviceName;
+
+      if (
+        selectedLocation &&
+        locationData.coordinates.latitude &&
+        locationData.coordinates.longitude &&
+        locationData.zipcode &&
+        serviceNameString
+      ) {
+        setLoader(true);
+        try {
+          console.log(
+            "Calling fetchBusinessesByServiceName with:",
+            serviceNameString
+          );
+          const businesses = await fetchBusinessesByServiceName(
+            serviceNameString,
+            selectedLocation,
+            locationData.coordinates.latitude,
+            locationData.coordinates.longitude,
+            locationData.zipcode,
+            selectedDate,
+            radiusInMeters
+          );
+
+          // Check again if this is still the latest service type
+          if (serviceNameString === latestServiceTypeRef.current) {
+            setAllBusinesses(businesses);
+            setFetchedBusinesses(businesses);
+          } else {
+            console.log("Discarding results for outdated service type");
+          }
+        } catch (error) {
+          console.error("Error fetching businesses:", error.message);
+          if (error.response) {
+            console.error("Response data:", error.response.data);
+            console.error("Response status:", error.response.status);
+          }
+          setAllBusinesses([]);
+          setFetchedBusinesses([]);
+        } finally {
+          setLoader(false);
+        }
+      } else {
+        console.log("Missing required data for fetching businesses");
+      }
+    },
+    [selectedLocation, locationData, selectedDate, radiusInMeters]
+  );
+  useEffect(() => {
+    console.log("selectedServiceTypeName changed:", selectedServiceTypeName);
+    if (selectedServiceTypeName && selectedServiceTypeName.name) {
+      latestServiceTypeRef.current = selectedServiceTypeName.name;
+      fetchData(selectedServiceTypeName.name);
+    }
+  }, [selectedServiceTypeName]);
   const applyFilters = () => {
     if (selectedFilters.length > 0 && allBusinesses.length > 0) {
       const filteredBusinesses = allBusinesses.filter((business) => {
@@ -270,11 +361,13 @@ const LandingScreen = ({ route }) => {
             business.yelpBusinessDeal && business.yelpBusinessDeal.length > 0
         )
         .map((business) => ({
-          ...business.yelpBusinessDeal[0],
-          businessId: business.yelpBusiness.id,
+          id: business.yelpBusiness.id,
+          title: business.yelpBusinessDeal[0].title,
+          discount: business.yelpBusinessDeal[0].discount,
+          validUntil: business.yelpBusinessDeal[0].validUntil,
           businessName: business.yelpBusiness.name,
-          business: business,
-          imageUrl: business.yelpBusinessDeal[0].imageUrl || null, // Add this line for deal images
+          imageUrl: business.yelpBusinessDeal[0].imageUrl || null,
+          business: business, // Include the whole business object if needed
         }));
       setDeals(extractedDeals);
     }
@@ -289,11 +382,6 @@ const LandingScreen = ({ route }) => {
           nestedScrollEnabled={true}
           data={fetchedBusinesses}
           keyExtractor={(item) => item.yelpBusiness.id.toString()}
-          ListHeaderComponent={() => (
-            <>
-              <DealsList deals={deals} navigation={navigation} />
-            </>
-          )}
           ListFooterComponent={() => (
             <PopularBusinessList
               fetchedBusinesses={fetchedBusinesses}
@@ -317,8 +405,8 @@ const LandingScreen = ({ route }) => {
       <View style={styles.content}>
         <SearchComponent
           selectedLocation={selectedLocation}
-          setSelectedLocation={setSelectedLocation}
-          setLocationData={setLocationData}
+          setSelectedLocation={setSelectedLocationAndSave}
+          setLocationData={setLocationDataAndSave}
           handleLoader={setLoader}
         />
         <View style={styles.categoryContainer}>

@@ -27,13 +27,9 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
 
   const filterOptions = [
     translations.all,
-    translations.reviewed,
-    translations.completed,
-    translations.booked,
-    translations.confirmed,
-    translations.cancelled,
     translations.accepted,
-    translations.rescheduled,
+    translations.confirmed,
+    translations.completed,
   ];
 
   useEffect(() => {

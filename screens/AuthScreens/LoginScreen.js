@@ -9,6 +9,9 @@ import {
   Dimensions,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import {
   loginUser,
@@ -17,7 +20,6 @@ import {
 } from "../../api/ApiCall";
 import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
 import Styles from "../../assets/branding/GlobalStyles";
 import { theme3 } from "../../assets/branding/themes";
 import { PushNotification } from "../../api/PushNotification";
@@ -25,27 +27,26 @@ import LoadingModal from "../GlobalComponents/LoadingModal";
 import ErrorAlert from "../GlobalComponents/ErrorAlert";
 import { LanguageContext } from "../../api/LanguageContext";
 import { logAnalyticsEvent } from "../../firebaseConfig";
-const WindowWidth = Dimensions.get("window").width;
 import eye from "../../assets/newimage/eye.png";
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Logo from "../../assets/newimage/Logo1.png";
 import Line from "../../assets/newimage/Line.png";
 import * as AuthSession from "expo-auth-session";
 import { useAuthRequest, makeRedirectUri } from "expo-auth-session";
-import * as Crypto from "expo-crypto";
 import SocialButton from "../../components/SocialButton";
 import {
   keycloakTokenCompleteUrl,
   clientId,
-  redirectUri,
   baseKeyCloakCompleteUrl,
 } from "../../api/Config";
+
+const WindowWidth = Dimensions.get("window").width;
 
 const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [usernameError, setUsernameError] = useState(null);
-  const [passwordError, setPasswordError] = useState(null);
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [securetext, setSecureText] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
@@ -56,13 +57,20 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const { language, translations } = useContext(LanguageContext);
   const [isGoogleLoginInitiated, setIsGoogleLoginInitiated] = useState(false);
+
+  const redirectUri = makeRedirectUri({
+    scheme: "speedyslotz",
+    path: "auth",
+    useProxy: false,
+  });
+
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: clientId,
-      redirectUri: makeRedirectUri({ useProxy: true }),
+      redirectUri,
       scopes: ["openid", "email", "profile"],
       responseType: "code",
-      codeChallengeMethod: AuthSession.CodeChallengeMethod.S256, // Enable PKCE
+      codeChallengeMethod: AuthSession.CodeChallengeMethod.S256,
     },
     {
       authorizationEndpoint: baseKeyCloakCompleteUrl,
@@ -76,7 +84,7 @@ const LoginScreen = () => {
       response.params?.code
     ) {
       exchangeCodeForToken(response.params.code);
-      setIsGoogleLoginInitiated(false); // Reset the flag
+      setIsGoogleLoginInitiated(false);
     }
   }, [response, isGoogleLoginInitiated]);
 
@@ -84,7 +92,6 @@ const LoginScreen = () => {
     setIsGoogleLoginInitiated(true);
     await promptAsync();
   };
-
   const handleSocialLogin = (platform) => {};
 
   // Function to exchange the authorization code for an access token
@@ -146,7 +153,7 @@ const LoginScreen = () => {
   ];
 
   const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
 
   const validateForm = () => {
     let hasError = false;
@@ -178,7 +185,6 @@ const LoginScreen = () => {
     }
 
     try {
-      setLoading(true);
       const response = await loginUser(username, password);
 
       if (response.success) {
@@ -191,7 +197,6 @@ const LoginScreen = () => {
     } catch (error) {
       setErrorModal(true);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -231,120 +236,102 @@ const LoginScreen = () => {
   }
 
   return (
-    <ImageBackground source={AuthBg} style={Styles.Container}>
-      <View style={Styles.TopView}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons
-            name="arrow-back-outline"
-            style={{ marginLeft: 5 }}
-            size={25}
-            color="#4C4C4C"
-          />
-        </TouchableOpacity>
-      </View>
-
-      <Image source={Logo} style={{ width: 160, height: 160, marginTop: 20 }} />
-
-      <View style={[Styles.TopView, { marginTop: -20 }]}>
-        <Text style={styles.Text}>{translations.username}</Text>
-
-        <View style={Styles.InputView}>
-          <TextInput
-            style={{ marginLeft: 13, flex: 1 }}
-            placeholder={translations.username}
-            value={username}
-            onChangeText={(e) => setUsername(e)}
-            autoCapitalize="none"
-            autoCompleteType="username"
-          />
-        </View>
-        {usernameError && (
-          <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
-            {usernameError}
-          </Text>
-        )}
-
-        <View style={styles.PasswordTextView}>
-          <Text style={[styles.Text]}>{translations.password}</Text>
-
-          <Text
-            onPress={() => handleForgotPassword()}
-            style={[styles.Text, { color: theme3.primaryColor }]}
-          >
-            {translations.forgotPassword}
-          </Text>
-        </View>
-
-        <View style={[Styles.InputView]}>
-          <TextInput
-            style={{ marginLeft: 13, flex: 1 }}
-            placeholder={translations.password}
-            value={password}
-            onChangeText={(e) => setPassword(e)}
-            secureTextEntry={securetext}
-            autoCapitalize="none"
-            autoCompleteType="password"
-          />
-          <TouchableOpacity onPress={() => setSecureText((prev) => !prev)}>
-            <Image
-              source={eye}
-              style={{
-                width: 20,
-                height: 20,
-                marginRight: 13,
-                tintColor: theme3.secondaryColor,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {passwordError && (
-          <>
-            <Text style={{ color: theme3.ErrorColor, marginTop: 5 }}>
-              {passwordError}
-            </Text>
-            {passwordPolicy.map((item, index) => (
-              <Text
-                key={index}
-                style={{ color: "#8A8A8A", marginTop: 5, marginLeft: 15 }}
-              >
-                • {item}
-              </Text>
-            ))}
-          </>
-        )}
-      </View>
-
-      <TouchableOpacity onPress={handleLogin} style={Styles.LoginBtn}>
-        <Text style={Styles.LoginTxt}>{translations.loginButton}</Text>
-      </TouchableOpacity>
-
-      <View
-        style={{ flexDirection: "row", alignItems: "center", marginTop: 40 }}
-      >
-        <Image source={Line} style={{ width: WindowWidth / 2.9, height: 2 }} />
-        <Text style={{ color: "#4C4C4C", marginLeft: 10, marginRight: 10 }}>
-          {translations.or}
-        </Text>
-        <Image source={Line} style={{ width: WindowWidth / 2.6, height: 2 }} />
-      </View>
-
-      <View style={styles.socialButtonsContainer}>
-        <SocialButton platform="Google" onPress={() => handleGoogleLogin()} />
-      </View>
-      <Text style={{ color: theme3.LightTxtClr, marginTop: 20 }}>
-        {translations.dontHaveAccount}{" "}
-        <Text
-          onPress={() => navigation.navigate("SignUpDecider")}
-          style={{
-            color: theme3.primaryColor,
-            fontWeight: "bold",
-            marginLeft: 10,
-          }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ImageBackground source={AuthBg} style={Styles.Container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContent}
+          keyboardShouldPersistTaps="handled"
         >
-          {translations.signUp}
-        </Text>
-      </Text>
+          <Image source={Logo} style={styles.logo} />
+
+          <View style={styles.formContainer}>
+            <Text style={styles.inputLabel}>{translations.username}</Text>
+            <View style={Styles.InputView}>
+              <TextInput
+                style={styles.input}
+                placeholder={translations.username}
+                value={username}
+                onChangeText={(e) => setUsername(e)}
+                autoCapitalize="none"
+                autoCompleteType="username"
+              />
+            </View>
+            {usernameError ? (
+              <Text style={styles.errorText}>{usernameError}</Text>
+            ) : null}
+
+            <View style={styles.passwordContainer}>
+              <Text style={styles.inputLabel}>{translations.password}</Text>
+              <TouchableOpacity onPress={handleForgotPassword}>
+                <Text style={styles.forgotPasswordText}>
+                  {translations.forgotPassword}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={Styles.InputView}>
+              <TextInput
+                style={styles.input}
+                placeholder={translations.password}
+                value={password}
+                onChangeText={(e) => setPassword(e)}
+                secureTextEntry={securetext}
+                autoCapitalize="none"
+                autoCompleteType="password"
+              />
+              <TouchableOpacity onPress={() => setSecureText((prev) => !prev)}>
+                <Image source={eye} style={styles.eyeIcon} />
+              </TouchableOpacity>
+            </View>
+            {passwordError ? (
+              <>
+                <Text style={styles.errorText}>{passwordError}</Text>
+                {passwordPolicy.map((item, index) => (
+                  <Text key={index} style={styles.policyText}>
+                    • {item}
+                  </Text>
+                ))}
+              </>
+            ) : null}
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={handleLogin}
+                style={styles.loginButton}
+              >
+                <Text style={styles.loginButtonText}>
+                  {translations.loginButton}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.orContainer}>
+              <Image source={Line} style={styles.line} />
+              <Text style={styles.orText}>{translations.or}</Text>
+              <Image source={Line} style={styles.line} />
+            </View>
+
+            <View style={styles.buttonContainer}>
+              <SocialButton
+                platform="Google"
+                onPress={() => handleGoogleLogin()}
+              />
+            </View>
+
+            <Text style={styles.signupPromptText}>
+              {translations.dontHaveAccount}{" "}
+              <Text
+                onPress={() => navigation.navigate("SignUpDecider")}
+                style={styles.signupLink}
+              >
+                {translations.signUp}
+              </Text>
+            </Text>
+          </View>
+        </ScrollView>
+      </ImageBackground>
       <LoadingModal show={loading} />
       <ErrorAlert
         show={errorModal}
@@ -352,29 +339,109 @@ const LoginScreen = () => {
         title={translations.errorLoginTitle}
         body={translations.errorLoginBody}
       />
-    </ImageBackground>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  Text: {
+  scrollViewContent: {
+    flexGrow: 1,
+    alignItems: "center",
+    paddingTop: 40,
+    paddingBottom: 20,
+  },
+  logo: {
+    width: 160,
+    height: 160,
+    marginBottom: 30,
+  },
+  formContainer: {
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  inputLabel: {
     color: "#4C4C4C",
-    margin: 5,
+    marginBottom: 5,
     fontWeight: "bold",
   },
-
-  PasswordTextView: {
-    marginTop: 25,
+  input: {
+    flex: 1,
+    marginLeft: 13,
+  },
+  passwordContainer: {
     flexDirection: "row",
-    width: WindowWidth / 1.08,
     justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 15,
+  },
+  forgotPasswordText: {
+    color: theme3.primaryColor,
+    fontWeight: "bold",
+  },
+  eyeIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 13,
+    tintColor: theme3.secondaryColor,
+  },
+  errorText: {
+    color: theme3.ErrorColor,
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  policyText: {
+    color: "#8A8A8A",
+    marginTop: 2,
+    marginLeft: 15,
+    fontSize: 12,
+  },
+  buttonContainer: {
+    marginTop: 20,
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  loginButton: {
+    backgroundColor: theme3.primaryColor,
+    paddingVertical: 16,
+    borderRadius: 10,
+    width: "90%",
+    alignItems: "center",
+  },
+  loginButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  orContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+    width: "90%",
+    alignSelf: "center",
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#4C4C4C",
+  },
+  orText: {
+    color: "#4C4C4C",
+    marginHorizontal: 10,
   },
   socialButtonsContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
     marginBottom: 20,
+  },
+  signupPromptText: {
+    color: theme3.LightTxtClr,
+    textAlign: "center",
+  },
+  signupLink: {
+    color: theme3.primaryColor,
+    fontWeight: "bold",
   },
 });
 

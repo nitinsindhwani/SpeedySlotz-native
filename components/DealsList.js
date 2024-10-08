@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  Image,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { theme3 } from "../assets/branding/themes";
@@ -46,29 +47,45 @@ const DealItem = ({ item, index, navigation }) => {
           navigation.navigate("DetailScreen", { business: item.business })
         }
       >
-        <Animated.View
-          style={[
-            styles.dealIconContainer,
-            { transform: [{ scale: scaleAnim }] },
-          ]}
-        >
-          <MaterialCommunityIcons name="fire" size={18} color="#FFFFFF" />
-        </Animated.View>
+        <Image
+          source={{
+            uri: item.imageUrl || "https://via.placeholder.com/220x120",
+          }}
+          style={styles.dealImage}
+        />
+        <View style={styles.dealHeader}>
+          <Animated.View
+            style={[
+              styles.dealIconContainer,
+              { transform: [{ scale: scaleAnim }] },
+            ]}
+          >
+            <MaterialCommunityIcons name="fire" size={18} color="#FFFFFF" />
+          </Animated.View>
+          <View style={styles.dealBadge}>
+            <Text style={styles.dealBadgeText}>{item.discount || "DEAL"}</Text>
+          </View>
+        </View>
         <View style={styles.dealContent}>
-          <Text style={styles.dealTitle} numberOfLines={1}>
+          <Text style={styles.dealTitle} numberOfLines={2}>
             {item.title}
           </Text>
           <Text style={styles.businessName} numberOfLines={1}>
             {item.businessName}
           </Text>
+          <Text style={styles.validUntil}>
+            Valid until {item.validUntil || "Limited time"}
+          </Text>
         </View>
+        <TouchableOpacity style={styles.bookNowButton}>
+          <Text style={styles.bookNowText}>Book Now</Text>
+        </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
   );
 };
-
 const DealsList = ({ deals, navigation }) => {
-  if (deals.length === 0) return null;
+  if (!deals || deals.length === 0) return null;
 
   return (
     <View style={styles.container}>
@@ -77,7 +94,7 @@ const DealsList = ({ deals, navigation }) => {
         renderItem={({ item, index }) => (
           <DealItem item={item} index={index} navigation={navigation} />
         )}
-        keyExtractor={(item, index) => `deal-${item.businessId}-${index}`}
+        keyExtractor={(item, index) => `deal-${item.id}-${index}`}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
@@ -85,7 +102,6 @@ const DealsList = ({ deals, navigation }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     marginVertical: 8,
@@ -101,24 +117,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   dealItem: {
-    flexDirection: "row",
-    alignItems: "center",
     backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    padding: 8,
-    marginRight: 12,
-    width: 200,
-    height: 50,
+    borderRadius: 12,
+    marginRight: 16,
+    width: 220,
+    height: 280, // Increased height to accommodate image
     borderWidth: 1,
     borderColor: theme3.primaryColor,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 4,
     elevation: 3,
+    overflow: "hidden", // To ensure image respects border radius
+  },
+  dealImage: {
+    width: "100%",
+    height: 120, // Adjust as needed
+    resizeMode: "cover",
+  },
+  dealHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 12,
   },
   dealIconContainer: {
-    marginRight: 10,
     backgroundColor: "#FF4136",
     borderRadius: 20,
     padding: 6,
@@ -127,18 +151,49 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  dealBadge: {
+    backgroundColor: theme3.primaryColor,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  dealBadgeText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
   dealContent: {
     flex: 1,
+    padding: 12,
   },
   dealTitle: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: "700",
     color: theme3.fontColor,
+    marginBottom: 4,
   },
   businessName: {
-    fontSize: 11,
+    fontSize: 14,
     color: theme3.fontColorI,
-    marginTop: 2,
+    marginBottom: 4,
+  },
+  validUntil: {
+    fontSize: 12,
+    color: theme3.fontColorI,
+    marginBottom: 8,
+  },
+  bookNowButton: {
+    backgroundColor: theme3.primaryColor,
+    borderRadius: 20,
+    paddingVertical: 8,
+    alignItems: "center",
+    marginHorizontal: 12,
+    marginBottom: 12,
+  },
+  bookNowText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
 

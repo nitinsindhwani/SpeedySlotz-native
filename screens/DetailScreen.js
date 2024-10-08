@@ -46,6 +46,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import * as FileSystem from "expo-file-system";
 import ReviewModal from "../screens/Modals/ReviewModal";
 const defaultImageUrl = require("../assets/images/defaultImage.png");
+import BusinessSettings from "../components/BusinessSettings";
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
 
@@ -833,7 +834,15 @@ function DetailScreen({ route }) {
             </View>
           </View>
         </View>
-
+        <View style={styles.workingHoursContainer}>
+          <View style={styles.workingHoursArea}>
+            <Text style={styles.label}>{translations.workingHours}</Text>
+            <BusinessSettings
+              settings={business.yelpBusinessSettings}
+              translations={translations}
+            />
+          </View>
+        </View>
         <CalenderCustom
           setSelectedDay={onDayPress}
           SlotAvailable={slots}
@@ -1210,11 +1219,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     marginTop: 5,
   },
+  workingHoursContainer: {
+    width: "100%",
+    paddingHorizontal: 5,
+    marginTop: 5,
+  },
+
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     color: theme3.fontColor,
-    marginBottom: 5,
+  },
+  workingHoursArea: {
+    marginBottom: 16,
+    width: WindowWidth / 1.03,
+    padding: 10,
+    shadowColor: "rgba(0,0,0,0.1)",
+    elevation: 2,
+    shadowOpacity: 4,
+    borderRadius: 10,
+    backgroundColor: theme3.GlobalBg,
   },
   input: {
     marginBottom: 16,

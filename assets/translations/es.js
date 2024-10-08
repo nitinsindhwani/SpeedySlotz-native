@@ -300,16 +300,92 @@ export default {
   contactUsText:
     "Si tienes alguna pregunta o inquietud sobre estos Términos, por favor contáctanos en info@speedyslotz.com. Siempre estamos disponibles para resolver tus inquietudes y proporcionar claridad cuando sea necesario.",
 
-  referEarnTitle: "Recomienda y Gana",
-  referYourFriends: "Recomienda a tus Amigos",
-  inviteFriendsText:
-    "¡Invita a tus amigos a unirse a SpeedySlotz! Por cada amigo que se registre y complete su primera reserva, ambos ganarán 500 SpeedyPoints. Acumula puntos para desbloquear descuentos exclusivos, reservas prioritarias y más. ¡Compartir es cuidar, y también es recompensar!",
-  yourReferralCode: "Tu Código de Referencia",
+  yourRewards: "Tus Recompensas",
+  totalPoints: "Puntos Totales",
+  howToEarnPoints: "Cómo Ganar Puntos",
+  earnPointsDescription:
+    "¡Gana puntos completando varias acciones en la aplicación!",
+  signUp: "Registrarse",
+  firstBooking: "Primera Reserva",
+  completedBooking: "Reserva Completada",
+  leaveReview: "Dejar una Reseña",
+  points: "puntos",
+  referralProgram: "Programa de Referidos",
   shareCode: "Compartir Código",
+  referralCodeTitle: "Tu Código de Referido",
+  inviteFriendsText:
+    "¡Invita a tus amigos y gana puntos de bonificación cuando se registren!",
+  referEarnTitle: "Refiere y Gana",
+  referYourFriends: "Refiere a Tus Amigos",
+  inviteFriendsText:
+    "¡Invita a tus amigos a unirse a SpeedySlotz! Por cada amigo que se registre y complete su primera reserva, ambos ganarán 500 SpeedyPoints. Acumula puntos para desbloquear descuentos exclusivos, reservas prioritarias y más. ¡Compartir es cuidar - y recompensa!",
+  yourReferralCode: "Tu Código de Referido",
   shareMessage:
-    "¡Hola! Únete a mí en SpeedySlotz, la forma más fácil de reservar tus citas rápidamente. Usa mi código de referencia '{referralCode}' cuando te registres, y ambos seremos recompensados con SpeedyPoints. Disfrutemos de la conveniencia juntos. Descarga la aplicación ahora: [Enlace de la aplicación]",
+    "¡Hola! Únete a mí en SpeedySlotz, la forma más fácil de reservar tus citas rápidamente. Usa mi código de referido '{referralCode}' cuando te registres, ¡y ambos seremos recompensados con SpeedyPoints! Disfrutemos juntos de la comodidad. Descarga la aplicación ahora: [Enlace de la App]",
   shareError:
     "No se puede compartir en este momento. Por favor, inténtalo de nuevo más tarde.",
+  redeemDescription:
+    "¡Transforma tus SpeedyPoints en tarjetas de regalo de Amazon! Por cada 1,000 puntos que acumules, puedes canjear una tarjeta de regalo de Amazon de $10. No hay límite en la frecuencia de canje – tan pronto como alcances el umbral de 1,000 puntos, eres elegible para canjear.",
+  redeemWarning:
+    "Importante: Los puntos solo se pueden canjear en incrementos de 1,000. Los puntos canjeados no se pueden reembolsar ni transferir. Asegúrate de tener puntos suficientes y revisa tu selección antes de confirmar cualquier canje.",
+  downloadAppIOS: "Descargar para iOS",
+  downloadAppAndroid: "Descargar para Android",
+  redeemEligibility:
+    "Eres elegible para canjear cuando tengas al menos 1,000 puntos.",
+  currentPointsStatus: "Puntos actuales: {points}",
+  pointsToNextReward: "Puntos necesarios para la próxima recompensa: {points}",
+  signUpFriend: "Amigo se Registra",
+  signUpFriendDesc:
+    "Cuando un amigo usa tu código de referencia para registrarse",
+  firstBookingFriend: "Primera Reserva",
+  firstBookingFriendDesc:
+    "Cuando completes tu primera reserva y dejes una reseña.",
+  completedBookingDesc: "Cada vez que completas una reserva",
+  leaveReviewDesc: "Cuando dejas una reseña después de una reserva completada",
+  codeCopied: "¡Código Copiado!",
+  codeCopiedMessage: "El código de referencia ha sido copiado al portapapeles.",
+  tapToCopy: "Toca el código para copiarlo",
+  excitingShareMessage:
+    "🎉 ¡Noticias emocionantes! ¡Únete a mí en SpeedySlotz y ganemos juntos!",
+  referralCodeIntro: "Usa mi código de referencia",
+  benefitsIntro: "Esto es lo que obtendrás",
+  signUpBonus: "500 puntos de bonificación solo por registrarte",
+  firstBookingBonus: "100 puntos de bonificación en tu primera reserva",
+  exclusiveOffers: "Acceso a ofertas y descuentos exclusivos",
+  downloadAppPrompt:
+    "Descarga SpeedySlotz ahora y comienza a ganar recompensas:",
+  joinNowMessage:
+    "No te pierdas estos increíbles beneficios. ¡Únete ahora y ganemos juntos! 🚀",
+  redeemPoints: "Canjear Puntos",
+  availablePoints: "Puntos Disponibles",
+  minRedeemablePoints: "Puntos Mínimos Canjeables",
+  selectAmount: "Seleccionar Cantidad a Canjear",
+  points: "puntos",
+  amazonGiftCard: "Tarjeta de Regalo de Amazon",
+  redeemNow: "Canjear Ahora",
+  error: "Error",
+  success: "Éxito",
+  ok: "OK",
+  minimumRedeemError: "La cantidad mínima canjeable es de 1000 puntos.",
+  insufficientPointsMessage: "Necesitas al menos 1000 puntos para canjear.",
+  redeemSuccessMessage:
+    "¡Felicidades! Has canjeado con éxito ${amount} en Tarjetas de Regalo de Amazon.",
+  redeemInfo:
+    "El proceso de canje puede tardar hasta 24-48 horas. Recibirás un correo electrónico con tu código de tarjeta de regalo una vez que se complete el canje.",
+  amazonGiftCardReward: "¡Canjea puntos por Tarjetas de Regalo de Amazon!",
+  redeemDescription:
+    "¡Convierte tus puntos en recompensas! Por cada 1,000 puntos, obtén una Tarjeta de Regalo de Amazon de $10. ¡Comienza a canjear hoy!",
+  redeemInfo:
+    "Las tarjetas de regalo se enviarán a tu correo electrónico registrado dentro de las 24-48 horas posteriores al canje.",
+  referralCodeIntro: "👉 Usa mi código de referencia",
+  referralCodeValidity: "El código de referencia es válido por 48 horas.",
+
+  generateCode: "Generar Código de Referencia",
+  generatingCode: "Generando Código...",
+  codeGenerationError:
+    "No se pudo generar el código de referencia. Por favor, inténtelo de nuevo.",
+  userDataError:
+    "Datos de usuario no disponibles. Por favor, inténtelo más tarde.",
 
   howItWorksTitle: "Cómo funciona",
   browseServicesTitle: "Explorar Servicios",
@@ -484,6 +560,11 @@ export default {
   login: "Iniciar sesión",
   noAccount: "¿No tienes una cuenta?",
   signUp: "Regístrate",
+  passwordPolicyLength: "Al menos 8 caracteres de longitud",
+  passwordPolicyUppercase: "Una letra mayúscula",
+  passwordPolicyLowercase: "Una letra minúscula",
+  passwordPolicyNumber: "Un número",
+  passwordPolicySpecial: "Un carácter especial (@, $, !, %, *, ?, &, .)",
 
   resetYourPassword: "Restablecer tu contraseña",
   enterNewPassword: "Por favor, introduce tu nueva contraseña y confírmala.",
@@ -724,4 +805,13 @@ export default {
   loading: "Cargando...",
   okay: "Aceptar",
   cancel: "Cancelar",
+  mostPopular: "Tendencias",
+  whatsNew: "Novedades",
+
+  yes: "Sí",
+  no: "No",
+  emergencyHours: "Horario de Emergencia",
+  workingHours: "Horario de Trabajo",
+  closed: "Cerrado",
+  deleteAccount: "Eliminar Cuenta",
 };

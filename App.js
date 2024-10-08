@@ -33,6 +33,7 @@ import PreferredCategoriesScreen from "./screens/PreferredCategoriesScreen";
 import FavoritesScreen from "./screens/FavoritesScreen";
 import PrivacyScreen from "./screens/PrivacyScreen";
 import ReferScreen from "./screens/ReferScreen";
+import RedeemScreen from "./screens/RedeemScreen";
 import AboutSpeedySlotzScreen from "./screens/AboutSpeedySlotzScreen";
 import AboutUsScreen from "./screens/AboutUsScreen";
 import HelpCenterScreen from "./screens/HelpCenterScreen";
@@ -46,6 +47,7 @@ import BottomNavigation from "./screens/BottomNavigation/BottomNavigation";
 import SignUpDecider from "./screens/AuthScreens/SignUpDescider";
 import LanguageSelectionScreen from "./screens/LanguageSelectionScreen";
 import InitialSettingsScreen from "./screens/InitialSettingsScreen";
+import HomeScreen from "./screens/HomeScreen";
 import { app, auth, firestore, logAnalyticsEvent } from "./firebaseConfig";
 
 // Use auth, firestore, and logAnalyticsEvent as needed
@@ -84,11 +86,9 @@ const PushNotification = async () => {
   if (finalStatus !== "granted") {
     Alert.alert(
       "Notification Permission Required",
-      "SpeedySlotz needs notification permissions to keep you updated on your service requests and appointments. You can enable this in your device settings.",
-      [
-        { text: "Cancel", style: "cancel" },
-        { text: "Open Settings", onPress: () => Linking.openSettings() },
-      ]
+      "SpeedySlotz needs permission to send you notifications about important updates, such as service confirmations, appointment reminders, and booking changes. For example, we will notify you when a service provider accepts your request or if there are any changes to your booking.",
+
+      [{ text: "OK" }]
     );
     return { status: "denied", token: null };
   }
@@ -135,6 +135,11 @@ function WelcomeStack({ onComplete }) {
 function AppNavigator() {
   return (
     <Stack.Navigator>
+      <Stack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="ApptHistoryScreen" component={ApptHistoryScreen} />
       <Stack.Screen name="FavoritesScreen" component={FavoritesScreen} />
       <Stack.Screen
@@ -175,8 +180,8 @@ export default function App() {
       } else {
         // You might want to show an alert to the user here
         Alert.alert(
-          "Notification Permission",
-          "To receive important updates, please enable notifications in your device settings.",
+          "Allow Notifications to Stay Updated",
+          "SpeedySlotz needs permission to send you notifications about important updates, such as service confirmations, appointment reminders, and booking changes. For example, we will notify you when a service provider accepts your request or if there are any changes to your booking.",
           [{ text: "OK" }]
         );
       }
@@ -371,6 +376,7 @@ export default function App() {
               />
               <Stack.Screen name="PrivacyScreen" component={PrivacyScreen} />
               <Stack.Screen name="ReferScreen" component={ReferScreen} />
+              <Stack.Screen name="RedeemScreen" component={RedeemScreen} />
               <Stack.Screen name="AboutUsScreen" component={AboutUsScreen} />
               <Stack.Screen
                 name="AboutSpeedySlotzScreen"
@@ -398,6 +404,11 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen name="App" component={AppNavigator} />
+              <Stack.Screen
+                name="HomeScreen"
+                component={HomeScreen}
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </WebSocketProvider>

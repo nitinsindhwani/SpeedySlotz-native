@@ -50,6 +50,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
   const [favorites, setFavorites] = useState(initialFavorites);
   const [isDealModalVisible, setIsDealModalVisible] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [deals, setDeals] = useState([]);
   const [selectedDeal, setSelectedDeal] = useState([]);
   const { translations } = useContext(LanguageContext);
   const [reviews, setReviews] = useState([]);
@@ -68,7 +69,24 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     setSelectedBusinessIsRegistered(isRegistered);
     setIsReviewModalVisible(true);
   };
-
+  useEffect(() => {
+    if (fetchedBusinesses.length > 0) {
+      const extractedDeals = fetchedBusinesses
+        .filter(
+          (business) =>
+            business.yelpBusinessDeal && business.yelpBusinessDeal.length > 0
+        )
+        .map((business) => ({
+          id: business.yelpBusiness.id,
+          title: business.yelpBusinessDeal[0].title,
+          discount: business.yelpBusinessDeal[0].discount,
+          validUntil: business.yelpBusinessDeal[0].validUntil,
+          businessName: business.yelpBusiness.name,
+          imageUrl: business.yelpBusinessDeal[0].imageUrl || null,
+        }));
+      setDeals(extractedDeals);
+    }
+  }, [fetchedBusinesses]);
   const renderBadge = ({ item }) => {
     const badge = getBadgeDetails(item, translations);
     if (!badge) return null;
@@ -233,16 +251,11 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       setIsFav(val);
     }
 
-    const getEarliestSlot = (slots) => {
-      if (!slots || slots.length === 0) return null;
-
-      return slots.reduce((earliest, slot) => {
-        const slotDate = new Date(`${slot.date}T${slot.startTime}`);
-        if (!earliest || slotDate < earliest) {
-          return slotDate;
-        }
-        return earliest;
-      }, null);
+    const getEarliestSlot = (earliestSlotDate, earliestSlotTime) => {
+      if (earliestSlotDate && earliestSlotTime) {
+        return new Date(`${earliestSlotDate}T${earliestSlotTime}`);
+      }
+      return null;
     };
 
     const formatSlotDateTime = (date) => {
@@ -270,10 +283,14 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       return `${month} ${day} - ${time}`;
     };
 
-    const earliestSlot = getEarliestSlot(item.slots);
+    const earliestSlot = getEarliestSlot(
+      item.earliestSlotDate,
+      item.earliestSlotTime
+    );
+
     const bookButtonText = earliestSlot
       ? `Book | ${formatSlotDateTime(earliestSlot)}`
-      : translations.bookNow; // Changed this line
+      : translations.bookNow;
 
     const getTierLevel = (score) => {
       if (score < 100)

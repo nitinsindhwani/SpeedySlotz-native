@@ -15,6 +15,7 @@ import FavoritesScreen from "../FavoritesScreen";
 import ApptHistoryScreen from "../ApptHistoryScreen";
 import Chat from "../Chat.js/ChatScreen";
 import NewJobScreen from "../NewJobScreen";
+import HomeScreen from "../HomeScreen";
 const Tab = createBottomTabNavigator();
 
 const BottomNavigation = ({ route }) => {
@@ -41,7 +42,7 @@ const BottomNavigation = ({ route }) => {
             case "Favourite":
               iconName = focused ? "heart" : "heart-outline";
               return <Ionicons name={iconName} size={30} color={color} />;
-            case "NewJob":
+            case "LandingScreen":
               return (
                 <View
                   style={{
@@ -53,7 +54,7 @@ const BottomNavigation = ({ route }) => {
                     backgroundColor: theme3.primaryColor,
                   }}
                 >
-                  <Ionicons name="add-circle" size={36} color="white" />
+                  <FontAwesome5 name="compass" size={36} color="white" solid />
                 </View>
               );
             case "Appointments":
@@ -74,9 +75,15 @@ const BottomNavigation = ({ route }) => {
         },
       })}
     >
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Home"
         component={LandingScreen}
+        options={{ headerShown: false }}
+        initialParams={{ user }}
+      /> */}
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
         options={{ headerShown: false }}
         initialParams={{ user }}
       />
@@ -87,8 +94,8 @@ const BottomNavigation = ({ route }) => {
         initialParams={{ user }}
       />
       <Tab.Screen
-        name="NewJob"
-        component={NewJobScreen}
+        name="LandingScreen"
+        component={LandingScreen}
         options={{ headerShown: false }}
         initialParams={{ user }}
       />

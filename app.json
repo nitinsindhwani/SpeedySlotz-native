@@ -1,5 +1,6 @@
 {
   "expo": {
+    "sdkVersion": "50.0.0",
     "name": "SpeedySlotz",
     "slug": "speedySlotzfinalapp",
     "version": "1.0.2",
@@ -11,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "scheme": "speedyslotz",
     "ios": {
       "supportsTablet": true,
@@ -21,9 +20,7 @@
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
       "buildNumber": "41",
       "infoPlist": {
-        "UIBackgroundModes": [
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["remote-notification"]
       }
     },
     "android": {

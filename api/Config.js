@@ -1,9 +1,9 @@
-import * as AuthSession from "expo-auth-session";
+import { makeRedirectUri } from "expo-auth-session";
 
 export const clientId = "speedyslotsapp";
 export const apiKey = "AIzaSyA0lolNAdaUEWUslsIPxKajib9p0kToU1U";
 
-//export const redirectUri = "exp://192.168.254.197:8081";
+// export const redirectUri = "exp://192.168.254.197:8081";
 // export const baseApiUrl = "http://192.168.254.197:8080";
 // export const baseKeyCloakUrl = "http://192.168.254.197:8280";
 // export const baseKeyCloakCompleteUrl =
@@ -11,7 +11,6 @@ export const apiKey = "AIzaSyA0lolNAdaUEWUslsIPxKajib9p0kToU1U";
 // export const keycloakTokenCompleteUrl =
 //   "http://192.168.254.197:8280/realms/speedyslotz-dev/protocol/openid-connect/token";
 
-export const redirectUri = "speedyslotz://auth";
 export const baseApiUrl = "https://api.speedyslotz.com"; // Replace this with your actual login API URL
 export const baseKeyCloakUrl = "https://keycloak.speedyslotz.com";
 export const baseKeyCloakCompleteUrl =

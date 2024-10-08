@@ -95,11 +95,12 @@ const ApptConfirmationScreen = ({ route }) => {
 
   const handleAddToCalendar = async () => {
     try {
+      // Request calendar permission with a clear message
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status !== "granted") {
         showErrorAlert(
-          "Permission Denied",
-          "Permission to access calendar was denied"
+          "Calendar Access Required",
+          "SpeedySlotz needs access to your calendar to add the appointment details. Please grant calendar access in your device settings."
         );
         return;
       }

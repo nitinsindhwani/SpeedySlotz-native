@@ -109,7 +109,7 @@ const NewJobScreen = ({ route }) => {
       const matchingService = userCategoriesData.find(
         (service) => service.serviceTypeName === selectedServiceTypeName
       );
-      
+
       if (matchingService) {
         setSelectedCategoryId(matchingService.category_id);
       }
@@ -318,7 +318,7 @@ const NewJobScreen = ({ route }) => {
       profilesAttached: attachedProfiles,
       categoryId: selectedCategoryId,
     };
-    console.log("SlotData", JSON.stringify(slotData));
+
     formData.append("slot", JSON.stringify(slotData));
 
     selectedImages.forEach((imageUri, index) => {

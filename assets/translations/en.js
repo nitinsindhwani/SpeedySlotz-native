@@ -299,15 +299,91 @@ export default {
   contactUsText:
     "If you have any questions or concerns about these Terms, please contact us at info@speedyslotz.com. We are always available to address your concerns and provide clarity where needed.",
 
+  yourRewards: "Your Rewards",
+  totalPoints: "Total Points",
+  howToEarnPoints: "How to Earn Points",
+  earnPointsDescription:
+    "Earn points by completing various actions in the app!",
+  signUp: "Sign Up",
+  firstBooking: "First Booking",
+  completedBooking: "Completed Booking",
+  leaveReview: "Leave a Review",
+  points: "points",
+  referralProgram: "Referral Program",
+  shareCode: "Share Code",
+  referralCodeTitle: "Your Referral Code",
+  inviteFriendsText:
+    "Invite your friends and earn bonus points when they sign up!",
   referEarnTitle: "Refer & Earn",
   referYourFriends: "Refer Your Friends",
   inviteFriendsText:
     "Invite your friends to join SpeedySlotz! For every friend who signs up and completes their first booking, you'll both earn 500 SpeedyPoints. Accumulate points to unlock exclusive discounts, priority booking, and more. Sharing is caring - and rewarding!",
   yourReferralCode: "Your Referral Code",
-  shareCode: "Share Code",
   shareMessage:
     "Hey! Join me on SpeedySlotz, the easiest way to book your slots quickly. Use my referral code '{referralCode}' when you sign up, and we both get rewarded with SpeedyPoints! Let's enjoy the convenience together. Download the app now: [App Link]",
   shareError: "Unable to share at the moment. Please try again later.",
+  howToRedeemPoints: "How to Redeem Points",
+  redeemDescription:
+    "Transform your SpeedyPoints into Amazon gift cards! For every 1,000 points you accumulate, you can redeem a $10 Amazon gift card. There's no limit to how often you can redeem – as soon as you reach the 1,000 point threshold, you're eligible for redemption.",
+  redeemWarning:
+    "Please note: Points can only be redeemed in increments of 1,000. Redeemed points cannot be refunded or transferred. Ensure you have sufficient points and review your selection before confirming any redemption.",
+  downloadAppIOS: "Download for iOS",
+  downloadAppAndroid: "Download for Android",
+  redeemEligibility:
+    "You are eligible to redeem when you have at least 1,000 points.",
+  currentPointsStatus: "Current Points: {points}",
+  pointsToNextReward: "Points needed for next reward: {points}",
+
+  signUpFriend: "Friend Signs Up",
+  signUpFriendDesc: "When a friend uses your referral code to sign up",
+  firstBookingFriend: "First Booking",
+  firstBookingFriendDesc:
+    "When you complete your first booking and leave a review.",
+  completedBookingDesc: "Every time you complete a booking",
+  leaveReviewDesc: "When you leave a review after a completed booking",
+  codeCopied: "Code Copied!",
+  codeCopiedMessage: "Referral code has been copied to clipboard.",
+  tapToCopy: "Tap the code to copy",
+  excitingShareMessage:
+    "🎉 Exciting news! Join me on SpeedySlotz and let's both win!",
+  referralCodeIntro: "Use my referral code",
+  referralCodeValidity: "Referral code is valid for 48 hours.",
+  generateCode: "Generate Referral Code",
+  generatingCode: "Generating Code...",
+  codeGenerationError: "Failed to generate referral code. Please try again.",
+  userDataError: "User data not available. Please try again later.",
+
+  benefitsIntro: "Here's what you'll get",
+  signUpBonus: "500 points bonus just for signing up",
+  firstBookingBonus: "100 points bonus on your first booking",
+  exclusiveOffers: "Access to exclusive offers and discounts",
+  downloadAppPrompt: "Download SpeedySlotz now and start earning rewards:",
+  joinNowMessage:
+    "Don't miss out on these amazing benefits. Join now and let's earn together! 🚀",
+
+  redeemPoints: "Redeem Points",
+  availablePoints: "Available Points",
+  minRedeemablePoints: "Minimum Redeemable Points",
+  selectAmount: "Select Amount to Redeem",
+  points: "points",
+  amazonGiftCard: "Amazon Gift Card",
+  redeemNow: "Redeem Now",
+  error: "Error",
+  success: "Success",
+  ok: "OK",
+  minimumRedeemError: "The minimum redeemable amount is 1000 points.",
+  insufficientPointsMessage: "You need at least 1000 points to redeem.",
+  redeemSuccessMessage:
+    "Congratulations! You've successfully redeemed ${amount} in Amazon Gift Cards.",
+  redeemInfo:
+    "Redemption process may take up to 24-48 hours. You will receive an email with your gift card code once the redemption is complete.",
+
+  amazonGiftCardReward: "Redeem points for Amazon Gift Cards!",
+  redeemDescription:
+    "Turn your points into rewards! For every 1,000 points, get a $10 Amazon Gift Card. Start redeeming today!",
+  redeemInfo:
+    "Gift cards will be sent to your registered email within 24-48 hours of redemption.",
+  referralCodeIntro: "👉 Use my referral code",
 
   howItWorksTitle: "How it works",
   browseServicesTitle: "Browse Services",
@@ -479,6 +555,12 @@ export default {
   login: "Login",
   noAccount: "Don't have an account?",
   signUp: "Sign up",
+  passwordPolicyLength: "At least 8 characters long",
+  passwordPolicyUppercase: "One uppercase letter",
+  passwordPolicyLowercase: "One lowercase letter",
+  passwordPolicyNumber: "One number",
+  passwordPolicySpecial: "One special character (@, $, !, %, *, ?, &, .)",
+
 
   resetYourPassword: "Reset Your Password",
   enterNewPassword: "Please enter your new password and confirm it.",
@@ -706,4 +788,13 @@ export default {
   loading: "Loading...",
   okay: "Okay",
   cancel: "Cancel",
+  mostPopular: "Trending",
+  whatsNew: "What's New",
+
+  yes: "Yes",
+  no: "No",
+  emergencyHours: "Emergency Hours",
+  workingHours: "Working Hours",
+  closed: "Closed",
+  deleteAccount: "Delete Account",
 };
