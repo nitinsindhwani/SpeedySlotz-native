@@ -297,8 +297,6 @@ export default {
   changesToTermsText:
     "Podemos actualizar nuestros Términos y Condiciones de vez en cuando para reflejar cambios en nuestros servicios, requisitos legales y regulatorios, u otras razones. Animamos a los usuarios a revisar regularmente nuestros términos para mantenerse informados. El uso continuado de nuestros servicios después de que se hayan realizado cambios implica la aceptación de esos cambios.",
   contactUsTitle: "Contáctanos",
-  contactUsText:
-    "Si tienes alguna pregunta o inquietud sobre estos Términos, por favor contáctanos en info@speedyslotz.com. Siempre estamos disponibles para resolver tus inquietudes y proporcionar claridad cuando sea necesario.",
 
   yourRewards: "Tus Recompensas",
   totalPoints: "Puntos Totales",
@@ -440,7 +438,6 @@ export default {
   errorFetchingBusinesses: "Error al obtener negocios:",
 
   noDataFound: "No se encontraron datos",
-  loading: "Cargando...",
   failedToAddFavorite: "Error al agregar a favoritos:",
   failedToRemoveFavorite: "Error al eliminar de favoritos:",
 
@@ -734,8 +731,6 @@ export default {
     "Algunos archivos seguían siendo demasiado grandes después de la compresión y no se añadieron.",
   maxImagesReached: "Se alcanzó el número máximo de imágenes (5)",
   maxVideosReached: "Se alcanzó el número máximo de videos (1)",
-  someFilesStillTooLarge:
-    "Algunos archivos eran demasiado grandes y no se añadieron",
   maxImagesAllowed: "Máximo de imágenes permitidas",
   maxVideoAllowed: "Máximo de videos permitidos",
   maxSizePerImage: "Tamaño máximo por imagen",
@@ -760,8 +755,7 @@ export default {
   maxProfilesReached: "Se ha alcanzado el número máximo de perfiles.",
   maxImagesReached: "Se ha alcanzado el número máximo de imágenes.",
   maxVideosReached: "Se ha alcanzado el número máximo de videos.",
-  someFilesStillTooLarge:
-    "Algunos archivos eran demasiado grandes y no se pudieron agregar.",
+
   imagesNotAdded: "No se pudieron agregar las imágenes.",
   videoNotAdded: "No se pudo agregar el video.",
   completeSelections: "Por favor, complete todas las selecciones",
@@ -802,7 +796,6 @@ export default {
     "Ocurrió un error durante el cierre de sesión. Por favor, intente de nuevo.",
   settings: "Ajustes",
   version: "Versión",
-  loading: "Cargando...",
   okay: "Aceptar",
   cancel: "Cancelar",
   mostPopular: "Tendencias",

@@ -1,6 +1,5 @@
 {
   "expo": {
-    "sdkVersion": "50.0.0",
     "name": "SpeedySlotz",
     "slug": "speedySlotzfinalapp",
     "version": "1.0.2",
@@ -12,15 +11,18 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "scheme": "speedyslotz",
     "ios": {
       "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
-      "buildNumber": "41",
+      "buildNumber": "49",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -28,7 +30,6 @@
         "foregroundImage": "./assets/android_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "googleServicesFile": "./google-services.json",
       "package": "com.speedyzslotznitinapp.app",
       "versionCode": 52,
       "permissions": [
@@ -52,15 +53,11 @@
           "color": "#ffffff"
         }
       ],
-      "@react-native-firebase/app",
       [
         "expo-build-properties",
         {
           "ios": {
             "useFrameworks": "static"
-          },
-          "android": {
-            "googleServicesVersion": "4.3.15"
           }
         }
       ]

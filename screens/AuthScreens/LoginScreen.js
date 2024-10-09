@@ -26,7 +26,7 @@ import { PushNotification } from "../../api/PushNotification";
 import LoadingModal from "../GlobalComponents/LoadingModal";
 import ErrorAlert from "../GlobalComponents/ErrorAlert";
 import { LanguageContext } from "../../api/LanguageContext";
-import { logAnalyticsEvent } from "../../firebaseConfig";
+// import { logAnalyticsEvent } from "../../firebaseConfig";
 import eye from "../../assets/newimage/eye.png";
 import AuthBg from "../../assets/newimage/AuthBg.png";
 import Logo from "../../assets/newimage/Logo1.png";
@@ -179,7 +179,7 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    logAnalyticsEvent("login", { method: "email" });
+    // logAnalyticsEvent("login", { method: "email" });
     if (!validateForm()) {
       return;
     }

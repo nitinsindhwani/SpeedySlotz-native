@@ -66,7 +66,6 @@ export default {
   // Other common terms
   error: "Error",
   success: "Success",
-  loading: "Loading...",
   retry: "Retry",
   noData: "No data available",
 
@@ -296,9 +295,6 @@ export default {
   changesToTermsText:
     "We may update our Terms and Conditions from time to time to reflect changes in our services, legal and regulatory requirements, or for other reasons. We encourage users to regularly review our terms to stay informed. Continued use of our services after changes have been made implies acceptance of those changes.",
   contactUsTitle: "Contact Us",
-  contactUsText:
-    "If you have any questions or concerns about these Terms, please contact us at info@speedyslotz.com. We are always available to address your concerns and provide clarity where needed.",
-
   yourRewards: "Your Rewards",
   totalPoints: "Total Points",
   howToEarnPoints: "How to Earn Points",
@@ -561,7 +557,6 @@ export default {
   passwordPolicyNumber: "One number",
   passwordPolicySpecial: "One special character (@, $, !, %, *, ?, &, .)",
 
-
   resetYourPassword: "Reset Your Password",
   enterNewPassword: "Please enter your new password and confirm it.",
   newPassword: "New Password",
@@ -718,8 +713,6 @@ export default {
   fileSizeNote: "Maximum file size for",
   images: "images",
   videos: "videos",
-  someFilesStillTooLarge:
-    "Some files were still too large after compression and were not added.",
   maxImagesReached: "Maximum number of images (5) reached",
   maxVideosReached: "Maximum number of videos (1) reached",
   someFilesStillTooLarge: "Some files were too large and were not added",
@@ -746,7 +739,6 @@ export default {
   maxProfilesReached: "Maximum number of profiles reached.",
   maxImagesReached: "Maximum number of images reached.",
   maxVideosReached: "Maximum number of videos reached.",
-  someFilesStillTooLarge: "Some files were too large and couldn't be added.",
   imagesNotAdded: "Images could not be added.",
   videoNotAdded: "Video could not be added.",
   completeSelections: "Please complete all selections",
@@ -785,7 +777,6 @@ export default {
   generalErrorMessage: "An error occurred during logout. Please try again.",
   settings: "Settings",
   version: "Version",
-  loading: "Loading...",
   okay: "Okay",
   cancel: "Cancel",
   mostPopular: "Trending",

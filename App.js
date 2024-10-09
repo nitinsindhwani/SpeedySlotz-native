@@ -48,7 +48,7 @@ import SignUpDecider from "./screens/AuthScreens/SignUpDescider";
 import LanguageSelectionScreen from "./screens/LanguageSelectionScreen";
 import InitialSettingsScreen from "./screens/InitialSettingsScreen";
 import HomeScreen from "./screens/HomeScreen";
-import { app, auth, firestore, logAnalyticsEvent } from "./firebaseConfig";
+// import { app, auth, firestore, logAnalyticsEvent } from "./firebaseConfig";
 
 // Use auth, firestore, and logAnalyticsEvent as needed
 import { TextEncoder, TextDecoder } from "text-encoding";
@@ -170,7 +170,6 @@ export default function App() {
   const [hasSeenWelcome, setHasSeenWelcome] = useState(null);
 
   useEffect(() => {
-    logAnalyticsEvent("app_open");
     const setupNotifications = async () => {
       const result = await PushNotification();
       setNotificationStatus(result.status);

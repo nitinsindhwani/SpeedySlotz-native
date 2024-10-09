@@ -31,7 +31,7 @@ import InLineLoader from "./GlobalComponents/InLineLoader";
 import LoadingModal from "./GlobalComponents/LoadingModal";
 import yelp from "../assets/images/yelp_logo.png";
 import SortModal from "../screens/Filters/SortModal";
-import { logAnalyticsEvent } from "../firebaseConfig";
+// import { logAnalyticsEvent } from "../firebaseConfig";
 import UserGuide from "../components/UserGuide";
 import DealsList from "../components/DealsList";
 const LandingScreen = ({ route }) => {
@@ -278,7 +278,6 @@ const LandingScreen = ({ route }) => {
     setSelectedDate(newDate);
   };
   const checkAndUpdatePushToken = async () => {
-    logAnalyticsEvent("landingScreen", { method: "checkAndUpdatePushToken" });
     try {
       const currentPushToken = await PushNotification();
 

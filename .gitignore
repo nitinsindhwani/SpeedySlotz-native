@@ -93,3 +93,9 @@ package-lock.json
 package-lock.json
 package-lock.json
 package-lock.json
+
+# Expo
+.expo
+dist/
+web-build/
+package-lock.json

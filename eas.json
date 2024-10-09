@@ -1,7 +1,6 @@
 {
   "cli": {
-    "version": ">= 7.3.0",
-    "appVersionSource": "remote"
+    "version": ">= 7.3.0"
   },
   "build": {
     "development": {
@@ -13,9 +12,6 @@
       "ios": {
         "simulator": true,
         "buildConfiguration": "Debug"
-      },
-      "env": {
-        "EXPO_PUBLIC_FIREBASE_ENABLED": "true"
       }
     },
     "preview": {
