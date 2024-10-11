@@ -20,7 +20,7 @@ import { LanguageContext } from "../api/LanguageContext";
 import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
 import { LinearGradient } from "expo-linear-gradient";
-import ConfettiCannon from "react-native-confetti-cannon";
+// import ConfettiCannon from "react-native-confetti-cannon";
 import { redeemUserPoints, getStoredUser } from "../api/ApiCall";
 import ErrorAlert from "../screens/GlobalComponents/ErrorAlert";
 
@@ -161,48 +161,52 @@ const RedeemScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       {showConfetti && (
-        <View style={styles.confettiContainer}>
-          <ConfettiCannon
-            key={confettiKey}
-            count={300}
-            origin={{ x: -10, y: 0 }}
-            autoStart={true}
-            fadeOut={true}
-            fallSpeed={2500}
-            explosionSpeed={350}
-            colors={[
-              "#ff0000",
-              "#00ff00",
-              "#0000ff",
-              "#ffff00",
-              "#ff00ff",
-              "#00ffff",
-              "#ffa500",
-              "#800080",
-            ]}
-            multiple={3}
-          />
-          <ConfettiCannon
-            key={confettiKey + 1}
-            count={300}
-            origin={{ x: width + 10, y: 0 }}
-            autoStart={true}
-            fadeOut={true}
-            fallSpeed={2500}
-            explosionSpeed={350}
-            colors={[
-              "#ff0000",
-              "#00ff00",
-              "#0000ff",
-              "#ffff00",
-              "#ff00ff",
-              "#00ffff",
-              "#ffa500",
-              "#800080",
-            ]}
-            multiple={3}
-          />
-        </View>
+        <>
+        </>
+        // <View style={styles.confettiContainer}>
+        //   <ConfettiCannon
+        //     key={confettiKey}
+        //     count={300}
+        //     origin={{ x: -10, y: 0 }}
+        //     autoStart={true}
+        //     fadeOut={true}
+        //     fallSpeed={2500}
+        //     explosionSpeed={350}
+        //     colors={[
+        //       "#ff0000",
+        //       "#00ff00",
+        //       "#0000ff",
+        //       "#ffff00",
+        //       "#ff00ff",
+        //       "#00ffff",
+        //       "#ffa500",
+        //       "#800080",
+        //     ]}
+        //     multiple={3}
+        //   />
+        //   <ConfettiCannon
+        //     key={confettiKey + 1}
+        //     count={300}
+        //     origin={{ x: width + 10, y: 0 }}
+        //     autoStart={true}
+        //     fadeOut={true}
+        //     fallSpeed={2500}
+        //     explosionSpeed={350}
+        //     colors={[
+        //       "#ff0000",
+        //       "#00ff00",
+        //       "#0000ff",
+        //       "#ffff00",
+        //       "#ff00ff",
+        //       "#00ffff",
+        //       "#ffa500",
+        //       "#800080",
+        //     ]}
+        //     multiple={3}
+        //   />
+       
+       
+        // </View>
       )}
 
       <Header
