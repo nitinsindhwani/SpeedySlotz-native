@@ -56,17 +56,37 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
     return moment(dateString).format("LL");
   };
 
-  const formatTime = (timeString) => {
-    if (!timeString) {
+  const formatTime = (timeValue) => {
+    // Check if timeValue is undefined or null
+    if (!timeValue) {
       return "-";
     }
 
-    const [hours, minutes] = timeString.split(":");
-    const date = new Date();
-    date.setHours(parseInt(hours));
-    date.setMinutes(parseInt(minutes));
-    const options = { hour: "2-digit", minute: "2-digit", hour12: true };
-    return date.toLocaleTimeString(undefined, options);
+    // Handle the case where timeValue is an array, e.g., [hours, minutes]
+    if (Array.isArray(timeValue) && timeValue.length === 2) {
+      const [hours, minutes] = timeValue;
+
+      // Format time using the Date object
+      const date = new Date();
+      date.setHours(hours);
+      date.setMinutes(minutes);
+      const options = { hour: "2-digit", minute: "2-digit", hour12: true };
+      return date.toLocaleTimeString(undefined, options);
+    }
+
+    // Handle the case where timeValue is a string (expected format: "HH:MM")
+    if (typeof timeValue === "string" && timeValue.includes(":")) {
+      const [hours, minutes] = timeValue.split(":");
+
+      const date = new Date();
+      date.setHours(parseInt(hours));
+      date.setMinutes(parseInt(minutes));
+      const options = { hour: "2-digit", minute: "2-digit", hour12: true };
+      return date.toLocaleTimeString(undefined, options);
+    }
+
+    // Default fallback if timeValue is of an unexpected type
+    return "Invalid time";
   };
 
   const handleCloseError = () => setShowError(false);

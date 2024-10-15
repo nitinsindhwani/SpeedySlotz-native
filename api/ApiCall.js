@@ -384,38 +384,42 @@ export const fetchFavorites = async () => {
 };
 
 export const fetchNotifications = async () => {
-  const secureToken = await getStoredToken();
+  try {
+    const secureToken = await getStoredToken();
 
-  const response = await fetch(
-    baseApiUrl + "/api/v1/notifications/getNotifications",
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${secureToken}`,
-        "Content-Type": "application/json",
-      },
+    const response = await fetch(
+      baseApiUrl + "/api/v1/notifications/getNotifications",
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${secureToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error("API Response:", await response.text());
+      throw new Error("Failed to fetch notifications");
     }
-  );
 
-  if (!response.ok) {
-    console.error("API Response:", await response.text());
-    throw new Error("Failed to fetch favorites");
+    // Parse the response as JSON
+    const notifications = await response.json();
+
+    console.log("Fetched notifications:", notifications); // Log the fetched data
+
+    // Check if notifications is available and is an array
+    if (!Array.isArray(notifications)) {
+      console.error("Notifications is not an array:", notifications);
+      throw new Error("Notifications data is not in the expected format");
+    }
+
+    return notifications;
+  } catch (error) {
+    console.error("Error in fetchNotifications:", error);
+    throw error;
   }
-
-  // Parse the response as JSON
-  const notifications = await response.json();
-
-  // For debugging purposes, it's good to log the parsedResponse to understand its structure
-
-  // Check if businesses is available
-  if (!notifications) {
-    console.error("notifications not found in response");
-    throw new Error("Notifications data missing");
-  }
-
-  return notifications;
 };
-
 export const deleteNotifications = async (notificationId) => {
   const secureToken = await getStoredToken();
 
@@ -476,10 +480,11 @@ export const fetchBookings = async (bookingType) => {
 };
 
 export const saveProfiles = async (profileData) => {
+  console.log("profileData", profileData);
   const saveProfileInfoUrl = baseApiUrl + "/api/user-profile/save";
   try {
     const secureToken = await getStoredToken();
-
+    console.log("secureToken", secureToken);
     const headers = {
       Authorization: `Bearer ${secureToken}`,
       "Content-Type": "application/json",
@@ -491,8 +496,8 @@ export const saveProfiles = async (profileData) => {
 
     return response;
   } catch (error) {
-    console.error("Signup failed:", error.message);
-    throw new Error("Signup failed. Please check your data and try again.");
+    console.error("Update failed:", error.message);
+    throw new Error("Update failed. Please check your data and try again.");
   }
 };
 

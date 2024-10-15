@@ -252,14 +252,48 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     }
 
     const getEarliestSlot = (earliestSlotDate, earliestSlotTime) => {
-      if (earliestSlotDate && earliestSlotTime) {
-        return new Date(`${earliestSlotDate}T${earliestSlotTime}`);
+      if (!earliestSlotDate || !earliestSlotTime) {
+        // Return null if either date or time is not yet available
+        return null;
       }
-      return null;
+
+      try {
+        // Ensure both date and time are arrays
+        if (
+          Array.isArray(earliestSlotDate) &&
+          Array.isArray(earliestSlotTime)
+        ) {
+          // Construct the date using the year, month, and day, adjusting month index as JS Date months are 0-based
+          const year = earliestSlotDate[0];
+          const month = earliestSlotDate[1] - 1; // Month is 0-based in JS Date
+          const day = earliestSlotDate[2];
+          const hours = earliestSlotTime[0];
+          const minutes = earliestSlotTime[1];
+
+          // Create the date object
+          const slotDate = new Date(year, month, day, hours, minutes);
+
+          if (!isNaN(slotDate.getTime())) {
+            return slotDate;
+          } else {
+            console.warn("Invalid date or time format");
+            return null;
+          }
+        } else {
+          console.warn("Date or time is not in expected array format");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error parsing date:", error);
+        return null;
+      }
     };
 
     const formatSlotDateTime = (date) => {
-      if (!date) return "";
+      if (!date || isNaN(date.getTime())) {
+        return "Loading..."; // Show a loading message if the date is not available yet
+      }
+
       const monthNames = [
         "Jan",
         "Feb",
@@ -274,12 +308,15 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         "Nov",
         "Dec",
       ];
+
       const month = monthNames[date.getMonth()];
       const day = date.getDate();
       const time = date.toLocaleTimeString([], {
         hour: "numeric",
         minute: "2-digit",
+        hour12: true,
       });
+
       return `${month} ${day} - ${time}`;
     };
 

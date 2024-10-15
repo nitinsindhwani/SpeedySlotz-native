@@ -83,12 +83,18 @@ const ApptConfirmationScreen = ({ route }) => {
   const handleCloseAlert = () => {
     setShowAlert(false);
   };
-  const formatTime = (timeString) => {
-    if (!timeString) return "";
-    const [hours, minutes] = timeString.split(":");
+  const formatTime = (timeArray) => {
+    // Ensure timeArray is a valid array with two elements
+    if (!Array.isArray(timeArray) || timeArray.length !== 2) {
+      return "Time not available"; // Fallback message
+    }
+
+    const [hours, minutes] = timeArray;
+
     const date = new Date();
-    date.setHours(parseInt(hours));
-    date.setMinutes(parseInt(minutes));
+    date.setHours(hours);
+    date.setMinutes(minutes);
+
     const options = { hour: "2-digit", minute: "2-digit", hour12: true };
     return date.toLocaleTimeString(undefined, options);
   };

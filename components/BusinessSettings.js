@@ -1,65 +1,75 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { theme3 } from "../assets/branding/themes";
 
 const BusinessSettings = ({ settings, translations }) => {
-  const workingDays = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-  ];
+  const workingDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  const formatTime = (time) => time.slice(0, 5);
+  const formatTime = (time) => {
+    if (Array.isArray(time) && time.length === 2) {
+      const [hours, minutes] = time;
+      return `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")}`;
+    }
+    return "00:00";
+  };
 
-  const renderWorkingHours = () => {
-    return workingDays.map((day) => (
-      <View key={day} style={styles.dayRow}>
-        <Text style={styles.dayText}>{translations[day].slice(0, 3)}</Text>
-        <Text style={styles.timeText}>
-          {settings[`${day}StartTime`] === "00:00:00" &&
-          settings[`${day}EndTime`] === "00:00:00"
-            ? translations.closed
-            : `${formatTime(settings[`${day}StartTime`])} - ${formatTime(
-                settings[`${day}EndTime`]
-              )}`}
-        </Text>
-      </View>
-    ));
+  const getWorkingHours = (day) => {
+    const fullDay = {
+      Mon: "monday",
+      Tue: "tuesday",
+      Wed: "wednesday",
+      Thu: "thursday",
+      Fri: "friday",
+      Sat: "saturday",
+      Sun: "sunday",
+    }[day];
+
+    const startTime = formatTime(settings[`${fullDay}StartTime`]);
+    const endTime = formatTime(settings[`${fullDay}EndTime`]);
+
+    if (startTime === "00:00" && endTime === "00:00") {
+      return "Closed";
+    }
+    return `${startTime}-${endTime}`;
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.workingHoursGrid}>{renderWorkingHours()}</View>
+      <View style={styles.workingHoursContainer}>
+        {workingDays.map((day) => (
+          <View key={day} style={styles.dayRow}>
+            <Text style={styles.dayText}>{day}</Text>
+            <Text style={styles.timeText}>{getWorkingHours(day)}</Text>
+          </View>
+        ))}
+      </View>
 
-      <View style={styles.policyContainer}>
+      <View style={styles.policiesContainer}>
         <PolicyItem
           icon="calendar-clock"
-          text={`${translations.cancel}: ${
-            settings.cancellationWindow / 60
-          }h before booking`}
+          text={`${translations.cancel}: ${settings.cancellationWindow / 60} ${
+            translations.beforeBooking
+          }`}
         />
         <PolicyItem
           icon="calendar-sync"
           text={`${translations.reschedule}: ${
             settings.rescheduleWindow / 60
-          }h before booking`}
+          } ${translations.beforeBooking}`}
         />
         <PolicyItem
           icon="clock-alert-outline"
-          text={
+          text={`${translations.emergency}: ${
+            settings.allowEmergencyRequest ? translations.yes : translations.no
+          }${
             settings.allowEmergencyRequest
-              ? `${translations.emergency}: ${translations.yes}, ${
-                  translations.emergencyHours
-                }: ${formatTime(settings.emergencyStartTime)} - ${formatTime(
-                  settings.emergencyEndTime
-                )}`
-              : `${translations.emergency}: ${translations.no}`
-          }
+              ? `, ${translations.emergencyHours}: ${formatTime(
+                  settings.emergencyStartTime
+                )}-${formatTime(settings.emergencyEndTime)}`
+              : ""
+          }`}
         />
       </View>
     </View>
@@ -68,43 +78,53 @@ const BusinessSettings = ({ settings, translations }) => {
 
 const PolicyItem = ({ icon, text }) => (
   <View style={styles.policyItem}>
-    <MaterialCommunityIcons name={icon} size={16} color={theme3.primaryColor} />
+    <MaterialCommunityIcons name={icon} size={18} color="#007AFF" />
     <Text style={styles.policyText}>{text}</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: theme3.GlobalBg,
-    marginTop: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
     padding: 15,
-    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  workingHoursGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+  },
+  workingHoursContainer: {
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+    paddingBottom: 10,
   },
   dayRow: {
-    width: "48%",
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    paddingVertical: 4,
   },
   dayText: {
     fontSize: 14,
-    color: theme3.fontColor,
     fontWeight: "bold",
+    color: "#333",
+    width: "20%",
   },
   timeText: {
     fontSize: 14,
-    color: theme3.fontColorI,
+    color: "#555",
+    width: "80%",
+    textAlign: "right",
   },
-  policyContainer: {
-    marginTop: 15,
-    borderTopWidth: 1,
-    borderTopColor: theme3.inActive,
-    paddingTop: 15,
+  policiesContainer: {
+    marginTop: 10,
   },
   policyItem: {
     flexDirection: "row",
@@ -112,9 +132,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   policyText: {
-    fontSize: 14,
-    color: theme3.fontColorI,
+    fontSize: 13,
     marginLeft: 8,
+    color: "#333",
+    flex: 1,
   },
 });
 

@@ -453,7 +453,7 @@ const ProfileScreen = ({ route }) => {
                 style={Styles.IconWrapper}
               />
               <Text style={Styles.textStyle}>
-                {translations.termsAndConditions}
+                {translations.termsConditions}
               </Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color={iconColor} />

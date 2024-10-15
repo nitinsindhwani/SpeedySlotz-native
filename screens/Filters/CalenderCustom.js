@@ -27,15 +27,17 @@ function CalenderCustom({
   const [dates, setDates] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
-  const sortedSlots = SlotAvailable.sort((a, b) => {
-    const timeA = a.startTime.split(":");
-    const minutesA = parseInt(timeA[0], 10) * 60 + parseInt(timeA[1], 10);
-
-    const timeB = b.startTime.split(":");
-    const minutesB = parseInt(timeB[0], 10) * 60 + parseInt(timeB[1], 10);
-
-    return minutesA - minutesB;
-  });
+  const sortedSlots =
+    SlotAvailable && SlotAvailable.length > 0
+      ? SlotAvailable.filter(
+          (slot) =>
+            slot && Array.isArray(slot.startTime) && slot.startTime.length === 2
+        ).sort((a, b) => {
+          const minutesA = a.startTime[0] * 60 + a.startTime[1];
+          const minutesB = b.startTime[0] * 60 + b.startTime[1];
+          return minutesA - minutesB;
+        })
+      : [];
 
   useEffect(() => {
     const currentDate = new Date();
@@ -83,6 +85,21 @@ function CalenderCustom({
   };
 
   function AvailableSlotsList({ item }) {
+    if (
+      !item ||
+      !Array.isArray(item.startTime) ||
+      !Array.isArray(item.endTime)
+    ) {
+      console.warn("Invalid slot data:", item);
+      return null;
+    }
+
+    const formatArrayTime = (timeArray) => {
+      return `${timeArray[0].toString().padStart(2, "0")}:${timeArray[1]
+        .toString()
+        .padStart(2, "0")}`;
+    };
+
     return (
       <TouchableOpacity
         onPress={() => handleSlotPress(item)}
@@ -90,14 +107,14 @@ function CalenderCustom({
           styles.CatList,
           {
             backgroundColor:
-              item.key.slotId === selectedSlotId
+              item.key && item.key.slotId === selectedSlotId
                 ? theme3.primaryColor
                 : theme3.inActive,
           },
         ]}
       >
         <Text style={{ color: theme3.light, marginLeft: 5 }}>
-          {formatTime(item.startTime)} - {formatTime(item.endTime)}
+          {formatArrayTime(item.startTime)} - {formatArrayTime(item.endTime)}
         </Text>
       </TouchableOpacity>
     );

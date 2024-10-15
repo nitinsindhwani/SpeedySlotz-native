@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -51,12 +51,17 @@ const NotificationScreen = ({ route }) => {
       console.log("Error marking notification as read:", error.message);
     }
   };
+  const swipeableRef = useRef(null);
+
   const handleDelete = async (notificationId) => {
     try {
       await deleteNotifications(notificationId);
       setNotifications((prevState) =>
         prevState.filter((notification) => notification.id !== notificationId)
       );
+      if (swipeableRef.current) {
+        swipeableRef.current.close();
+      }
     } catch (error) {
       console.log("Error deleting notification:", error.message);
     }
@@ -79,34 +84,23 @@ const NotificationScreen = ({ route }) => {
   );
 
   function Notificationlist({ item, index }) {
-    const [showDetail, setShowDetail] = useState(false);
+    let formattedDate;
+    try {
+      const date = new Date(item.created_at * 1000);
+      formattedDate = format(date, "MM/dd HH:mm");
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      formattedDate = "Date unavailable";
+    }
+
     return (
-      <View style={[NotifStyle.TrickContainer, {}]}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View style={NotifStyle.IconWrapper}>
-            <Image
-              source={notificationIcon}
-              style={{
-                width: 30,
-                height: 30,
-                tintColor: theme3.primaryColor,
-                margin: 5,
-              }}
-            />
-          </View>
-          <View style={NotifStyle.InnerTricks}>
-            <Text
-              style={[
-                NotifStyle.TextStyle,
-                { color: theme3.fontColor, fontWeight: "bold" },
-              ]}
-            >
-              {item.title}
-            </Text>
-            <Text style={NotifStyle.TextStyle}>{item.message}</Text>
-            <Text style={NotifStyle.TextStyle}>
-              {format(parseISO(item.created_at), "MM/dd HH:mm")}
-            </Text>
+      <View style={styles.notificationItem}>
+        <View style={styles.notificationContent}>
+          <Image source={notificationIcon} style={styles.notificationIcon} />
+          <View style={styles.notificationText}>
+            <Text style={styles.notificationTitle}>{item.title}</Text>
+            <Text style={styles.notificationMessage}>{item.message}</Text>
+            <Text style={styles.notificationDate}>{formattedDate}</Text>
           </View>
         </View>
       </View>
@@ -125,7 +119,10 @@ const NotificationScreen = ({ route }) => {
           data={notifications}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item, index }) => (
-            <Swipeable renderRightActions={() => renderRightAction(item.id)}>
+            <Swipeable
+              renderRightActions={() => renderRightAction(item.id)}
+              overshootRight={false}
+            >
               <Notificationlist item={item} index={index} />
             </Swipeable>
           )}
@@ -138,42 +135,53 @@ const NotificationScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
     backgroundColor: "#FFF",
   },
-  notificationContainer: {
+  notificationItem: {
+    height: 100, // Fixed height for consistency
+    borderBottomWidth: 1,
+    borderBottomColor: "#E0E0E0",
+  },
+  notificationContent: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 10,
-    padding: 20,
-    borderColor: "#CCC",
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: "#FFA500",
+    padding: 15,
+    height: "100%",
+  },
+  notificationIcon: {
+    width: 30,
+    height: 30,
+    tintColor: theme3.primaryColor,
+    marginRight: 15,
+  },
+  notificationText: {
+    flex: 1,
   },
   notificationTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    color: "#0000FF",
-    flex: 3,
+    color: theme3.fontColor,
+    marginBottom: 5,
+  },
+  notificationMessage: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 5,
+  },
+  notificationDate: {
+    fontSize: 12,
+    color: "#999",
   },
   deleteBackground: {
-    width: 100,
-    height: 85, // Add this line
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    justifyContent: "center",
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
+    width: 80,
+    backgroundColor: "#FF4747",
   },
-
   deleteButton: {
-    justifyContent: "center",
-    width: 100,
-    height: 85, // Add this line
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    marginTop: 10,
+    width: 80,
+    height: "100%",
   },
 });
 

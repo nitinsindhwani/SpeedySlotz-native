@@ -1,5 +1,3 @@
-// src/assets/translations/en.js
-
 export default {
   // General
   appName: "SpeedySlotz",
@@ -62,27 +60,12 @@ export default {
   privacyPolicy: "Privacy Policy",
   termsConditions: "Terms & Conditions",
   logOut: "Log Out",
-
-  // Other common terms
-  error: "Error",
-  success: "Success",
   retry: "Retry",
   noData: "No data available",
 
-  settings: "Settings",
-  manageProfile: "Manage Profile",
-  preferredCategories: "Preferred Categories",
-  chat: "Chat",
   inviteAndEarn: "Invite & Earn!",
-  helpCenter: "Help Center",
-  aboutUs: "About Us",
-  privacyPolicy: "Privacy Policy",
-  termsAndConditions: "Terms & Conditions",
   registerAsServiceProvider: "Register as service provider",
   howItWorks: "How it works",
-  aboutSpeedySlotz: "About SpeedySlotz",
-  logOut: "Log Out",
-  version: "Version",
 
   // ManageAccountScreen
   manageAccount: "Manage Account",
@@ -179,7 +162,6 @@ export default {
 
   // Buttons
   submit: "Submit",
-
   privacy_policy: "Privacy Policy",
   introduction: "Introduction",
   introduction_content:
@@ -217,26 +199,15 @@ export default {
   next: "Next",
   skip: "Skip",
 
-  // Other translations
-  login: "Login",
-  signup: "Sign Up",
-  username: "Username",
-  password: "Password",
-  forgotPassword: "Forgot Password?",
-
   // WelcomeScreen2
   effortlessDecisions: "Effortless Decisions",
   effortlessDecisionsMessage:
     "Dive deeper into our features. Experience real-time availability updates, transparent pricing, and the ability to chat directly with professionals. Making an informed decision has never been easier.",
-  next: "Next",
-  skip: "Skip",
 
   // WelcomeScreen3
   adventureAwaits: "Adventure Awaits",
   adventureAwaitsMessage:
     "Ready to get started? Enjoy the freedom to schedule, reschedule, or cancel appointments effortlessly. Our intuitive app is designed to adapt to your busy life. Say hello to stress-free planning and more time enjoying the moments that matter.",
-  login: "Login",
-  signup: "Sign-up",
 
   // PopularBusinessList
   trailblazer: "Trailblazer",
@@ -246,15 +217,6 @@ export default {
   elite: "Elite",
   champion: "Champion",
   unranked: "Unranked",
-  readMore: "Read More...",
-  readLess: "Read Less...",
-  noBadges: "No badges available.",
-  bookNow: "Book Now",
-  callNow: "Call Now",
-  noBusinessesFound: "No matching businesses found.",
-  tryDifferentSearch:
-    "Try increasing the search radius or choose a different category.",
-  callError: "Cannot place the call, please try it from your phone keypad.",
 
   locationNotAvailable: "Location not available",
   distanceNotAvailable: "Distance not available",
@@ -263,7 +225,6 @@ export default {
 
   // CategoryList
   selectCategory: "Select Category",
-
   aboutSpeedySlotz: "About SpeedySlotz",
   aboutUsHeading: "About Us",
   ourBeginningTitle: "Our Beginning",
@@ -272,11 +233,11 @@ export default {
   solutionForAllText: `Cancellations, especially last minute, are detrimental to businesses. Filling those slots becomes another challenge, often involving frantic calls to existing clients who might not always be available or interested in such short notice. This is where SpeedySlotz bridges the gap. Our platform provides a hassle-free solution where service providers can open specific slots, and users can instantly book them. A win-win for everyone involved.`,
   ourVisionTitle: "Our Vision",
   ourVisionText: `At SpeedySlotz, we aim to streamline and simplify the booking process for both customers and service providers. We envision a world where getting an appointment is just a click away, saving time, energy, and reducing lost opportunities for businesses. Our journey with Elmo was just the beginning, and we're excited to be part of yours.`,
-  contactUsTitle: "Contact Us",
+
   contactUsText: `To learn more or for any queries, feel free to reach out to us at info@speedyslotz.com. We'd love to hear from you!`,
 
   termsAndConditionsTitle: "Terms and Conditions",
-  introductionTitle: "Introduction",
+
   introductionText:
     "Welcome to www.speedyslotz.com. This app and website are provided to offer a scheduling platform, allowing users across the US to discover and book available slots with a variety of service providers. By accessing and using our services, users agree to abide by the following terms and conditions.",
   dataCollectionTitle: "Data Collection and Use",
@@ -294,17 +255,17 @@ export default {
   changesToTermsTitle: "Changes to Terms",
   changesToTermsText:
     "We may update our Terms and Conditions from time to time to reflect changes in our services, legal and regulatory requirements, or for other reasons. We encourage users to regularly review our terms to stay informed. Continued use of our services after changes have been made implies acceptance of those changes.",
-  contactUsTitle: "Contact Us",
+
   yourRewards: "Your Rewards",
   totalPoints: "Total Points",
   howToEarnPoints: "How to Earn Points",
   earnPointsDescription:
     "Earn points by completing various actions in the app!",
-  signUp: "Sign Up",
+
   firstBooking: "First Booking",
   completedBooking: "Completed Booking",
   leaveReview: "Leave a Review",
-  points: "points",
+
   referralProgram: "Referral Program",
   shareCode: "Share Code",
   referralCodeTitle: "Your Referral Code",
@@ -312,8 +273,7 @@ export default {
     "Invite your friends and earn bonus points when they sign up!",
   referEarnTitle: "Refer & Earn",
   referYourFriends: "Refer Your Friends",
-  inviteFriendsText:
-    "Invite your friends to join SpeedySlotz! For every friend who signs up and completes their first booking, you'll both earn 500 SpeedyPoints. Accumulate points to unlock exclusive discounts, priority booking, and more. Sharing is caring - and rewarding!",
+
   yourReferralCode: "Your Referral Code",
   shareMessage:
     "Hey! Join me on SpeedySlotz, the easiest way to book your slots quickly. Use my referral code '{referralCode}' when you sign up, and we both get rewarded with SpeedyPoints! Let's enjoy the convenience together. Download the app now: [App Link]",
@@ -361,25 +321,19 @@ export default {
   availablePoints: "Available Points",
   minRedeemablePoints: "Minimum Redeemable Points",
   selectAmount: "Select Amount to Redeem",
-  points: "points",
+
   amazonGiftCard: "Amazon Gift Card",
   redeemNow: "Redeem Now",
-  error: "Error",
-  success: "Success",
+
   ok: "OK",
   minimumRedeemError: "The minimum redeemable amount is 1000 points.",
   insufficientPointsMessage: "You need at least 1000 points to redeem.",
   redeemSuccessMessage:
-    "Congratulations! You've successfully redeemed ${amount} in Amazon Gift Cards.",
+    "Congratulations! You've successfully redeemed $ {amount} in Amazon Gift Cards.",
   redeemInfo:
     "Redemption process may take up to 24-48 hours. You will receive an email with your gift card code once the redemption is complete.",
 
   amazonGiftCardReward: "Redeem points for Amazon Gift Cards!",
-  redeemDescription:
-    "Turn your points into rewards! For every 1,000 points, get a $10 Amazon Gift Card. Start redeeming today!",
-  redeemInfo:
-    "Gift cards will be sent to your registered email within 24-48 hours of redemption.",
-  referralCodeIntro: "👉 Use my referral code",
 
   howItWorksTitle: "How it works",
   browseServicesTitle: "Browse Services",
@@ -390,14 +344,13 @@ export default {
     "Once you've found your desired service, view the available slots. Our system updates in real-time, ensuring you see the most current availability. Select a slot that fits your schedule.",
   bookInstantlyTitle: "Book Instantly",
   bookInstantlyText:
-    "With just a few taps, you can book your chosen slot. You’ll receive instant confirmation, and your service provider will be notified immediately. It’s that simple - no more phone calls or waiting.",
+    "With just a few taps, you can book your chosen slot. You'll receive instant confirmation, and your service provider will be notified immediately. It's that simple - no more phone calls or waiting.",
   enjoyServiceTitle: "Enjoy Your Service",
   enjoyServiceText:
     "Show up at the scheduled time and enjoy your service. SpeedySlotz streamlines the entire booking process, making it efficient for both users and service providers.",
   finalNote:
     "At SpeedySlotz, our goal is to make scheduling appointments as straightforward as possible. Say goodbye to the hassle of last-minute bookings. Welcome to the future of service scheduling.",
 
-  helpCenterTitle: "Help Center",
   helpCenterQuestion1: "How do I book a service on SpeedySlotz?",
   helpCenterAnswer1:
     "Simply browse the service category you need, select an available slot, and confirm your booking instantly. You will receive a confirmation for your booking.",
@@ -411,9 +364,8 @@ export default {
   helpCenterAnswer4:
     "Our customer support team can be reached at info@speedyslotz.com. We're here to help with any issues or questions you might have.",
 
-  selectDate: "Select Date",
   selectTime: "Select Time",
-  zipcode: "Zipcode",
+
   enterZipcodes: "Enter zipcodes (e.g., 76262,72623)",
   jobDescription: "Job Description",
   enterJobDescription: "Enter job description",
@@ -433,25 +385,19 @@ export default {
   favorites: "Favorites",
   errorFetchingBusinesses: "Error fetching businesses:",
 
-  noDataFound: "No data found",
   loading: "Loading...",
   failedToAddFavorite: "Failed to add favorite:",
   failedToRemoveFavorite: "Failed to remove favorite:",
 
   description: "Description will be written here",
-  readMore: "Read More...",
-  readLess: "Read Less...",
   noBadgesAvailable: "No badges available.",
-  categories: "Categories",
   slotsAvailable: "Slots Available",
   chatNow: "Chat Now",
+
   bookNow: "Book Now",
   callNow: "Call Now",
   directions: "Directions",
   deals: "Deals",
-  cannotPlaceCall:
-    "Cannot place the call, please try it from your phone keypad.",
-
   all: "All",
   reviewed: "Reviewed",
   completed: "Completed",
@@ -463,15 +409,14 @@ export default {
 
   rescheduled: "Rescheduled",
   actionError: "Action Error",
-  noDataFound: "No data found",
 
   review: "Review",
   bookAgain: "Book Again",
   markComplete: "Mark Complete",
-  confirm: "Confirm",
+
   reject: "Reject",
   reschedule: "Reschedule",
-  cancel: "Cancel",
+
   attention: "Attention!",
   cancelReason: "Please provide a reason for cancellation",
   cancellationFailed: "Cancellation failed. Please try again.",
@@ -495,23 +440,15 @@ export default {
   statusOpen: "Open",
   statusReviewed: "Reviewed",
   statusUnknown: "Unknown Status",
-  readMore: "Read More",
-  readLess: "Read Less",
-  categories: "Categories",
-  directions: "Directions",
+
   finalAmountPending: "Final Amount Pending",
-  chatNow: "Chat Now",
+
   bookingDetails: "Booking Details",
-  priorityFlexible: "Flexible",
-  priorityRoutine: "Routine",
-  priorityUrgent: "Urgent",
-  priorityEmergency: "Emergency",
 
   appointmentsTitle: "Appointments",
   upcomingTab: "Upcoming",
   pastTab: "Past",
 
-  aboutSpeedySlotzTitle: "About SpeedySlotz",
   aboutSpeedySlotzParagraph1:
     "SpeedySlotz revolutionizes how users book services across various industries by providing a seamless, efficient, and user-friendly online booking platform. Born out of the necessity to simplify the appointment booking process, SpeedySlotz aims to bridge the gap between service providers and customers seeking immediate bookings.",
   aboutSpeedySlotzParagraph2:
@@ -523,7 +460,6 @@ export default {
   aboutSpeedySlotzParagraph5:
     "Thank you for choosing SpeedySlotz. We're excited to be a part of your journey and look forward to serving you.",
 
-  forgotPasswordTitle: "Forgot Password",
   forgotPasswordDescription: "Please enter your email to reset your password.",
   emailPlaceholder: "Enter your email address",
   submitButton: "Submit",
@@ -535,7 +471,6 @@ export default {
     "There was an error resetting your password. Please try again later.",
   goBackToLoginQuestion:
     "After receiving the email, kindly return to the login screen to proceed.",
-  login: "Login",
 
   verifyEmail: "Verify Your Email",
   verifyEmailDescription:
@@ -548,20 +483,13 @@ export default {
   unexpectedError: "An unexpected error occurred. Please try again later.",
   resendAgreement: "By resending, you agree to our Terms and Privacy Policy.",
   alreadyVerified: "Already verified?",
-  login: "Login",
+
   noAccount: "Don't have an account?",
-  signUp: "Sign up",
-  passwordPolicyLength: "At least 8 characters long",
-  passwordPolicyUppercase: "One uppercase letter",
-  passwordPolicyLowercase: "One lowercase letter",
-  passwordPolicyNumber: "One number",
-  passwordPolicySpecial: "One special character (@, $, !, %, *, ?, &, .)",
 
   resetYourPassword: "Reset Your Password",
   enterNewPassword: "Please enter your new password and confirm it.",
   newPassword: "New Password",
-  confirmPassword: "Confirm Password",
-  resetPassword: "Reset Password",
+
   passwordsDoNotMatch: "Passwords do not match.",
   passwordResetSuccess: "Your password has been successfully reset.",
   passwordResetFailed: "Failed to reset password. Please try again.",
@@ -579,30 +507,29 @@ export default {
   waivedIfHired: "Waived if Hired",
   minutes: "min",
   notAvailable: "N/A",
-
   topRated: "Top Rated",
   topRatedDescription:
     "Consistently receive top ratings from customers for outstanding service.",
-  verified: "Verified",
+
   verifiedDescription:
     "Successfully pass a verification process for identity and credentials.",
-  lowPrice: "Low Price",
+
   lowPriceDescription:
     "Offer competitive pricing and excellent value for your services.",
-  insurance: "Insurance",
+
   insuranceDescription: "Maintain proper insurance for liability and damages.",
   over5Years: "Over 5 Years In Business",
   over5YearsDescription:
     "Operate a business with a proven track record of over five years.",
-  licensed: "Licensed",
+
   licensedDescription: "Hold and maintain proper professional licensing.",
   responseWithin1Hour: "Response Within 1 Hour",
   responseWithin1HourDescription:
     "Respond to customer inquiries consistently within one hour.",
-  fairBusiness: "Fair Business",
+
   fairBusinessDescription:
     "Demonstrate fairness and integrity in your business practices.",
-  punctualityAward: "Punctuality Award",
+
   punctualityAwardDescription: "Consistently deliver services on time.",
   topProfessionalOfTheYear: "Top Professional of the Year",
   topProfessionalOfTheYearDescription:
@@ -629,37 +556,16 @@ export default {
     "Recognized for consistently honoring commitments by not canceling confirmed jobs.",
   emergencyService: "Emergency Service",
   emergencyServiceDescription: "Available for emergency services.",
-  noMatchingBusinessesFound: "No matching businesses found.",
-  tryIncreasingSearchRadius:
-    "Try increasing the search radius or choose a different category.",
-
-  businessDetails: "Business Details",
-
-  "Business Details": "Business Details",
-  Achievements: "Achievements",
-  "No badges available.": "No badges available.",
-  "Job Description:": "Job Description:",
-  "Enter job description": "Enter job description",
-  "Priority Status:": "Priority Status:",
   Routine: "Routine",
   Flexible: "Flexible",
   Urgent: "Urgent",
   Emergency: "Emergency",
-  "Attach Profiles:": "Attach Profiles:",
-  "Add Images:": "Add Images:",
-  "Add Videos:": "Add Videos:",
-  "Complete selections to submit": "Complete selections to submit",
-  "Booked Successfully": "Booked Successfully",
   noCategoriesAvailable:
     "No categories available. Please select a slot or wait until slots are available.",
   miles: "miles",
-  "Business Details": "Business Details",
   "Select a Slot": "Select a Slot",
-  "Swipe to complete": "Swipe to complete",
-  "Release to complete": "Release to complete",
   "Add a Profile": "Add a Profile",
   "No slots available": "No slots available",
-  Booked: "Booked",
 
   january: "January",
   february: "February",
@@ -683,38 +589,17 @@ export default {
   availability: "Availability",
   noSlotsAvailable: "No Slots Available, Try With Another Date",
 
-  topRated: "Top Rated",
-  verified: "Verified",
-  lowPrice: "Low Price",
-  insurance: "Insurance",
   yearsOld: "5 years+ old",
-  licensed: "Licensed",
   responseIn1Hr: "Response in 1 Hr",
   topProfessionalYearly: "Top Professional (Yearly)",
-  fairBusiness: "Fair Business",
   mostBusy: "Most Busy",
-  punctualityAward: "Punctuality Award",
   new: "New",
-  slotsAvailable: "Slots Available",
-  categories: "Categories",
-  noBadgesAvailable: "No badges available.",
-  readMore: "Read More...",
-  readLess: "Read Less...",
-  noMatchingBusinesses: "No matching businesses found.",
   increaseRadiusOrChooseDifferentCategory:
     "Try increasing the search radius or choose a different category.",
-  callNow: "Call Now",
-  bookNow: "Book Now",
-  directions: "Directions",
-  deals: "Deals",
-  chatNow: "Chat Now",
-
   fileSizeError: "File size exceeds the maximum limit of",
   fileSizeNote: "Maximum file size for",
   images: "images",
   videos: "videos",
-  maxImagesReached: "Maximum number of images (5) reached",
-  maxVideosReached: "Maximum number of videos (1) reached",
   someFilesStillTooLarge: "Some files were too large and were not added",
   maxImagesAllowed: "Max images allowed",
   maxVideoAllowed: "Max video allowed",
@@ -723,9 +608,6 @@ export default {
   addVideo: "Add Video",
   someImagesNotAdded: "Some images were not added due to the maximum limit",
   videoNotAdded: "Video could not be added due to the maximum limit",
-  maxImagesReached: "Maximum number of images reached",
-  maxVideosReached: "Maximum number of videos reached",
-  maxProfilesReached: "Maximum number of profiles reached",
   maxProfilesAllowed: "Max profiles allowed",
 
   browseServices: "Browse Services",
@@ -735,19 +617,12 @@ export default {
   filters: "Filters",
   dateFilter: "Date Filter",
 
-  attention: "Attention",
-  maxProfilesReached: "Maximum number of profiles reached.",
-  maxImagesReached: "Maximum number of images reached.",
-  maxVideosReached: "Maximum number of videos reached.",
   imagesNotAdded: "Images could not be added.",
-  videoNotAdded: "Video could not be added.",
-  completeSelections: "Please complete all selections",
 
   noServiceTypesSelected: "No service types selected",
   findingBestMatch: "Finding Best Match",
 
   sortBy: "Sort by",
-  save: "Save",
   googleRating: "Google Rating",
   speedySlotzRating: "SpeedySlotz Rating",
   distance: "Distance",
@@ -769,19 +644,15 @@ export default {
   funFact3:
     "Riddle me this: What's always in front of you but can't be seen? The future! And we're here to make it awesome!",
 
-  logOut: "Log Out",
   logoutError: "Logout Error",
   logoutFailedMessage: "Logout failed. Please try again.",
   networkErrorMessage:
     "Network error. Please check your internet connection and try again.",
   generalErrorMessage: "An error occurred during logout. Please try again.",
-  settings: "Settings",
-  version: "Version",
   okay: "Okay",
-  cancel: "Cancel",
   mostPopular: "Trending",
   whatsNew: "What's New",
-
+  beforeBooking: "hours before booking",
   yes: "Yes",
   no: "No",
   emergencyHours: "Emergency Hours",

@@ -1,5 +1,3 @@
-// src/assets/translations/es.js
-
 export default {
   // General
   appName: "SpeedySlotz",
@@ -32,7 +30,7 @@ export default {
   passwordPolicyUppercase: "Una letra mayúscula",
   passwordPolicyLowercase: "Una letra minúscula",
   passwordPolicyNumber: "Un número",
-  passwordPolicySpecial: "Un carácter especial (@, $, !, %, *, ?, &)",
+  passwordPolicySpecial: "Un carácter especial (@, $, !, %, *, ?, &, .)",
 
   // Sign Up
   createAccount: "Crear cuenta",
@@ -71,19 +69,10 @@ export default {
   noData: "No hay datos disponibles",
 
   // ProfileScreen
-  settings: "Configuración",
-  manageProfile: "Gestionar Perfil",
-  preferredCategories: "Categorías Preferidas",
-  chat: "Mensajes",
   inviteAndEarn: "¡Invita y Gana!",
-  helpCenter: "Centro de Ayuda",
-  aboutUs: "Acerca de Nosotros",
-  privacyPolicy: "Política de Privacidad",
-  termsAndConditions: "Términos y Condiciones",
   registerAsServiceProvider: "Regístrate como proveedor de servicios",
   howItWorks: "Cómo funciona",
   aboutSpeedySlotz: "Acerca de SpeedySlotz",
-  logOut: "Cerrar Sesión",
   version: "Versión",
 
   // ManageAccountScreen
@@ -103,8 +92,8 @@ export default {
   state: "Estado",
   zipcode: "Código Postal",
 
+  // Pharmacy
   pharmacy: "Farmacia Preferida",
-  // Preferred Pharmacy
   preferredPharmacy: "Farmacia Preferida",
   pharmacyName: "Nombre de la Farmacia",
   pharmacyAddress: "Dirección de la Farmacia",
@@ -179,13 +168,12 @@ export default {
   petMicrochipped: "¿Está su mascota microchipada? (Sí/No)",
   petBehavior:
     "Comportamiento de la Mascota con Extraños (Amigable/Tímido/Agresivo)",
-
-  // Pet Insurance
   petInsurance: "Información del Seguro de Mascotas",
 
   // Buttons
   submit: "Enviar",
 
+  // Privacy Policy
   privacy_policy: "Política de Privacidad",
   introduction: "Introducción",
   introduction_content:
@@ -212,39 +200,25 @@ export default {
   contact_us_content:
     "Si tiene alguna pregunta o inquietud sobre estos Términos, por favor contáctenos en info@speedyslotz.com. Siempre estamos disponibles para abordar sus inquietudes y proporcionar claridad cuando sea necesario.",
 
+  // Language Selection
   language_selection: "Selección de Idioma",
   select_preferred_language: "Seleccione su idioma preferido",
   save_and_return: "Guardar y Volver",
 
-  // WelcomeScreen1
+  // Welcome Screens
   unlockYourTime: "Libera Tu Tiempo",
   welcomeMessage:
     "Bienvenido a una nueva era de conveniencia. Dile adiós a las molestias de reservar citas. Descubre un mundo donde la programación se encuentra con la simplicidad, y tu próxima cita está a solo un toque de distancia.",
   next: "Siguiente",
   skip: "Saltar",
-
-  // Other translations
-  login: "Iniciar Sesión",
-  signup: "Registrarse",
-  username: "Nombre de Usuario",
-  password: "Contraseña",
-  forgotPassword: "¿Olvidaste tu Contraseña?",
-
-  // WelcomeScreen2
   effortlessDecisions: "Decisiones Sin Esfuerzo",
   effortlessDecisionsMessage:
     "Sumérgete en nuestras funciones. Experimenta actualizaciones de disponibilidad en tiempo real, precios transparentes y la posibilidad de chatear directamente con profesionales. Tomar una decisión informada nunca ha sido tan fácil.",
-  next: "Siguiente",
-  skip: "Saltar",
-
-  // WelcomeScreen3
   adventureAwaits: "La Aventura Te Espera",
   adventureAwaitsMessage:
     "¿Listo para comenzar? Disfruta de la libertad de programar, reprogramar o cancelar citas sin esfuerzo. Nuestra aplicación intuitiva está diseñada para adaptarse a tu vida ocupada. Di hola a una planificación sin estrés y más tiempo para disfrutar de los momentos que importan.",
-  login: "Iniciar sesión",
-  signup: "Regístrate",
 
-  // PopularBusinessList
+  // Business Ratings
   trailblazer: "Pionero",
   rookie: "Novato",
   ace: "As",
@@ -263,22 +237,23 @@ export default {
   callError:
     "No se puede realizar la llamada, intente hacerlo desde el teclado de su teléfono.",
 
-  // CategoryList
+  // Category List
   selectCategory: "Seleccionar Categoría",
 
-  aboutSpeedySlotz: "Acerca de SpeedySlotz",
+  // About SpeedySlotz
   aboutUsHeading: "Sobre nosotros",
   ourBeginningTitle: "Nuestro Comienzo",
   ourBeginningText: `Todo comenzó con una simple frustración personal. Como desarrollador de software, la tecnología siempre ha sido parte de mi vida. Pero cuando se trató de encontrar una cita de peluquería de última hora para Elmo, nuestro mini Golden Doodle de 6 meses, la tecnología se sintió distante. A pesar de estar recién vacunado contra la rabia y necesitando desesperadamente un corte, me encontré en un bucle de llamadas aparentemente interminable con varios peluqueros, solo para ser recibido con constantes rechazos. Con el pelo cubriéndole los ojos y afectando su comodidad, estaba claro que Elmo no podía esperar. Me di cuenta: debería haber una mejor manera. Una plataforma que no solo beneficie a personas como yo, que buscan citas rápidas, sino que también aborde un problema urgente que enfrentan los proveedores de servicios: el problema de las cancelaciones el mismo día y la consiguiente pérdida de negocios.`,
   solutionForAllTitle: "Una Solución Para Todos",
+
   solutionForAllText: `Las cancelaciones, especialmente de última hora, son perjudiciales para los negocios. Llenar esos espacios se convierte en otro desafío, a menudo implicando llamadas frenéticas a clientes existentes que no siempre pueden estar disponibles o interesados en tan poco tiempo. Aquí es donde SpeedySlotz cierra la brecha. Nuestra plataforma proporciona una solución sin complicaciones donde los proveedores de servicios pueden abrir espacios específicos y los usuarios pueden reservarlos instantáneamente. Una situación en la que todos ganan.`,
   ourVisionTitle: "Nuestra Visión",
   ourVisionText: `En SpeedySlotz, nuestro objetivo es agilizar y simplificar el proceso de reserva tanto para los clientes como para los proveedores de servicios. Imaginamos un mundo donde obtener una cita esté a solo un clic de distancia, ahorrando tiempo, energía y reduciendo las oportunidades perdidas para los negocios. Nuestro viaje con Elmo fue solo el comienzo, y estamos emocionados de ser parte del tuyo.`,
   contactUsTitle: "Contáctanos",
   contactUsText: `Para obtener más información o si tienes alguna consulta, no dudes en comunicarte con nosotros en info@speedyslotz.com. ¡Nos encantaría saber de ti!`,
 
+  // Terms and Conditions
   termsAndConditionsTitle: "Términos y Condiciones",
-  introductionTitle: "Introducción",
   introductionText:
     "Bienvenido a www.speedyslotz.com. Esta aplicación y sitio web se proporcionan para ofrecer una plataforma de programación, permitiendo a los usuarios en los EE.UU. descubrir y reservar espacios disponibles con una variedad de proveedores de servicios. Al acceder y usar nuestros servicios, los usuarios aceptan cumplir con los siguientes términos y condiciones.",
   dataCollectionTitle: "Recopilación y Uso de Datos",
@@ -296,14 +271,13 @@ export default {
   changesToTermsTitle: "Cambios en los Términos",
   changesToTermsText:
     "Podemos actualizar nuestros Términos y Condiciones de vez en cuando para reflejar cambios en nuestros servicios, requisitos legales y regulatorios, u otras razones. Animamos a los usuarios a revisar regularmente nuestros términos para mantenerse informados. El uso continuado de nuestros servicios después de que se hayan realizado cambios implica la aceptación de esos cambios.",
-  contactUsTitle: "Contáctanos",
 
+  // Rewards and Referrals
   yourRewards: "Tus Recompensas",
   totalPoints: "Puntos Totales",
   howToEarnPoints: "Cómo Ganar Puntos",
   earnPointsDescription:
     "¡Gana puntos completando varias acciones en la aplicación!",
-  signUp: "Registrarse",
   firstBooking: "Primera Reserva",
   completedBooking: "Reserva Completada",
   leaveReview: "Dejar una Reseña",
@@ -311,12 +285,8 @@ export default {
   referralProgram: "Programa de Referidos",
   shareCode: "Compartir Código",
   referralCodeTitle: "Tu Código de Referido",
-  inviteFriendsText:
-    "¡Invita a tus amigos y gana puntos de bonificación cuando se registren!",
   referEarnTitle: "Refiere y Gana",
   referYourFriends: "Refiere a Tus Amigos",
-  inviteFriendsText:
-    "¡Invita a tus amigos a unirse a SpeedySlotz! Por cada amigo que se registre y complete su primera reserva, ambos ganarán 500 SpeedyPoints. Acumula puntos para desbloquear descuentos exclusivos, reservas prioritarias y más. ¡Compartir es cuidar - y recompensa!",
   yourReferralCode: "Tu Código de Referido",
   shareMessage:
     "¡Hola! Únete a mí en SpeedySlotz, la forma más fácil de reservar tus citas rápidamente. Usa mi código de referido '{referralCode}' cuando te registres, ¡y ambos seremos recompensados con SpeedyPoints! Disfrutemos juntos de la comodidad. Descarga la aplicación ahora: [Enlace de la App]",
@@ -346,6 +316,7 @@ export default {
   excitingShareMessage:
     "🎉 ¡Noticias emocionantes! ¡Únete a mí en SpeedySlotz y ganemos juntos!",
   referralCodeIntro: "Usa mi código de referencia",
+  referralCodeValidity: "El código de referencia es válido por 48 horas.",
   benefitsIntro: "Esto es lo que obtendrás",
   signUpBonus: "500 puntos de bonificación solo por registrarte",
   firstBookingBonus: "100 puntos de bonificación en tu primera reserva",
@@ -358,11 +329,8 @@ export default {
   availablePoints: "Puntos Disponibles",
   minRedeemablePoints: "Puntos Mínimos Canjeables",
   selectAmount: "Seleccionar Cantidad a Canjear",
-  points: "puntos",
   amazonGiftCard: "Tarjeta de Regalo de Amazon",
   redeemNow: "Canjear Ahora",
-  error: "Error",
-  success: "Éxito",
   ok: "OK",
   minimumRedeemError: "La cantidad mínima canjeable es de 1000 puntos.",
   insufficientPointsMessage: "Necesitas al menos 1000 puntos para canjear.",
@@ -371,12 +339,6 @@ export default {
   redeemInfo:
     "El proceso de canje puede tardar hasta 24-48 horas. Recibirás un correo electrónico con tu código de tarjeta de regalo una vez que se complete el canje.",
   amazonGiftCardReward: "¡Canjea puntos por Tarjetas de Regalo de Amazon!",
-  redeemDescription:
-    "¡Convierte tus puntos en recompensas! Por cada 1,000 puntos, obtén una Tarjeta de Regalo de Amazon de $10. ¡Comienza a canjear hoy!",
-  redeemInfo:
-    "Las tarjetas de regalo se enviarán a tu correo electrónico registrado dentro de las 24-48 horas posteriores al canje.",
-  referralCodeIntro: "👉 Usa mi código de referencia",
-  referralCodeValidity: "El código de referencia es válido por 48 horas.",
 
   generateCode: "Generar Código de Referencia",
   generatingCode: "Generando Código...",
@@ -385,6 +347,7 @@ export default {
   userDataError:
     "Datos de usuario no disponibles. Por favor, inténtelo más tarde.",
 
+  // How it works
   howItWorksTitle: "Cómo funciona",
   browseServicesTitle: "Explorar Servicios",
   browseServicesText:
@@ -400,6 +363,8 @@ export default {
     "Preséntate a la hora programada y disfruta de tu servicio. SpeedySlotz simplifica todo el proceso de reserva, haciéndolo eficiente tanto para los usuarios como para los proveedores de servicios.",
   finalNote:
     "En SpeedySlotz, nuestro objetivo es hacer que la programación de citas sea lo más sencilla posible. Despídete del problema de las reservas de última hora. Bienvenido al futuro de la programación de servicios.",
+
+  // Help Center
   helpCenterTitle: "Centro de Ayuda",
   helpCenterQuestion1: "¿Cómo reservo un servicio en SpeedySlotz?",
   helpCenterAnswer1:
@@ -415,9 +380,8 @@ export default {
   helpCenterAnswer4:
     "Nuestro equipo de atención al cliente está disponible en info@speedyslotz.com. Estamos aquí para ayudarte con cualquier problema o pregunta que puedas tener.",
 
-  selectDate: "Seleccionar Fecha",
+  // Misc
   selectTime: "Seleccionar Hora",
-  zipcode: "Código Postal",
   enterZipcodes: "Ingrese códigos postales (ej., 76262,72623)",
   jobDescription: "Descripción del Trabajo",
   enterJobDescription: "Ingrese la descripción del trabajo",
@@ -433,28 +397,15 @@ export default {
   releaseToComplete: "Soltar para completar",
   completeSelections: "Complete las selecciones para enviar",
   bookedSuccessfully: "Reservado con Éxito",
-
   favorites: "Favoritos",
   errorFetchingBusinesses: "Error al obtener negocios:",
-
-  noDataFound: "No se encontraron datos",
   failedToAddFavorite: "Error al agregar a favoritos:",
   failedToRemoveFavorite: "Error al eliminar de favoritos:",
-
   description: "La descripción se escribirá aquí",
-  readMore: "Leer más...",
-  readLess: "Leer menos...",
-  noBadgesAvailable: "No hay insignias disponibles.",
-  categories: "Categorías",
   slotsAvailable: "Espacios disponibles",
   chatNow: "Chatear ahora",
-  bookNow: "Reservar ahora",
-  callNow: "Llamar ahora",
   directions: "Direcciones",
   deals: "Ofertas",
-  cannotPlaceCall:
-    "No se puede realizar la llamada, intente desde el teclado de su teléfono.",
-
   all: "Todo",
   reviewed: "Revisado",
   completed: "Completado",
@@ -465,15 +416,10 @@ export default {
   accepted: "Aceptado",
   rescheduled: "Reprogramado",
   actionError: "Error de acción",
-  noDataFound: "No se encontraron datos",
-
   review: "Revisar",
   bookAgain: "Reservar de nuevo",
   markComplete: "Marcar como completado",
-  confirm: "Confirmar",
-  reject: "Rechazar",
   reschedule: "Reprogramar",
-  cancel: "Cancelar",
   attention: "¡Atención!",
   cancelReason: "Por favor, proporcione una razón para la cancelación",
   cancellationFailed: "La cancelación falló. Inténtalo de nuevo.",
@@ -497,22 +443,15 @@ export default {
   statusOpen: "Abierto",
   statusReviewed: "Revisado",
   statusUnknown: "Estado desconocido",
-  readMore: "Leer más",
-  readLess: "Leer menos",
-  categories: "Categorías",
-  directions: "Direcciones",
   finalAmountPending: "Monto final pendiente",
-  chatNow: "Chatear ahora",
   bookingDetails: "Detalles de la reserva",
   priorityFlexible: "Flexible",
   priorityRoutine: "Rutina",
   priorityUrgent: "Urgente",
   priorityEmergency: "Emergencia",
-
   appointmentsTitle: "Citas",
   upcomingTab: "Próximas",
   pastTab: "Pasadas",
-
   aboutSpeedySlotzTitle: "Acerca de SpeedySlotz",
   aboutSpeedySlotzParagraph1:
     "SpeedySlotz revoluciona la forma en que los usuarios reservan servicios en diversas industrias al proporcionar una plataforma de reservas en línea eficiente, fácil de usar y sin complicaciones. Nacido de la necesidad de simplificar el proceso de reserva de citas, SpeedySlotz tiene como objetivo cerrar la brecha entre los proveedores de servicios y los clientes que buscan reservas inmediatas.",
@@ -524,8 +463,6 @@ export default {
     "En SpeedySlotz, imaginamos un mundo donde reservar una cita sea tan fácil y directo como hacer una compra en línea. Estamos trabajando continuamente para expandir nuestras categorías de servicios y alcance, asegurando que más personas puedan experimentar la conveniencia de SpeedySlotz.",
   aboutSpeedySlotzParagraph5:
     "Gracias por elegir SpeedySlotz. Estamos emocionados de ser parte de su viaje y esperamos poder servirle.",
-
-  forgotPasswordTitle: "Olvidó su contraseña",
   forgotPasswordDescription:
     "Por favor, introduzca su correo electrónico para restablecer su contraseña.",
   emailPlaceholder: "Ingrese su dirección de correo electrónico",
@@ -539,8 +476,6 @@ export default {
     "Hubo un error al restablecer su contraseña. Por favor, inténtelo de nuevo más tarde.",
   goBackToLoginQuestion:
     "Después de recibir el correo electrónico, por favor regrese a la pantalla de inicio de sesión para continuar.",
-  login: "Iniciar sesión",
-
   verifyEmail: "Verifica tu correo electrónico",
   verifyEmailDescription:
     "Por favor, revisa tu correo electrónico para un enlace para verificar tu dirección de correo electrónico. Una vez verificado, podrás continuar.",
@@ -554,27 +489,15 @@ export default {
   resendAgreement:
     "Al reenviar, aceptas nuestros Términos y Política de Privacidad.",
   alreadyVerified: "¿Ya verificado?",
-  login: "Iniciar sesión",
   noAccount: "¿No tienes una cuenta?",
-  signUp: "Regístrate",
-  passwordPolicyLength: "Al menos 8 caracteres de longitud",
-  passwordPolicyUppercase: "Una letra mayúscula",
-  passwordPolicyLowercase: "Una letra minúscula",
-  passwordPolicyNumber: "Un número",
-  passwordPolicySpecial: "Un carácter especial (@, $, !, %, *, ?, &, .)",
-
   resetYourPassword: "Restablecer tu contraseña",
   enterNewPassword: "Por favor, introduce tu nueva contraseña y confírmala.",
   newPassword: "Nueva contraseña",
-  confirmPassword: "Confirmar contraseña",
-  resetPassword: "Restablecer contraseña",
   passwordsDoNotMatch: "Las contraseñas no coinciden.",
   passwordResetSuccess: "Tu contraseña ha sido restablecida con éxito.",
   passwordResetFailed:
     "Error al restablecer la contraseña. Por favor, inténtalo de nuevo.",
-
   serviceCategory: "Categoría del Servicio",
-  category: "Categoría",
   subcategory: "Subcategoría",
   service: "Servicio",
   serviceDetails: "Detalles del Servicio",
@@ -586,32 +509,24 @@ export default {
   waivedIfHired: "Exonerado si es contratado",
   minutes: "min",
   notAvailable: "N/D",
-
-  topRated: "Mejor Calificado",
   topRatedDescription:
     "Recibe constantemente altas calificaciones de los clientes por un servicio excepcional.",
-  verified: "Verificado",
   verifiedDescription:
     "Pasa con éxito un proceso de verificación de identidad y credenciales.",
-  lowPrice: "Precio Bajo",
   lowPriceDescription:
     "Ofrece precios competitivos y un excelente valor por tus servicios.",
-  insurance: "Seguro",
   insuranceDescription:
     "Mantén un seguro adecuado para responsabilidad y daños.",
   over5Years: "Más de 5 Años en el Negocio",
   over5YearsDescription:
     "Opera un negocio con un historial comprobado de más de cinco años.",
-  licensed: "Licenciado",
   licensedDescription:
     "Posee y mantiene las licencias profesionales adecuadas.",
   responseWithin1Hour: "Respuesta en 1 Hora",
   responseWithin1HourDescription:
     "Responde a las consultas de los clientes consistentemente en una hora.",
-  fairBusiness: "Negocio Justo",
   fairBusinessDescription:
     "Demuestra equidad e integridad en tus prácticas comerciales.",
-  punctualityAward: "Premio a la Puntualidad",
   punctualityAwardDescription:
     "Entrega consistentemente los servicios a tiempo.",
   topProfessionalOfTheYear: "Mejor Profesional del Año",
@@ -640,16 +555,10 @@ export default {
   emergencyService: "Servicio de Emergencia",
   emergencyServiceDescription: "Disponible para servicios de emergencia.",
   noMatchingBusinessesFound: "No se encontraron negocios coincidentes.",
-  tryIncreasingSearchRadius:
-    "Intente aumentar el radio de búsqueda o elija una categoría diferente.",
-
   businessDetails: "Detalles del Negocio",
-
-  "Business Details": "Detalles del negocio",
   Achievements: "Logros",
   "No badges available.": "No hay insignias disponibles.",
   "Job Description:": "Descripción del trabajo:",
-  "Enter job description": "Ingrese la descripción del trabajo",
   "Priority Status:": "Estado de prioridad:",
   Routine: "Rutina",
   Flexible: "Flexible",
@@ -667,14 +576,10 @@ export default {
   Deals: "Ofertas",
   Directions: "Direcciones",
   miles: "millas",
-  "Business Details": "Detalles del negocio",
   "Select a Slot": "Selecciona un horario",
-  "Swipe to complete": "Desliza para completar",
-  "Release to complete": "Suelta para completar",
   "Add a Profile": "Agregar un perfil",
   "No slots available": "No hay horarios disponibles",
   Booked: "Reservado",
-
   january: "Enero",
   february: "Febrero",
   march: "Marzo",
@@ -694,43 +599,20 @@ export default {
   thursday: "Jue",
   friday: "Vie",
   saturday: "Sáb",
-  availability: "Disponibilidad",
   noSlotsAvailable: "No hay espacios disponibles, intenta con otra fecha",
-
-  topRated: "Mejor Valorado",
-  verified: "Verificado",
-  lowPrice: "Bajo Precio",
-  insurance: "Seguro",
   yearsOld: "5 años+ de antigüedad",
-  licensed: "Licenciado",
   responseIn1Hr: "Respuesta en 1 Hr",
   topProfessionalYearly: "Mejor Profesional (Anual)",
-  fairBusiness: "Negocio Justo",
   mostBusy: "Más Ocupado",
-  punctualityAward: "Premio a la Puntualidad",
   new: "Nuevo",
-  slotsAvailable: "Espacios Disponibles",
-  categories: "Categorías",
-  noBadgesAvailable: "No hay insignias disponibles.",
-  readMore: "Leer Más...",
-  readLess: "Leer Menos...",
-  noMatchingBusinesses: "No se encontraron negocios coincidentes.",
   increaseRadiusOrChooseDifferentCategory:
     "Intenta aumentar el radio de búsqueda o elige una categoría diferente.",
-  callNow: "Llamar Ahora",
-  bookNow: "Reservar Ahora",
-  directions: "Direcciones",
-  deals: "Ofertas",
-  chatNow: "Chatea Ahora",
-
   fileSizeError: "El tamaño del archivo excede el límite máximo de",
   fileSizeNote: "Tamaño máximo de archivo para",
   images: "imágenes",
   videos: "vídeos",
   someFilesStillTooLarge:
     "Algunos archivos seguían siendo demasiado grandes después de la compresión y no se añadieron.",
-  maxImagesReached: "Se alcanzó el número máximo de imágenes (5)",
-  maxVideosReached: "Se alcanzó el número máximo de videos (1)",
   maxImagesAllowed: "Máximo de imágenes permitidas",
   maxVideoAllowed: "Máximo de videos permitidos",
   maxSizePerImage: "Tamaño máximo por imagen",
@@ -739,32 +621,17 @@ export default {
   someImagesNotAdded:
     "Algunas imágenes no se añadieron debido al límite máximo",
   videoNotAdded: "No se pudo añadir el video debido al límite máximo",
-  maxImagesReached: "Se alcanzó el número máximo de imágenes",
-  maxVideosReached: "Se alcanzó el número máximo de videos",
-  maxProfilesReached: "Se alcanzó el número máximo de perfiles",
   maxProfilesAllowed: "Máximo de perfiles permitidos",
-
   browseServices: "Explorar Servicios",
   gettingStartedTitle: "Cómo Empezar",
   searchLocationGuidance: "1. Busca tu ubicación deseada arriba",
   browseServicesGuidance: "2. Explora servicios y elige una categoría",
   filters: "Filtros",
   dateFilter: "Filtro de Fecha",
-
-  attention: "Atención",
-  maxProfilesReached: "Se ha alcanzado el número máximo de perfiles.",
-  maxImagesReached: "Se ha alcanzado el número máximo de imágenes.",
-  maxVideosReached: "Se ha alcanzado el número máximo de videos.",
-
   imagesNotAdded: "No se pudieron agregar las imágenes.",
-  videoNotAdded: "No se pudo agregar el video.",
-  completeSelections: "Por favor, complete todas las selecciones",
-
   noServiceTypesSelected: "No se seleccionaron tipos de servicio",
-  findingBestMatch: "Encontrando Mejor Opción", // Spanish
-
+  findingBestMatch: "Encontrando Mejor Opción",
   sortBy: "Ordenar por",
-  save: "Guardar",
   googleRating: "Calificación de Google",
   speedySlotzRating: "Calificación de SpeedySlotz",
   distance: "Distancia",
@@ -772,7 +639,6 @@ export default {
   priceHighToLow: "Precio: de mayor a menor",
   sort: "Ordenar",
   continue: "Continuar",
-
   funnyWelcomeTitle: "¿Listo para una aventura salvaje?",
   step1: "Dinos dónde estás (o dónde te gustaría estar)",
   step2: "Elige tu opción favorita de nuestra lista de categorías increíbles",
@@ -785,8 +651,6 @@ export default {
     "Dato curioso: La palabra 'cita' proviene del latín 'appointare', que significa 'fijar una hora'. ¡Nosotros preferimos 'cita divertida'!",
   funFact3:
     "Acertijo: ¿Qué está siempre frente a ti pero no puedes ver? ¡El futuro! Y estamos aquí para hacerlo increíble.",
-
-  logOut: "Cerrar Sesión",
   logoutError: "Error de Cierre de Sesión",
   logoutFailedMessage:
     "El cierre de sesión falló. Por favor, intente de nuevo.",
@@ -794,13 +658,9 @@ export default {
     "Error de red. Por favor, verifique su conexión a internet e intente de nuevo.",
   generalErrorMessage:
     "Ocurrió un error durante el cierre de sesión. Por favor, intente de nuevo.",
-  settings: "Ajustes",
-  version: "Versión",
   okay: "Aceptar",
-  cancel: "Cancelar",
   mostPopular: "Tendencias",
   whatsNew: "Novedades",
-
   yes: "Sí",
   no: "No",
   emergencyHours: "Horario de Emergencia",
