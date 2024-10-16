@@ -6,13 +6,42 @@ const BusinessSettings = ({ settings, translations }) => {
   const workingDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const formatTime = (time) => {
+    if (!time) return "Closed";
+
+    if (typeof time === "string") {
+      // If it's already a string in HH:MM format, return it
+      if (/^\d{2}:\d{2}$/.test(time)) return time;
+
+      // If it's a string but not in HH:MM format, try to parse it
+      const [hours, minutes] = time.split(":").map(Number);
+      if (!isNaN(hours) && !isNaN(minutes)) {
+        return `${hours.toString().padStart(2, "0")}:${minutes
+          .toString()
+          .padStart(2, "0")}`;
+      }
+    }
+
     if (Array.isArray(time) && time.length === 2) {
       const [hours, minutes] = time;
-      return `${hours.toString().padStart(2, "0")}:${minutes
-        .toString()
-        .padStart(2, "0")}`;
+      if (!isNaN(hours) && !isNaN(minutes)) {
+        return `${hours.toString().padStart(2, "0")}:${minutes
+          .toString()
+          .padStart(2, "0")}`;
+      }
     }
-    return "00:00";
+
+    if (typeof time === "object" && time !== null) {
+      const hours = time.hours || time.hour;
+      const minutes = time.minutes || time.minute;
+      if (!isNaN(hours) && !isNaN(minutes)) {
+        return `${hours.toString().padStart(2, "0")}:${minutes
+          .toString()
+          .padStart(2, "0")}`;
+      }
+    }
+
+    console.warn(`Invalid time format: ${JSON.stringify(time)}`);
+    return "Closed";
   };
 
   const getWorkingHours = (day) => {
@@ -29,12 +58,11 @@ const BusinessSettings = ({ settings, translations }) => {
     const startTime = formatTime(settings[`${fullDay}StartTime`]);
     const endTime = formatTime(settings[`${fullDay}EndTime`]);
 
-    if (startTime === "00:00" && endTime === "00:00") {
+    if (startTime === "Closed" && endTime === "Closed") {
       return "Closed";
     }
     return `${startTime}-${endTime}`;
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.workingHoursContainer}>
@@ -85,8 +113,6 @@ const PolicyItem = ({ icon, text }) => (
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
     padding: 15,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

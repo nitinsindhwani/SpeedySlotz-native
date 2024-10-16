@@ -19,6 +19,8 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
 import { Platform } from "react-native";
 import { LanguageContext } from "../api/LanguageContext"; // Import LanguageContext
+import ErrorAlert from "./GlobalComponents/ErrorAlert";
+import SuccessModal from "./GlobalComponents/SuccessModal";
 
 const ManageAccountScreen = ({ route }) => {
   const { user } = route.params;
@@ -151,6 +153,12 @@ const ManageAccountScreen = ({ route }) => {
   );
   const [errors, setErrors] = useState({});
   const navigation = useNavigation();
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const validate = () => {
     // Validation logic here
@@ -178,29 +186,6 @@ const ManageAccountScreen = ({ route }) => {
       [name]: value,
     }));
   };
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle: translations.manageProfiles,
-      headerTitleStyle: {
-        fontWeight: "bold",
-        fontSize: 24,
-        color: "purple",
-      },
-      headerStyle: {
-        backgroundColor: "white",
-      },
-      headerLeft: () => (
-        <Ionicons
-          name="arrow-back"
-          size={24}
-          color="black"
-          style={{ marginLeft: 10 }}
-          onPress={() => navigation.goBack()}
-        />
-      ),
-    });
-  }, [navigation, translations]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -405,102 +390,193 @@ const ManageAccountScreen = ({ route }) => {
   }, []);
 
   const handleSaveChanges = () => {
-    const profileData = {
-      userProfile: profile,
-      userAddress: {
-        street: street,
-        city: city,
-        state: state,
-        zip: zip,
-      },
-      userPreferredPharmacy: {
-        pharmacyName: pharmacyName,
-        pharmacyAddress: pharmacyAddress,
-        pharmacyPhone: pharmacyPhone,
-      },
-      userMedicalHistory: {
-        allergies: allergies,
-        currentMedications: currentMedications,
-        pastMedications: pastMedications,
-        surgicalHistory: surgicalHistory,
-        smokeAlcoholHistory: smokeAlcoholHistory,
-        chronicIllnesses: chronicIllnesses,
-        familyMedicalHistory: familyMedicalHistory,
-        recentHospitalVisits: recentHospitalVisits,
-        immunizationHistory: immunizationHistory,
-        pregnancyChildbirthHistory: pregnancyChildbirthHistory,
-        otherMedicalInfo: otherMedicalInfo,
-      },
-      userDentalInformation: {
-        lastDentalVisit: lastDentalVisit,
-        lastDentalXray: lastDentalXray,
-        dentalAllergies: dentalAllergies,
-        dentalComplaints: dentalComplaints,
-        orthodonticHistory: orthodonticHistory,
-        gumDiseaseHistory: gumDiseaseHistory,
-        toothExtractionHistory: toothExtractionHistory,
-        dentalMedications: dentalMedications,
-        otherDentalInfo: otherDentalInfo,
-      },
-      userPersonalInsurance: {
-        provider: personalInsuranceProvider,
-        policyNumber: personalPolicyNumber,
-        coverageDetails: personalCoverageDetails,
-        contact: personalInsuranceContact,
-        claimDetails: personalClaimDetails,
-        exclusions: personalInsuranceExclusions,
-      },
-      userDentalInsurance: {
-        provider: dentalInsuranceProvider,
-        policyNumber: dentalPolicyNumber,
-        coverageDetails: dentalCoverageDetails,
-        contact: dentalInsuranceContact,
-        claimDetails: dentalClaimDetails,
-        exclusions: dentalInsuranceExclusions,
-      },
-      userHomeInformation: {
-        homeType: homeType,
-        homeExterior: homeExterior,
-        homeElevation: homeElevation,
-        ceilingType: ceilingType,
-        homeSize: homeSize,
-        numberOfRooms: numberOfRooms,
-        numberOfFloors: numberOfFloors,
-        lastHvacServiceDate: lastHvacServiceDate,
-        mowingFrequency: mowingFrequency,
-        lastWindowCleaningDate: lastWindowCleaningDate,
-        treeCount: treeCount,
-        lightingPreferences: lightingPreferences,
-      },
-      userPetInformation: {
-        petName: petName,
-        petType: petType,
-        petBreed: petBreed,
-        petAge: petAge,
-        petWeight: petWeight,
-        petSpecialNeeds: petSpecialNeeds,
-        petFavorites: petFavorites,
-        petAllergies: petAllergies,
-        vetDetails: vetDetails,
-        petMicrochipped: petMicrochipped,
-        petBehavior: petBehavior,
-      },
-      userPetInsurance: {
-        provider: provider,
-        policyNumber: policyNumber,
-        coverageDetails: coverageDetails,
-        contact: contact,
-        claimDetails: claimDetails,
-        exclusions: exclusions,
-      },
+    const formatDate = (date) => {
+      return date ? moment(date).format("YYYY-MM-DD") : null;
     };
-    const response = saveProfiles(profileData);
-  };
 
+    const formatInstant = (date) => {
+      return date ? moment(date).toISOString() : null;
+    };
+
+    const nullIfEmpty = (value) => (value === "" ? null : value);
+
+    // Helper function to remove null values from an object
+    const removeNullValues = (obj) => {
+      return Object.fromEntries(
+        Object.entries(obj).filter(([_, v]) => v != null)
+      );
+    };
+
+    const addressMap = removeNullValues({
+      street: nullIfEmpty(street),
+      city: nullIfEmpty(city),
+      state: nullIfEmpty(state),
+      zip: nullIfEmpty(zip),
+    });
+
+    const profileData = {
+      userProfile: removeNullValues({
+        user_id: profile.user_id,
+        username: profile.username,
+        provider_id: profile.provider_id,
+        password: profile.password,
+        role: profile.role,
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        email: profile.email,
+        gender: profile.gender,
+        email_verified: profile.email_verified,
+        email_verification_code: nullIfEmpty(profile.email_verification_code),
+        phoneNumber: nullIfEmpty(profile.phoneNumber),
+        phone_verified: profile.phone_verified,
+        phone_verification_code: nullIfEmpty(profile.phone_verification_code),
+        profile_picture_url: nullIfEmpty(profile.profile_picture_url),
+        address: Object.keys(addressMap).length > 0 ? addressMap : undefined,
+        latitude: profile.latitude || 0,
+        longitude: profile.longitude || 0,
+        active: profile.active,
+        lastLoginAt:
+          formatInstant(profile.lastLoginAt) || formatInstant(new Date()),
+        createdAt:
+          formatInstant(profile.createdAt) || formatInstant(new Date()),
+        quick_login: profile.quick_login,
+        profile_completed: profile.profile_completed,
+        dateOfBirth: formatDate(profile.dateOfBirth),
+        about_me: nullIfEmpty(profile.about_me),
+        socialMediaHandles:
+          Object.keys(profile.socialMediaHandles || {}).length > 0
+            ? profile.socialMediaHandles
+            : undefined,
+        settings:
+          Object.keys(profile.settings || {}).length > 0
+            ? profile.settings
+            : undefined,
+        push_notification: nullIfEmpty(profile.push_notification),
+        admin_status: profile.admin_status,
+        zipCodes: (profile.zipCodes || []).filter(Boolean),
+      }),
+      userAddress: removeNullValues({
+        user_id: profile.user_id,
+        ...addressMap,
+      }),
+      userPreferredPharmacy: removeNullValues({
+        user_id: profile.user_id,
+        pharmacyName: nullIfEmpty(pharmacyName),
+        pharmacyAddress: nullIfEmpty(pharmacyAddress),
+        pharmacyPhone: nullIfEmpty(pharmacyPhone),
+      }),
+      userMedicalHistory: removeNullValues({
+        user_id: profile.user_id,
+        allergies: nullIfEmpty(allergies),
+        currentMedications: nullIfEmpty(currentMedications),
+        pastMedications: nullIfEmpty(pastMedications),
+        surgicalHistory: nullIfEmpty(surgicalHistory),
+        smokeAlcoholHistory: nullIfEmpty(smokeAlcoholHistory),
+        chronicIllnesses: nullIfEmpty(chronicIllnesses),
+        familyMedicalHistory: nullIfEmpty(familyMedicalHistory),
+        recentHospitalVisits: nullIfEmpty(recentHospitalVisits),
+        immunizationHistory: nullIfEmpty(immunizationHistory),
+        pregnancyChildbirthHistory: nullIfEmpty(pregnancyChildbirthHistory),
+        otherMedicalInfo: nullIfEmpty(otherMedicalInfo),
+      }),
+      userDentalInformation: removeNullValues({
+        user_id: profile.user_id,
+        lastDentalVisit: formatDate(lastDentalVisit),
+        lastDentalXray: formatDate(lastDentalXray),
+        dentalAllergies: nullIfEmpty(dentalAllergies),
+        dentalComplaints: nullIfEmpty(dentalComplaints),
+        orthodonticHistory: nullIfEmpty(orthodonticHistory),
+        gumDiseaseHistory: nullIfEmpty(gumDiseaseHistory),
+        toothExtractionHistory: nullIfEmpty(toothExtractionHistory),
+        dentalMedications: nullIfEmpty(dentalMedications),
+        otherDentalInfo: nullIfEmpty(otherDentalInfo),
+      }),
+      userPersonalInsurance: removeNullValues({
+        user_id: profile.user_id,
+        provider: nullIfEmpty(personalInsuranceProvider),
+        policyNumber: nullIfEmpty(personalPolicyNumber),
+        coverageDetails: nullIfEmpty(personalCoverageDetails),
+        contact: nullIfEmpty(personalInsuranceContact),
+        claimDetails: nullIfEmpty(personalClaimDetails),
+        exclusions: nullIfEmpty(personalInsuranceExclusions),
+      }),
+      userDentalInsurance: removeNullValues({
+        user_id: profile.user_id,
+        provider: nullIfEmpty(dentalInsuranceProvider),
+        policyNumber: nullIfEmpty(dentalPolicyNumber),
+        coverageDetails: nullIfEmpty(dentalCoverageDetails),
+        contact: nullIfEmpty(dentalInsuranceContact),
+        claimDetails: nullIfEmpty(dentalClaimDetails),
+        exclusions: nullIfEmpty(dentalInsuranceExclusions),
+      }),
+      userHomeInformation: removeNullValues({
+        user_id: profile.user_id,
+        homeType: nullIfEmpty(homeType),
+        homeExterior: nullIfEmpty(homeExterior),
+        homeElevation: nullIfEmpty(homeElevation),
+        ceilingType: nullIfEmpty(ceilingType),
+        homeSize: nullIfEmpty(homeSize),
+        numberOfRooms: nullIfEmpty(numberOfRooms),
+        numberOfFloors: nullIfEmpty(numberOfFloors),
+        lastHvacServiceDate: formatDate(lastHvacServiceDate),
+        mowingFrequency: nullIfEmpty(mowingFrequency),
+        lastWindowCleaningDate: formatDate(lastWindowCleaningDate),
+        treeCount: nullIfEmpty(treeCount),
+        lightingPreferences: nullIfEmpty(lightingPreferences),
+      }),
+      userPetInformation: removeNullValues({
+        user_id: profile.user_id,
+        petName: nullIfEmpty(petName),
+        petType: nullIfEmpty(petType),
+        petBreed: nullIfEmpty(petBreed),
+        petAge: nullIfEmpty(petAge),
+        petWeight: nullIfEmpty(petWeight),
+        petSpecialNeeds: nullIfEmpty(petSpecialNeeds),
+        petFavorites: nullIfEmpty(petFavorites),
+        petAllergies: nullIfEmpty(petAllergies),
+        vetDetails: nullIfEmpty(vetDetails),
+        petMicrochipped: nullIfEmpty(petMicrochipped),
+        petBehavior: nullIfEmpty(petBehavior),
+      }),
+      userPetInsurance: removeNullValues({
+        user_id: profile.user_id,
+        provider: nullIfEmpty(provider),
+        policyNumber: nullIfEmpty(policyNumber),
+        coverageDetails: nullIfEmpty(coverageDetails),
+        contact: nullIfEmpty(contact),
+        claimDetails: nullIfEmpty(claimDetails),
+        exclusions: nullIfEmpty(exclusions),
+      }),
+    };
+
+    // Remove any top-level objects that are empty after null removal
+    Object.keys(profileData).forEach((key) => {
+      if (Object.keys(profileData[key]).length === 0) {
+        delete profileData[key];
+      }
+    });
+
+    saveProfiles(profileData)
+      .then((response) => {
+        console.log("Profile saved successfully:", response);
+        setAlertTitle(translations.success);
+        setAlertMessage(translations.profileSavedSuccessfully);
+        setShowAlert(true);
+      })
+      .catch((error) => {
+        console.error("Error saving profile:", error);
+        setAlertTitle(translations.error);
+        setAlertMessage(translations.profileSaveError);
+        setShowAlert(true);
+      });
+  };
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+  };
   return (
     <View style={{ flex: 1 }}>
       <ScrollView style={styles.scrollContainer}>
-        <Header title={translations.manageProfiles} />
+        <Header title={translations.manageProfile} />
         <View style={styles.container}>
           <Text style={styles.heading}>{translations.manageAccount}</Text>
 
@@ -754,7 +830,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.allergies}
+                placeholder={translations.knownAllergies}
                 value={allergies}
                 onChangeText={setAllergies}
               />
@@ -787,7 +863,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome name="scissors" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder={translations.surgicalHistory}
+                placeholder={translations.surgeries}
                 value={surgicalHistory}
                 onChangeText={setSurgicalHistory}
               />
@@ -802,7 +878,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.smokeAlcoholHistory}
+                placeholder={translations.smokeAlcohol}
                 value={smokeAlcoholHistory}
                 onChangeText={setSmokeAlcoholHistory}
               />
@@ -828,7 +904,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="users" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder={translations.familyMedicalHistory}
+                placeholder={translations.familyHistory}
                 value={familyMedicalHistory}
                 onChangeText={setFamilyMedicalHistory}
               />
@@ -843,7 +919,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.recentHospitalVisits}
+                placeholder={translations.recentHospitalizations}
                 value={recentHospitalVisits}
                 onChangeText={setRecentHospitalVisits}
               />
@@ -865,7 +941,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="baby" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder={translations.pregnancyChildbirthHistory}
+                placeholder={translations.pregnancyHistory}
                 value={pregnancyChildbirthHistory}
                 onChangeText={setPregnancyChildbirthHistory}
               />
@@ -1059,7 +1135,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.insuranceProviderName}
+                placeholder={translations.insuranceProvider}
                 value={personalInsuranceProvider}
                 onChangeText={setPersonalInsuranceProvider}
               />
@@ -1102,7 +1178,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="phone" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder={translations.contactNumber}
+                placeholder={translations.insuranceContact}
                 value={personalInsuranceContact}
                 onChangeText={setPersonalInsuranceContact}
               />
@@ -1117,7 +1193,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.claimProcessDetails}
+                placeholder={translations.claimProcess}
                 value={personalClaimDetails}
                 onChangeText={setPersonalClaimDetails}
                 multiline
@@ -1173,7 +1249,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.insuranceProviderName}
+                placeholder={translations.insuranceProvider}
                 value={dentalInsuranceProvider}
                 onChangeText={setDentalInsuranceProvider}
               />
@@ -1212,7 +1288,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="phone" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder={translations.contactNumber}
+                placeholder={translations.insuranceContact}
                 value={dentalInsuranceContact}
                 onChangeText={setDentalInsuranceContact}
               />
@@ -1227,7 +1303,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.claimProcessDetails}
+                placeholder={translations.claimProcess}
                 value={dentalClaimDetails}
                 onChangeText={setDentalClaimDetails}
                 multiline
@@ -1374,7 +1450,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="fan" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder={translations.lastHvacServiceDate}
+                placeholder={translations.lastHvacService}
                 value={lastHvacServiceDate}
                 onChangeText={setLastHvacServiceDate}
               />
@@ -1400,7 +1476,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.lastWindowCleaningDate}
+                placeholder={translations.lastWindowCleaning}
                 value={lastWindowCleaningDate}
                 onChangeText={setLastWindowCleaningDate}
               />
@@ -1611,7 +1687,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.insuranceProviderName}
+                placeholder={translations.insuranceProvider}
                 value={provider}
                 onChangeText={setProvider}
               />
@@ -1651,7 +1727,7 @@ const ManageAccountScreen = ({ route }) => {
               <FontAwesome5 name="phone" size={20} color={theme3.fontColor} />
               <TextInput
                 style={styles.input}
-                placeholder={translations.contactNumber}
+                placeholder={translations.insuranceContact}
                 value={contact}
                 onChangeText={setContact}
               />
@@ -1665,7 +1741,7 @@ const ManageAccountScreen = ({ route }) => {
               />
               <TextInput
                 style={styles.input}
-                placeholder={translations.claimProcessDetails}
+                placeholder={translations.claimProcess}
                 value={claimDetails}
                 onChangeText={setClaimDetails}
                 multiline
@@ -1698,6 +1774,12 @@ const ManageAccountScreen = ({ route }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <ErrorAlert
+        show={showAlert}
+        onAction={handleCloseAlert}
+        title={alertTitle}
+        body={alertMessage}
+      />
     </View>
   );
 };

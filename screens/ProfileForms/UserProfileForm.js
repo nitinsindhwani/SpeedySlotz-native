@@ -1,26 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   TextInput,
   Text,
   TouchableOpacity,
   StyleSheet,
+  Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import moment from "moment";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { LanguageContext } from "../../api/LanguageContext";
+import ErrorAlert from "../GlobalComponents/ErrorAlert";
 
 const UserProfileForm = ({ profilesData, onFormValidation }) => {
+  const { translations } = useContext(LanguageContext);
   const [profile, setProfile] = useState({
     first_name: "",
     last_name: "",
     email: "",
     phoneNumber: "",
     gender: "",
-    dateOfBirth: "",
+    dateOfBirth: new Date(),
   });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     if (profilesData) {
@@ -30,37 +39,43 @@ const UserProfileForm = ({ profilesData, onFormValidation }) => {
         email: profilesData.email || "",
         phoneNumber: profilesData.phoneNumber || "",
         gender: profilesData.gender || "",
-        dateOfBirth: profilesData.dateOfBirth || "",
+        dateOfBirth: profilesData.dateOfBirth
+          ? new Date(profilesData.dateOfBirth)
+          : new Date(),
       });
     }
   }, [profilesData]);
 
   useEffect(() => {
-    // Check if all fields are filled to enable form validation
     const isFormComplete =
       profile.first_name.trim() &&
       profile.last_name.trim() &&
       profile.email.trim() &&
       profile.phoneNumber.trim() &&
       profile.gender.trim() &&
-      profile.dateOfBirth.trim();
+      profile.dateOfBirth;
 
     onFormValidation(isFormComplete);
-  }, [
-    profile.first_name,
-    profile.last_name,
-    profile.email,
-    profile.phoneNumber,
-    profile.gender,
-    profile.dateOfBirth,
-    onFormValidation,
-  ]);
+  }, [profile, onFormValidation]);
 
   const handleInputChange = (name, value) => {
     setProfile((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || profile.dateOfBirth;
+    setShowDatePicker(Platform.OS === "ios");
+    setProfile((prevState) => ({
+      ...prevState,
+      dateOfBirth: currentDate,
+    }));
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
   };
 
   const handleSave = async () => {
@@ -70,33 +85,53 @@ const UserProfileForm = ({ profilesData, onFormValidation }) => {
       !profile.email.trim() ||
       !profile.phoneNumber.trim() ||
       !profile.gender.trim() ||
-      !profile.dateOfBirth.trim()
+      !profile.dateOfBirth
     ) {
-      Alert.alert(
-        "Incomplete Form",
-        "Please fill in all fields before submitting."
-      );
+      setAlertTitle(translations.incompleteForm);
+      setAlertMessage(translations.fillAllFields);
+      setShowAlert(true);
       return;
     }
-    const updatedFields = {};
-    Object.keys(profile).forEach((key) => {
-      if (profile[key] !== profilesData[key]) {
-        updatedFields[key] = profile[key];
-      }
-    });
 
-    if (Object.keys(updatedFields).length > 0) {
-      try {
-        const response = await saveProfiles({
-          userProfile: { ...profilesData, ...updatedFields },
-        });
-        if (response.success) {
-          alert("Profile information saved successfully");
-        }
-      } catch (error) {
-        console.error("Update failed:", error);
+    try {
+      const formattedProfile = {
+        ...profilesData,
+        ...profile,
+        dateOfBirth: moment(profile.dateOfBirth).format("YYYY-MM-DD"),
+        email_verified: profilesData.email_verified || false,
+        phone_verified: profilesData.phone_verified || false,
+        active: profilesData.active || true,
+        quick_login: profilesData.quick_login || false,
+        profile_completed: profilesData.profile_completed || false,
+        admin_status: profilesData.admin_status || 0,
+      };
+
+      Object.keys(formattedProfile).forEach(
+        (key) => formattedProfile[key] === null && delete formattedProfile[key]
+      );
+
+      console.log(
+        "Sending profile data:",
+        JSON.stringify({ userProfile: formattedProfile }, null, 2)
+      );
+
+      const response = await saveProfiles({ userProfile: formattedProfile });
+      console.log("Response:", response);
+
+      if (response.data && response.data.success) {
+        setAlertTitle(translations.success);
+        setAlertMessage(translations.profileSavedSuccessfully);
+      } else {
+        throw new Error(
+          response.data.message || translations.failedToSaveProfile
+        );
       }
+    } catch (error) {
+      console.error("Update failed:", error);
+      setAlertTitle(translations.error);
+      setAlertMessage(error.message || translations.updateFailed);
     }
+    setShowAlert(true);
   };
 
   return (
@@ -107,7 +142,7 @@ const UserProfileForm = ({ profilesData, onFormValidation }) => {
           value={profile.first_name}
           onChangeText={(value) => handleInputChange("first_name", value)}
           style={styles.input}
-          placeholder="First Name"
+          placeholder={translations.firstName}
         />
       </View>
 
@@ -117,7 +152,7 @@ const UserProfileForm = ({ profilesData, onFormValidation }) => {
           value={profile.last_name}
           onChangeText={(value) => handleInputChange("last_name", value)}
           style={styles.input}
-          placeholder="Last Name"
+          placeholder={translations.lastName}
         />
       </View>
 
@@ -127,7 +162,7 @@ const UserProfileForm = ({ profilesData, onFormValidation }) => {
           value={profile.email}
           onChangeText={(value) => handleInputChange("email", value)}
           style={styles.input}
-          placeholder="Email"
+          placeholder={translations.email}
         />
       </View>
 
@@ -137,7 +172,7 @@ const UserProfileForm = ({ profilesData, onFormValidation }) => {
           value={profile.phoneNumber}
           onChangeText={(value) => handleInputChange("phoneNumber", value)}
           style={styles.input}
-          placeholder="Phone Number"
+          placeholder={translations.phoneNumber}
         />
       </View>
 
@@ -147,48 +182,45 @@ const UserProfileForm = ({ profilesData, onFormValidation }) => {
           value={profile.gender}
           onChangeText={(value) => handleInputChange("gender", value)}
           style={styles.input}
-          placeholder="Gender"
+          placeholder={translations.gender}
         />
       </View>
 
-      <View style={styles.iconInputContainer}>
+      <TouchableOpacity
+        onPress={() => setShowDatePicker(true)}
+        style={styles.iconInputContainer}
+      >
         <FontAwesome5
           name="birthday-cake"
           size={20}
           color={theme3.primaryColor}
         />
-        <TextInput
-          value={profile.dateOfBirth}
-          onChangeText={(value) => handleInputChange("dateOfBirth", value)}
-          style={styles.input}
-          placeholder="Date of Birth"
-        />
-      </View>
-
-      <TouchableOpacity
-        onPress={handleSave}
-        style={[
-          styles.button,
-          !profile.first_name.trim() ||
-          !profile.last_name.trim() ||
-          !profile.email.trim() ||
-          !profile.phoneNumber.trim() ||
-          !profile.gender.trim() ||
-          !profile.dateOfBirth.trim()
-            ? styles.disabledButton
-            : null,
-        ]}
-        disabled={
-          !profile.first_name.trim() ||
-          !profile.last_name.trim() ||
-          !profile.email.trim() ||
-          !profile.phoneNumber.trim() ||
-          !profile.gender.trim() ||
-          !profile.dateOfBirth.trim()
-        }
-      >
-        <Text style={styles.buttonText}>Submit</Text>
+        <Text style={styles.input}>
+          {moment(profile.dateOfBirth).format("YYYY-MM-DD")}
+        </Text>
       </TouchableOpacity>
+
+      {showDatePicker && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={profile.dateOfBirth}
+          mode="date"
+          is24Hour={true}
+          display="default"
+          onChange={handleDateChange}
+        />
+      )}
+
+      <TouchableOpacity onPress={handleSave} style={styles.button}>
+        <Text style={styles.buttonText}>{translations.submit}</Text>
+      </TouchableOpacity>
+
+      <ErrorAlert
+        show={showAlert}
+        onAction={handleCloseAlert}
+        title={alertTitle}
+        body={alertMessage}
+      />
     </View>
   );
 };
@@ -200,9 +232,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     elevation: 4,
-  },
-  disabledButton: {
-    backgroundColor: "#ccc",
   },
   iconInputContainer: {
     flexDirection: "row",

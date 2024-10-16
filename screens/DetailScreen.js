@@ -459,14 +459,26 @@ function DetailScreen({ route }) {
     }
 
     let slotData = {
-      ...selectedSlot,
+      key: {
+        slotId: selectedSlot.key.slotId,
+        date: selectedSlot.key.date,
+        business_id: business.yelpBusiness.id, // Add this line
+      },
+      startTime: selectedSlot.key.startTime,
+      endTime: selectedSlot.key.endTime,
+      date: selectedSlot.key.date,
       selectedServiceTypes: [selectedServiceType],
       job_description: jobDescription,
       booked: true,
       priorityStatus: priorityStatus,
       profilesAttached: attachedProfiles,
       categoryId: selectedCategoryId,
+      business_id: business.yelpBusiness.id,
+      business_name: business.yelpBusiness.name,
+      business_phone: business.yelpBusiness.phone,
+      // Add any other fields that are required
     };
+
     formData.append("slot", JSON.stringify(slotData));
 
     selectedImages.forEach((imageUri, index) => {
@@ -541,6 +553,8 @@ function DetailScreen({ route }) {
   }, [navigation, translations]);
 
   const onDayPress = (day) => {
+    console.log("Selected day:", day);
+    setCurrentDate(moment(day).toDate());
     fetchSlots(day);
   };
 
@@ -570,28 +584,54 @@ function DetailScreen({ route }) {
 
     const userToken = await getStoredToken("userToken");
 
-    axios
-      .post(
+    try {
+      const response = await axios.post(
         baseApiUrl + "/api/v1/slots/getSlotsByUser",
-        {
-          data,
-        },
+        { data },
         {
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
         }
-      )
-      .then((response) => {
-        setSlots(response.data);
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the slots", error);
-      });
+      );
+
+      console.log("Raw slot data:", JSON.stringify(response.data, null, 2));
+
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const formattedSlots = response.data.map((slot) => ({
+          ...slot,
+          key: {
+            slotId: slot.key.slotId,
+            date: moment(slot.date).format("YYYY-MM-DD"),
+            startTime: moment(slot.startTime, "HH:mm:ss").format("HH:mm"),
+            endTime: moment(slot.endTime, "HH:mm:ss").format("HH:mm"),
+          },
+        }));
+
+        console.log(
+          "Formatted slots:",
+          JSON.stringify(formattedSlots, null, 2)
+        );
+
+        setSlots(formattedSlots);
+      } else {
+        console.log("No slots available for the selected date");
+        setSlots([]);
+      }
+    } catch (error) {
+      console.error("Error fetching slots:", error);
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+        console.error("Error status:", error.response.status);
+      }
+      setSlots([]);
+    }
   };
 
   useEffect(() => {
-    fetchSlots(currentDate.toISOString().split("T")[0]);
+    const initialDate = moment().format("YYYY-MM-DD");
+    console.log("Fetching initial slots for date:", initialDate);
+    fetchSlots(initialDate);
   }, []);
 
   function SpecialityListII({ item, onPress, isSelected }) {

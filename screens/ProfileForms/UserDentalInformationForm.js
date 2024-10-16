@@ -10,7 +10,8 @@ import {
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import { FontAwesome5 } from "@expo/vector-icons";
-
+import ErrorAlert from "../GlobalComponents/ErrorAlert";
+import { LanguageContext } from "../../api/LanguageContext";
 const UserDentalInformationForm = ({ profilesData, onFormValidation }) => {
   const [lastDentalVisit, setLastDentalVisit] = useState("");
   const [dentalAllergies, setDentalAllergies] = useState("");
@@ -21,6 +22,9 @@ const UserDentalInformationForm = ({ profilesData, onFormValidation }) => {
   const [orthodonticHistory, setOrthodonticHistory] = useState("");
   const [otherDentalInfo, setOtherDentalInfo] = useState("");
   const [toothExtractionHistory, setToothExtractionHistory] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     if (profilesData) {
@@ -94,19 +98,28 @@ const UserDentalInformationForm = ({ profilesData, onFormValidation }) => {
         toothExtractionHistory,
       },
     };
-    try {
-      const response = await saveProfiles(profileData);
-      if (response.success) {
-        alert("Dental information saved successfully");
-      }
-    } catch (error) {
-      console.error("Failed to save dental information:", error);
-    }
+    saveProfiles(profileData)
+      .then((response) => {
+        console.log("Profile saved successfully:", response);
+        setAlertTitle(translations.success);
+        setAlertMessage(translations.profileSavedSuccessfully);
+        setShowAlert(true);
+      })
+      .catch((error) => {
+        console.error("Error saving profile:", error);
+        setAlertTitle(translations.error);
+        setAlertMessage(translations.profileSaveError);
+        setShowAlert(true);
+      });
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
   };
 
   return (
-    <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
         <View style={styles.iconInputContainer}>
           <FontAwesome5
             name="calendar-check"
@@ -245,8 +258,14 @@ const UserDentalInformationForm = ({ profilesData, onFormValidation }) => {
         >
           <Text style={styles.buttonText}>Save Dental Information</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      <ErrorAlert
+        show={showAlert}
+        onAction={handleCloseAlert}
+        title={alertTitle}
+        body={alertMessage}
+      />
+    </View>
   );
 };
 

@@ -3,7 +3,6 @@ import { makeRedirectUri } from "expo-auth-session";
 export const clientId = "speedyslotsapp";
 export const apiKey = "AIzaSyA0lolNAdaUEWUslsIPxKajib9p0kToU1U";
 
-// export const redirectUri = "exp://192.168.254.52:8081";
 // export const baseApiUrl = "http://192.168.254.52:8080";
 // export const baseKeyCloakUrl = "http://192.168.254.52:8280";
 // export const baseKeyCloakCompleteUrl =

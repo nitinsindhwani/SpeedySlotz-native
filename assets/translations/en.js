@@ -76,7 +76,13 @@ export default {
   gender: "Gender",
   dateOfBirth: "Date of Birth",
   selectDate: "Select Date",
-
+  incompleteForm: "Incomplete Form",
+  fillAllFields: "Please fill in all fields before submitting.",
+  success: "Success",
+  profileSavedSuccessfully: "Profile information saved successfully!",
+  error: "Error",
+  failedToSaveProfile: "Failed to save profile",
+  updateFailed: "Failed to update profile. Please try again.",
   // Address
   address: "Address",
   street: "Street",
@@ -493,7 +499,9 @@ export default {
   passwordsDoNotMatch: "Passwords do not match.",
   passwordResetSuccess: "Your password has been successfully reset.",
   passwordResetFailed: "Failed to reset password. Please try again.",
-
+  businessDetails: "Business Details",
+  readMore: "Read More...",
+  readLess: "Read Less...",
   serviceCategory: "Service Category",
   category: "Category",
   subcategory: "Subcategory",

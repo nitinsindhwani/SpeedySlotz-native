@@ -489,15 +489,31 @@ export const saveProfiles = async (profileData) => {
       Authorization: `Bearer ${secureToken}`,
       "Content-Type": "application/json",
     };
-
-    const response = await axios.post(saveProfileInfoUrl, profileData, {
+    const formattedRequest = JSON.stringify(profileData);
+    console.log("formattedRequest", formattedRequest);
+    const response = await axios.post(saveProfileInfoUrl, formattedRequest, {
       headers: headers,
     });
-
+    console.log("response", response);
     return response;
   } catch (error) {
-    console.error("Update failed:", error.message);
-    throw new Error("Update failed. Please check your data and try again.");
+    console.error("Error in saveProfiles:", error);
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.error("Error response from server:", error.response.data);
+      console.error("Error status:", error.response.status);
+      console.error("Error headers:", error.response.headers);
+      throw new Error(error.response.data.message || "Server error");
+    } else if (error.request) {
+      // The request was made but no response was received
+      console.error("No response received:", error.request);
+      throw new Error("No response from server");
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.error("Error setting up request:", error.message);
+      throw new Error("Error setting up request");
+    }
   }
 };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Modal,
   View,
@@ -14,10 +14,42 @@ import { theme3 } from "../assets/branding/themes";
 const DealModal = ({ isVisible, deals, onClose }) => {
   const dummyDealImage = require("../assets/images/hot-deals.png");
 
-  const formatDate = (date) => {
-    const [year, month, day] = date.split("-");
-    return `${day}/${month}/${year}`;
+  useEffect(() => {
+    console.log("Deals data:", JSON.stringify(deals, null, 2));
+  }, [deals]);
+
+  const formatDate = (dateArray) => {
+    if (!Array.isArray(dateArray) || dateArray.length !== 3) {
+      console.warn("Invalid date format:", dateArray);
+      return "Invalid Date";
+    }
+    const [year, month, day] = dateArray;
+    return `${day.toString().padStart(2, "0")}/${month
+      .toString()
+      .padStart(2, "0")}/${year}`;
   };
+
+  const formatTime = (timeArray) => {
+    if (!Array.isArray(timeArray) || timeArray.length !== 2) {
+      console.warn("Invalid time format:", timeArray);
+      return "Invalid Time";
+    }
+    const [hours, minutes] = timeArray;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const renderDealInfo = (icon, text) => (
+    <View style={styles.infoRow}>
+      <MaterialCommunityIcons
+        name={icon}
+        size={20}
+        color={theme3.primaryColor}
+      />
+      <Text style={styles.infoText}>{text}</Text>
+    </View>
+  );
 
   return (
     <Modal
@@ -34,42 +66,37 @@ const DealModal = ({ isVisible, deals, onClose }) => {
             style={styles.scrollView}
             showsVerticalScrollIndicator={false}
           >
-            {deals && deals.length > 0 ? (
+            {Array.isArray(deals) && deals.length > 0 ? (
               deals.map((deal, index) => (
                 <View key={index} style={styles.dealContainer}>
-                  <Text style={styles.dealTitle}>{deal.title}</Text>
-                  <Text style={styles.dealDescription}>{deal.description}</Text>
+                  <Text style={styles.dealTitle}>
+                    {deal.title || "Untitled Deal"}
+                  </Text>
+                  <Text style={styles.dealDescription}>
+                    {deal.description || "No description available"}
+                  </Text>
                   <View style={styles.infoContainer}>
-                    <View style={styles.infoRow}>
-                      <MaterialCommunityIcons
-                        name="calendar-range"
-                        size={20}
-                        color={theme3.primaryColor}
-                      />
-                      <Text style={styles.infoText}>
-                        {formatDate(deal.startDate)} -{" "}
-                        {formatDate(deal.endDate)}
-                      </Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                      <MaterialCommunityIcons
-                        name="clock-outline"
-                        size={20}
-                        color={theme3.primaryColor}
-                      />
-                      <Text style={styles.infoText}>
-                        {deal.startTime} - {deal.endTime}
-                      </Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                      <MaterialCommunityIcons
-                        name="tag"
-                        size={20}
-                        color={theme3.primaryColor}
-                      />
-                      <Text style={styles.infoText}>{deal.couponCode}</Text>
-                    </View>
+                    {renderDealInfo(
+                      "calendar-range",
+                      `${formatDate(deal.startDate)} - ${formatDate(
+                        deal.endDate
+                      )}`
+                    )}
+                    {renderDealInfo(
+                      "clock-outline",
+                      `${formatTime(deal.startTime)} - ${formatTime(
+                        deal.endTime
+                      )}`
+                    )}
+                    {renderDealInfo("tag", deal.couponCode || "No coupon code")}
+                    {renderDealInfo("percent", `${deal.percentageOff}% Off`)}
                   </View>
+                  {deal.images && deal.images.length > 0 && (
+                    <Image
+                      source={{ uri: deal.images[0] }}
+                      style={styles.dealImage}
+                    />
+                  )}
                 </View>
               ))
             ) : (
@@ -86,7 +113,6 @@ const DealModal = ({ isVisible, deals, onClose }) => {
     </Modal>
   );
 };
-
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
@@ -171,6 +197,12 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  dealImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
+    marginTop: 10,
   },
 });
 

@@ -9,9 +9,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { theme3 } from "../../assets/branding/themes";
-import AvailableSlots from "../../assets/data/Availableslots";
-import formatTime from "../CallFuncGlobal/formatTime";
-import { LanguageContext } from "../../api/LanguageContext"; // Import your translation context
+import moment from "moment";
+import { LanguageContext } from "../../api/LanguageContext";
 
 const WindowWidth = Dimensions.get("window").width;
 
@@ -22,20 +21,17 @@ function CalenderCustom({
   handleSlotPress,
   customContainerStyle,
 }) {
-  const { translations } = useContext(LanguageContext); // Use translation context
+  const { translations } = useContext(LanguageContext);
   const [selectedDate, setSelectedDate] = useState(null);
   const [dates, setDates] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
 
   const sortedSlots =
     SlotAvailable && SlotAvailable.length > 0
-      ? SlotAvailable.filter(
-          (slot) =>
-            slot && Array.isArray(slot.startTime) && slot.startTime.length === 2
-        ).sort((a, b) => {
-          const minutesA = a.startTime[0] * 60 + a.startTime[1];
-          const minutesB = b.startTime[0] * 60 + b.startTime[1];
-          return minutesA - minutesB;
+      ? SlotAvailable.sort((a, b) => {
+          const startTimeA = moment(a.key.startTime, "HH:mm");
+          const startTimeB = moment(b.key.startTime, "HH:mm");
+          return startTimeA.diff(startTimeB);
         })
       : [];
 
@@ -70,9 +66,7 @@ function CalenderCustom({
 
   const toggleDate = (date) => {
     setSelectedDate(date);
-    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+    const formattedDate = moment(date).format("YYYY-MM-DD");
     setSelectedDay(formattedDate);
   };
 
@@ -85,20 +79,10 @@ function CalenderCustom({
   };
 
   function AvailableSlotsList({ item }) {
-    if (
-      !item ||
-      !Array.isArray(item.startTime) ||
-      !Array.isArray(item.endTime)
-    ) {
+    if (!item || !item.key || !item.key.startTime || !item.key.endTime) {
       console.warn("Invalid slot data:", item);
       return null;
     }
-
-    const formatArrayTime = (timeArray) => {
-      return `${timeArray[0].toString().padStart(2, "0")}:${timeArray[1]
-        .toString()
-        .padStart(2, "0")}`;
-    };
 
     return (
       <TouchableOpacity
@@ -114,7 +98,7 @@ function CalenderCustom({
         ]}
       >
         <Text style={{ color: theme3.light, marginLeft: 5 }}>
-          {formatArrayTime(item.startTime)} - {formatArrayTime(item.endTime)}
+          {item.key.startTime} - {item.key.endTime}
         </Text>
       </TouchableOpacity>
     );
@@ -189,10 +173,8 @@ function CalenderCustom({
             data={sortedSlots}
             horizontal={true}
             showsHorizontalScrollIndicator={false}
-            keyExtractor={(item, index) => `slot-${item.id || index}`}
-            renderItem={({ item, index }) => {
-              return <AvailableSlotsList item={item} index={index} />;
-            }}
+            keyExtractor={(item) => item.key.slotId}
+            renderItem={({ item }) => <AvailableSlotsList item={item} />}
           />
         </>
       ) : (

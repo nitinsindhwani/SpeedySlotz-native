@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   TextInput,
@@ -10,13 +10,17 @@ import {
 import { theme3 } from "../../assets/branding/themes";
 import { saveProfiles } from "../../api/ApiCall";
 import { FontAwesome5 } from "@expo/vector-icons";
-
+import { LanguageContext } from "../../api/LanguageContext";
+import ErrorAlert from "../GlobalComponents/ErrorAlert";
 const UserAddressForm = ({ profilesData, onFormValidation }) => {
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zip, setZip] = useState("");
-
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const { translations } = useContext(LanguageContext);
   useEffect(() => {
     if (profilesData) {
       setStreet(profilesData.street || "");
@@ -38,10 +42,9 @@ const UserAddressForm = ({ profilesData, onFormValidation }) => {
 
   const handleSaveAddress = async () => {
     if (!street.trim() || !city.trim() || !state.trim() || !zip.trim()) {
-      Alert.alert(
-        "Incomplete Form",
-        "Please fill in all fields before submitting."
-      );
+      setAlertTitle(translations.incompleteForm);
+      setAlertMessage(translations.fillAllFields);
+      setShowAlert(true);
       return;
     }
     const profileData = {
@@ -54,17 +57,29 @@ const UserAddressForm = ({ profilesData, onFormValidation }) => {
     };
     try {
       const response = await saveProfiles(profileData);
-      if (response.success) {
-        alert("Address saved successfully");
+      console.log("Response:", response);
+
+      if (response.data && response.data.success) {
+        setAlertTitle(translations.success);
+        setAlertMessage(translations.profileSavedSuccessfully);
+      } else {
+        throw new Error(translations.failedToSaveProfile);
       }
     } catch (error) {
       console.error("Failed to save address:", error);
+      setAlertTitle(translations.error);
+      setAlertMessage(error.message || translations.failedToSaveProfile);
     }
+    setShowAlert(true);
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
   };
 
   return (
-    <ScrollView style={styles.scrollView}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView}>
         <View style={styles.iconInputContainer}>
           <FontAwesome5 name="road" size={20} color={theme3.primaryColor} />
           <TextInput
@@ -119,8 +134,14 @@ const UserAddressForm = ({ profilesData, onFormValidation }) => {
         >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      <ErrorAlert
+        show={showAlert}
+        onAction={handleCloseAlert}
+        title={alertTitle}
+        body={alertMessage}
+      />
+    </View>
   );
 };
 
