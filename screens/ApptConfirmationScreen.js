@@ -64,10 +64,6 @@ const ApptConfirmationScreen = ({ route }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  const formatDate = (dateString) => {
-    return moment(dateString).format("LL");
-  };
-
   const showSuccessAlert = (title, message) => {
     setAlertTitle(title);
     setAlertMessage(message);
@@ -83,20 +79,56 @@ const ApptConfirmationScreen = ({ route }) => {
   const handleCloseAlert = () => {
     setShowAlert(false);
   };
-  const formatTime = (timeArray) => {
-    // Ensure timeArray is a valid array with two elements
-    if (!Array.isArray(timeArray) || timeArray.length !== 2) {
-      return "Time not available"; // Fallback message
+  const formatDate = (dateInput) => {
+    if (!dateInput) return "Date not available";
+
+    let date;
+    if (typeof dateInput === "string") {
+      date = moment(
+        dateInput,
+        ["YYYY-MM-DD", "DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601],
+        true
+      );
+    } else if (Array.isArray(dateInput) && dateInput.length === 3) {
+      date = moment(new Date(dateInput[0], dateInput[1] - 1, dateInput[2]));
+    } else if (dateInput instanceof Date) {
+      date = moment(dateInput);
+    } else {
+      console.warn("Invalid date format:", dateInput);
+      return "Invalid Date";
     }
 
-    const [hours, minutes] = timeArray;
+    if (!date.isValid()) {
+      console.warn("Invalid date:", dateInput);
+      return "Invalid Date";
+    }
 
-    const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(minutes);
+    return date.format("DD MMM, YYYY");
+  };
 
-    const options = { hour: "2-digit", minute: "2-digit", hour12: true };
-    return date.toLocaleTimeString(undefined, options);
+  const formatTime = (timeInput) => {
+    if (!timeInput) return "Time not available";
+
+    let time;
+    if (typeof timeInput === "string") {
+      // Handle "HH:mm:ss" or "HH:mm" format
+      time = moment(timeInput, ["HH:mm:ss", "HH:mm"], true);
+    } else if (Array.isArray(timeInput) && timeInput.length >= 2) {
+      // Handle [hours, minutes] array
+      time = moment().hours(timeInput[0]).minutes(timeInput[1]).seconds(0);
+    } else if (timeInput instanceof Date) {
+      time = moment(timeInput);
+    } else {
+      console.warn("Invalid time format:", timeInput);
+      return "Invalid Time";
+    }
+
+    if (!time.isValid()) {
+      console.warn("Invalid time:", timeInput);
+      return "Invalid Time";
+    }
+
+    return time.format("HH:mm");
   };
 
   const handleAddToCalendar = async () => {

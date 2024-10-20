@@ -1,7 +1,1717 @@
 export const getIconName = (name) => {
   switch (name) {
     case "Handyman":
-      return "construct";
+      return "hammer-outline";
+
+    // Martial Arts Coaching Icons
+    case "Martial Arts Coaching":
+      return "body-outline"; // Represents martial arts in general
+    case "Karate Coaching":
+    case "Judo Coaching":
+    case "Taekwondo Coaching":
+    case "Brazilian Jiu-Jitsu Coaching":
+    case "Kickboxing Coaching":
+    case "Muay Thai Coaching":
+    case "Wrestling Coaching":
+      return "hand-left-outline"; // Represents individual martial arts coaching
+
+    // Sports Coaching Icons
+    case "Sports Coaching":
+      return "trophy-outline"; // Represents sports coaching
+    case "Soccer Coaching":
+    case "Basketball Coaching":
+    case "Tennis Coaching":
+    case "Golf Coaching":
+    case "Swimming Coaching":
+    case "Rugby Coaching":
+    case "Volleyball Coaching":
+    case "Baseball Coaching":
+    case "Football Coaching":
+    case "Ice Hockey Coaching":
+      return "football-outline"; // Represents different sports coaching services
+
+    // Fitness Coaching Icons
+    case "Fitness Coaching":
+      return "barbell-outline"; // Represents general fitness coaching
+    case "Boxing Coaching":
+    case "CrossFit Coaching":
+    case "Personal Training":
+      return "fitness-outline"; // Represents boxing, CrossFit, and personal fitness coaching
+
+    // Specialty Coaching Icons
+    case "Specialty Coaching":
+      return "star-outline"; // Represents specialty coaching
+    case "ADHD Coaching":
+    case "Autism Coaching":
+    case "Addiction Recovery Coaching":
+    case "Grief Coaching":
+    case "Life Transition Coaching":
+    case "Adventure Coaching":
+    case "Career Coaching":
+    case "Life Coaching":
+      return "person-outline"; // Represents different specialty coaching services
+
+    // Decor Category Icons
+    case "Decor":
+      return "color-palette-outline"; // Represents general decor services
+
+    // Interior Design Icons
+    case "Interior":
+      return "home-outline"; // Represents interior design-related services
+    case "Interior Design Service":
+      return "brush-outline"; // Symbolizes creative interior design services
+
+    // Furniture Selection Icons
+    case "Furniture":
+      return "bed-outline"; // Represents furniture-related services
+    case "Furniture Selection Service":
+      return "sofa-outline"; // Symbolizes furniture selection and placement
+
+    // Art Installation Icons
+    case "Art":
+      return "image-outline"; // Represents wall art and artistic decor
+    case "Wall Art Installation":
+      return "easel-outline"; // Symbolizes the installation of wall art
+
+    // Lighting Design Icons
+    case "Lighting":
+      return "bulb-outline"; // Represents lighting-related decor services
+    case "Lighting Design Service":
+      return "flash-outline"; // Symbolizes creative lighting design
+
+    // Curtain Installation Icons
+    case "Curtains":
+      return "cloudy-outline"; // Represents curtain and window treatments
+    case "Curtain Installation Service":
+      return "cut-outline"; // Symbolizes curtain installation services
+
+    // Shelving Installation Icons
+    case "Shelving":
+      return "albums-outline"; // Represents shelving and storage solutions
+    case "Custom Shelving Installation":
+      return "build-outline"; // Symbolizes custom shelving design and installation
+
+    // Home Office Setup Icons
+    case "Office":
+      return "desktop-outline"; // Represents home office and workspace setup
+    case "Home Office Setup Service":
+      return "laptop-outline"; // Symbolizes home office setup services
+
+    // Holiday Decoration Icons
+    case "Holiday":
+      return "gift-outline"; // Represents holiday-related decoration services
+    case "Holiday Decoration Service":
+      return "sparkles-outline"; // Symbolizes festive and holiday decoration
+
+    // Dentist Category and Subcategory Icons
+
+    // Emergency Care Subcategory
+    case "Emergency Care":
+      return "alert-circle-outline"; // Represents emergency situations in dental care
+
+    // Emergency Care Services
+    case "Emergency Dental Care":
+    case "Toothache Relief":
+    case "Broken Tooth Repair":
+    case "Emergency Root Canal":
+    case "Chipped Tooth Fix":
+    case "Dental Abscess Treatment":
+    case "Emergency Tooth Extraction":
+    case "Lost Filling Replacement":
+    case "Emergency Crown Repair":
+    case "Bleeding Gums Treatment":
+    case "Dental Trauma Care":
+      return "medkit-outline"; // Represents individual emergency dental services
+
+    // Pediatric Emergency Care Subcategory
+    case "Pediatric Emergency Care": //
+      return "happy-outline"; // Represents children's emergency dental care
+
+    // Pediatric Emergency Services
+    case "Pediatric Toothache Relief":
+    case "Pediatric Broken Tooth Repair":
+    case "Emergency Pediatric Tooth Extraction":
+    case "Pediatric Lost Filling Replacement":
+    case "Pediatric Dental Trauma Care":
+      return "medkit-outline"; // Represents pediatric emergency dental services
+
+    // Urgent Care Subcategory
+    case "Urgent Care":
+      return "speedometer-outline"; // Represents urgent but non-emergency dental care
+
+    // Urgent Care Services
+    case "Dental Checkup":
+    case "Teeth Cleaning":
+    case "Cavity Filling":
+    case "Gum Disease Treatment":
+    case "Wisdom Tooth Removal":
+      return "pulse-outline"; // Represents individual urgent care dental services
+
+    // Cosmetic Procedures Subcategory
+    case "Cosmetic Procedures":
+      return "diamond-outline"; // Represents cosmetic dentistry
+
+    // Cosmetic Procedure Services
+    case "Teeth Whitening":
+    case "Veneers":
+    case "Dental Implants":
+    case "Bonding":
+    case "Clear Aligners":
+      return "star-outline"; // Represents individual cosmetic dental procedures
+
+    // Orthodontics Subcategory
+    case "Orthodontics":
+      return "build-outline"; // Represents orthodontic services like braces
+
+    // Orthodontics Services
+    case "Braces":
+    case "Retainers":
+    case "Clear Braces":
+      return "construct-outline"; // Represents individual orthodontic services
+
+    // Pediatric Dentistry Subcategory
+    case "Pediatric Dentistry":
+      return "happy-outline"; // Represents general pediatric dental care
+
+    // Pediatric Dentistry Services
+    case "Pediatric Checkup":
+    case "Pediatric Fillings":
+    case "Fluoride Treatment":
+      return "thermometer-outline"; // Represents individual pediatric dental services
+
+    // Restorative Dentistry Subcategory
+    case "Restorative Dentistry":
+      return "hammer-outline"; // Represents restorative dental procedures
+
+    // Restorative Dentistry Services
+    case "Dental Bridges":
+    case "Dental Crowns":
+    case "Dentures":
+      return "construct-outline"; // Represents individual restorative dental services
+
+    // Preventive Dentistry Subcategory
+    case "Preventive Dentistry":
+      return "shield-outline"; // Represents preventive dental procedures
+
+    // Preventive Dentistry Services
+    case "Sealants":
+    case "Oral Cancer Screening":
+    case "Dental X-Rays":
+      return "shield-checkmark-outline"; // Represents individual preventive dental services
+
+    // Education Category and Subcategory Icons
+
+    // Academic Tutoring Subcategory
+    case "Academic Tutoring":
+      return "school-outline"; // Represents academic tutoring
+
+    // Academic Tutoring Services
+    case "Math Tutoring":
+    case "Science Tutoring":
+    case "English Tutoring":
+    case "History Tutoring":
+    case "Geography Tutoring":
+    case "Language Tutoring":
+      return "book-outline"; // Represents subject-specific tutoring
+
+    // Test Prep Services
+    case "SAT Prep":
+    case "ACT Prep":
+    case "College Prep":
+    case "Test Prep":
+      return "pencil-outline"; // Represents test preparation services
+
+    // Music Lessons Subcategory
+    case "Music Lessons":
+      return "musical-notes-outline"; // Represents music lessons
+
+    // Music Lessons Services
+    case "Piano Lessons":
+    case "Guitar Lessons":
+    case "Violin Lessons":
+    case "Voice Lessons":
+    case "Drum Lessons":
+    case "Saxophone Lessons":
+    case "Flute Lessons":
+    case "Cello Lessons":
+    case "Clarinet Lessons":
+    case "Music Theory":
+    case "Composition Lessons":
+    case "Electronic Music":
+      return "musical-note-outline"; // Represents individual music lessons
+
+    // Art Classes Subcategory
+    case "Art Classes":
+      return "color-palette-outline"; // Represents art-related classes
+
+    // Art Classes Services
+    case "Drawing Classes":
+    case "Painting Classes":
+    case "Sculpture Classes":
+    case "Ceramics Classes":
+    case "Photography Classes":
+    case "Digital Art Classes":
+    case "Calligraphy Classes":
+    case "Printmaking Classes":
+    case "Mixed Media Classes":
+      return "brush-outline"; // Represents individual art classes
+
+    // Language Classes Subcategory
+    case "Language Classes":
+      return "language-outline"; // Represents language education
+
+    // Language Classes Services
+    case "English Classes":
+    case "Spanish Classes":
+    case "French Classes":
+    case "German Classes":
+    case "Chinese Classes":
+    case "Japanese Classes":
+    case "Italian Classes":
+    case "Russian Classes":
+    case "Arabic Classes":
+      return "chatbubbles-outline"; // Represents individual language classes
+
+    // STEM Classes Subcategory
+    case "STEM Classes":
+      return "calculator-outline"; // Represents STEM classes
+
+    // STEM Classes Services
+    case "Coding Classes":
+    case "Robotics Classes":
+    case "Engineering Classes":
+    case "Science Experiments":
+    case "Math Enrichment":
+    case "Technology Workshops":
+      return "flask-outline"; // Represents individual STEM-related classes
+
+    // Professional Development Subcategory
+    case "Professional Development":
+      return "briefcase-outline"; // Represents professional development
+
+    // Professional Development Services
+    case "Public Speaking":
+    case "Leadership Training":
+    case "Business Writing":
+    case "Project Management":
+    case "Time Management":
+    case "Negotiation Skills":
+    case "Entrepreneurship":
+      return "document-text-outline"; // Represents individual professional skills training
+
+    case "Early Learning":
+      return "school-outline"; // Represents early learning education
+
+    // Early Learning Services
+    case "Preschool Prep":
+    case "Kindergarten Readiness":
+    case "Early Literacy":
+    case "Early Math Skills":
+    case "Play-Based Learning":
+      return "book-outline";
+
+    // Special Education Subcategory
+    case "Special Education":
+      return "hand-left-outline"; // Represents special education services
+
+    // Special Education Services
+    case "Learning Disabilities":
+    case "ADHD Support":
+    case "Autism Support":
+    case "Speech Therapy":
+    case "Occupational Therapy":
+      return "accessibility-outline"; // Represents individual special education services
+
+    // Life Skills Subcategory
+    case "Life Skills":
+      return "bulb-outline"; // Represents life skills education
+
+    // Life Skills Services
+    case "Financial Literacy":
+    case "Cooking Classes":
+    case "Home Economics":
+    case "Driver Education":
+    case "Personal Safety":
+      return "people-outline"; // Represents individual life skills services
+
+    // Test Prep Subcategory
+    case "Test Prep":
+      return "document-text-outline"; // Represents test preparation services
+
+    // Test Prep Services
+    case "SAT Prep":
+    case "ACT Prep":
+    case "GRE Prep":
+    case "GMAT Prep":
+    case "LSAT Prep":
+    case "MCAT Prep":
+    case "AP Exam Prep":
+    case "GED Prep":
+      return "pencil-outline"; // Represents individual test preparation services
+
+    // Hobby Classes Subcategory
+    case "Hobby Classes":
+      return "happy-outline"; // Represents hobby-related classes
+
+    // Hobby Classes Services
+    case "Cooking Classes":
+    case "Gardening Classes":
+    case "Photography Workshops":
+    case "Creative Writing":
+    case "Craft Workshops":
+    case "Sewing Classes":
+      return "flower-outline"; // Represents individual hobby and creative classes
+
+    // Fashion & Styling Subcategories
+    case "Tailoring & Alterations":
+      return "create-outline"; // Represents the action of making or altering clothing
+    case "Wardrobe Styling":
+      return "shirt-outline"; // Represents clothing and fashion styling
+
+    // Fashion & Styling Services
+    case "Tailoring Service":
+    case "Clothing Alteration Service":
+      return "cut-outline"; // Alternative for scissors, representing tailoring and cutting
+    case "Wardrobe Stylist Consultation":
+      return "people-outline"; // Represents consultation services with a stylist
+    case "Closet Organization Service":
+      return "cube-outline"; // Symbolizes organization, suitable for closet services
+    case "Personal Shopper Service":
+      return "cart-outline"; // Represents shopping services
+    case "Virtual Styling Service":
+      return "videocam-outline"; // Symbolizes virtual styling services
+    case "Group Training":
+      return "people-outline";
+
+    // Handyman Services Icons
+    case "General Repairs":
+      return "hammer-outline"; // Symbolizes general repair work
+
+    case "Furniture Assembly":
+      return "construct-outline"; // Represents assembling furniture
+
+    case "Electrical Work":
+      return "flash-outline"; // Represents electrical-related tasks
+
+    case "Plumbing":
+      return "water-outline"; // Symbolizes plumbing work
+
+    case "Interior Painting":
+      return "brush-outline"; // Symbolizes interior painting services
+
+    case "Exterior Painting":
+      return "color-fill-outline"; // Symbolizes exterior painting services
+
+    case "Drywall Repair":
+      return "build-outline"; // Represents construction and repair work like drywall
+
+    case "Custom Carpentry":
+      return "cut-outline"; // Represents woodwork and carpentry
+
+    case "Appliance Installation":
+      return "cube-outline"; // Represents installing home appliances
+
+    case "Window Repairs":
+      return "window-outline"; // Represents window-related repairs
+
+    case "Door Repairs":
+      return "door-outline"; // Represents door-related repairs
+
+    case "Floor Installation":
+      return "layers-outline"; // Symbolizes flooring installation
+
+    case "Floor Repairs":
+      return "hammer-outline"; // Represents repairs related to flooring
+
+    case "Deck Repair":
+      return "layers-outline"; // Represents deck-related repair
+
+    case "Fence Repair":
+      return "hammer-outline"; // Symbolizes fence-related repair
+
+    case "Seasonal Maintenance":
+      return "calendar-outline"; // Represents home maintenance and seasonal tasks
+
+    case "Gutter Cleaning":
+      return "water-outline"; // Represents cleaning gutters
+
+    case "Power Washing":
+      return "water-outline"; // Represents pressure washing services
+
+    case "TV Mounting":
+      return "tv-outline"; // Represents TV mounting or installation services
+    case "Window & Door Repairs":
+      return "key-outline";
+    case "Cleaning":
+      return "sparkles-outline"; // General icon for cleaning services
+
+    // Holiday Category Icons
+    case "Light Installation":
+    case "Holiday Light Installation":
+      return "bulb-outline"; // Represents holiday lights installation
+
+    case "Light Removal":
+    case "Holiday Light Removal":
+      return "bulb-outline"; // Represents holiday lights removal
+
+    case "Custom Lighting Design":
+    case "Custom Holiday Lighting Design":
+      return "color-palette-outline"; // Represents custom lighting design
+
+    case "Light Maintenance":
+    case "Holiday Light Maintenance":
+      return "construct-outline"; // Represents maintenance work for holiday lights
+
+    case "Decoration Installation":
+    case "Holiday Decoration Installation":
+      return "ribbon-outline"; // Symbolizes the installation of holiday decorations
+
+    case "Decoration Removal":
+    case "Holiday Decoration Removal":
+      return "ribbon-outline"; // Symbolizes the removal of holiday decorations
+
+    case "Custom Decoration Design":
+    case "Custom Holiday Decoration Design":
+      return "color-fill-outline"; // Represents custom decoration design
+
+    case "Gift Wrapping":
+    case "Gift Wrapping Service":
+      return "gift-outline"; // Represents gift wrapping services
+
+    case "Custom Wrapping Design":
+    case "Custom Gift Wrapping Design":
+      return "gift-outline"; // Represents custom wrapping design
+
+    case "Event Planning":
+    case "Holiday Event Planning":
+      return "calendar-outline"; // Represents event planning services
+
+    case "Venue Decoration":
+    case "Holiday Venue Decoration":
+      return "balloon-outline"; // Represents venue decoration services
+
+    case "Catering":
+    case "Holiday Catering":
+      return "restaurant-outline"; // Represents catering services
+
+    case "Personal Shopper":
+    case "Holiday Personal Shopper":
+      return "cart-outline"; // Represents personal shopping services
+
+    case "Gift Selection":
+    case "Gift Selection Service":
+      return "gift-outline"; // Represents gift selection services
+
+    // Home Category Icons
+    case "Water":
+    case "Water Purification System":
+    case "Water Softening Service":
+    case "Water Filtration System":
+    case "Reverse Osmosis System":
+      return "water-outline"; // Represents water-related services
+
+    case "Automation":
+    case "Smart Lighting Installation":
+    case "Smart Thermostat Installation":
+    case "Smart Lock Installation":
+    case "Home Theater Setup":
+    case "Whole-Home Audio Installation":
+      return "settings-outline"; // Represents home automation services
+
+    case "Inspections":
+    case "Home Inspection Pre-Purchase":
+    case "Home Inspection Pre-Sale":
+    case "Energy Efficiency Audit":
+    case "Radon Testing Service":
+    case "Mold Inspection Service":
+      return "clipboard-outline"; // Represents inspection services
+
+    case "Septic":
+    case "Septic Tank Pumping Service":
+    case "Septic Tank Installation":
+    case "Drain Field Repair Service":
+      return "construct-outline"; // Represents septic system services
+
+    case "Junk":
+    case "Furniture Removal Service":
+    case "Appliance Removal Service":
+    case "Yard Waste Removal Service":
+    case "Construction Debris Removal":
+    case "Estate Cleanout Service":
+    case "Hoarding Cleanup Service":
+      return "trash-outline"; // Represents junk removal services
+
+    // For Kitchen Remodel services
+    case "Kitchen Remodel":
+    case "Full Kitchen Remodel":
+    case "Cabinet Installation":
+    case "Countertop Installation":
+    case "Backsplash Installation":
+    case "Appliance Installation":
+    case "Plumbing for Kitchen Remodel":
+      return "restaurant-outline"; // Represents kitchen-related services
+
+    // For Bathroom Remodel services
+    case "Bathroom Remodel":
+    case "Full Bathroom Remodel":
+    case "Tile Installation":
+    case "Shower Installation":
+    case "Bathtub Installation":
+    case "Vanity Installation":
+    case "Plumbing for Bathroom Remodel":
+      return "water"; // Represents bathroom-related services
+
+    case "Flooring":
+    case "Tile Floor Installation":
+    case "Hardwood Floor Installation":
+    case "Laminate Floor Installation":
+    case "Carpet Installation":
+      return "layers-outline"; // Represents flooring services
+
+    case "Roofing":
+    case "Roof Repair Service":
+    case "New Roof Installation":
+    case "Gutter Installation":
+      return "home-outline"; // Represents roofing services
+
+    case "Painting":
+    case "Interior Painting Service":
+    case "Exterior Painting Service":
+    case "Cabinet Painting Service":
+      return "brush-outline"; // Represents painting services
+
+    case "HVAC":
+    case "Air Conditioner Installation":
+    case "Furnace Installation":
+    case "Air Duct Cleaning":
+    case "Heat Pump Installation":
+      return "thermometer-outline"; // Represents HVAC services
+
+    case "Plumbing":
+    case "Pipe Repair Service":
+    case "Drain Cleaning Service":
+    case "Water Heater Installation":
+    case "Toilet Installation":
+      return "water-outline"; // Represents plumbing services
+
+    case "Fencing":
+    case "Fence Installation":
+    case "Fence Repair":
+      return "construct-outline"; // Represents fencing services
+
+    case "Windows & Doors":
+    case "Window Installation":
+    case "Door Installation":
+    case "Door Repair Service":
+      return "home-outline"; // Represents window and door services
+
+    case "Pool Maintenance":
+    case "Pool Cleaning Service":
+    case "Pool Repair Service":
+    case "Pool Equipment Installation":
+      return "water-outline"; // Represents pool maintenance services
+
+    case "Carpentry":
+    case "Custom Cabinet Installation":
+    case "Deck Installation":
+    case "Framing Service":
+      return "hammer-outline"; // Represents carpentry services
+
+    // For Garage Door Services
+    case "Garage Door Services":
+    case "Garage Door Installation":
+    case "Garage Door Repair":
+      return "car-outline"; // Represents garage-related services
+
+    case "Outdoor Living":
+    case "Deck Installation":
+    case "Patio Installation":
+    case "Outdoor Kitchen Installation":
+      return "leaf-outline"; // Represents outdoor living services
+
+    case "Solar Panel Installation":
+    case "Solar Panel Installation Service":
+    case "Solar Panel Repair Service":
+      return "sunny-outline"; // Represents solar panel services
+
+    case "Tile & Stonework":
+    case "Tile Installation Service":
+    case "Stone Paving Installation Service":
+    case "Stone Wall Installation Service":
+      return "build-outline"; // Represents tile and stonework services
+
+    case "Home Theater Installation":
+    case "Home Theater Setup":
+    case "Surround Sound Installation":
+    case "Projector Installation Service":
+      return "videocam-outline"; // Represents home theater installation services
+
+    case "Foundation Repair":
+    case "Foundation Inspection Service":
+    case "Crack Repair Service":
+    case "Foundation Waterproofing Service":
+      return "layers-outline"; // Represents foundation repair services
+
+    // For Hair services
+    case "Hair":
+    case "Haircut":
+    case "Hair Coloring":
+    case "Hair Styling":
+    case "Hair Extensions":
+    case "Hair Treatments":
+    case "Hair Perming":
+    case "Special Needs Haircut":
+    case "Adult Haircut":
+      return "cut-outline"; // Represents hair-related services
+
+    // For Nail services
+    case "Nails":
+    case "Manicure":
+    case "Pedicure":
+    case "Nail Art":
+    case "Acrylic Nails":
+    case "Gel Nails":
+    case "Special Needs Manicure":
+    case "Adult Manicure":
+      return "hand-left-outline"; // Represents nail-related services
+
+    // For Skin Care services
+    case "Skin Care":
+    case "Facial Treatments":
+    case "Microdermabrasion":
+    case "Chemical Peels":
+    case "Acne Treatments":
+    case "Anti-Aging Treatments":
+    case "Special Needs Facial Treatments":
+    case "Adult Facial Treatments":
+      return "happy-outline"; // Represents facial or skin care services
+
+    // For Waxing services
+    case "Waxing":
+    case "Eyebrow Waxing":
+    case "Bikini Waxing":
+    case "Leg Waxing":
+    case "Arm Waxing":
+    case "Back Waxing":
+    case "Special Needs Eyebrow Waxing":
+    case "Adult Eyebrow Waxing":
+      return "body-outline"; // Represents body waxing services
+    // For Lawn Care services
+    case "Lawn Care":
+    case "Lawn Mowing Service":
+    case "Lawn Fertilization Service":
+    case "Sod Installation Service":
+      return "leaf-outline"; // Represents lawn-related services
+
+    // For Garden services
+    case "Garden":
+    case "Garden Design Service":
+    case "Garden Maintenance Service":
+    case "Mulching Service":
+      return "flower-outline"; // Represents garden-related services
+
+    // For Tree Care services
+    case "Tree Care":
+    case "Tree Trimming Service":
+    case "Tree Removal Service":
+      return "leaf-outline"; // Represents tree care services
+
+    // For Hardscaping services
+    case "Hardscaping":
+    case "Hardscaping Installation":
+      return "construct-outline"; // Represents hardscaping services
+
+    // For Landscape Design services
+    case "Design":
+    case "Landscape Design Service":
+    case "Hardscaping Installation":
+    case "Landscape Lighting Installation":
+      return "construct-outline"; // Represents landscape design, hardscaping, and lighting services
+
+    // For Irrigation services
+    case "Irrigation":
+    case "Irrigation System Installation":
+    case "Irrigation System Repair":
+      return "water-outline"; // Represents irrigation services
+
+    // For Yard Care services
+    case "Yard Care":
+    case "Yard Cleanup Service":
+      return "trash-outline"; // Represents yard cleanup services
+
+    // For Immigration services
+    case "Immigration":
+    case "Visa Assistance":
+    case "Citizenship Applications":
+    case "Green Card Processing":
+    case "Work Permits":
+    case "Asylum Applications":
+    case "Deportation Defense":
+    case "Family-Based Petitions":
+    case "Marriage Visas":
+    case "Investor Visas":
+    case "Student Visas":
+    case "Naturalization Services":
+      return "globe-outline"; // Represents immigration-related services
+
+    // For Family Law services
+    case "Family Law":
+    case "Divorce Services":
+    case "Child Custody":
+    case "Child Support":
+    case "Adoption Services":
+    case "Domestic Violence":
+    case "Prenuptial Agreements":
+    case "Guardianship":
+      return "people-outline"; // Represents family-related services
+
+    // For Criminal Law services
+    case "Criminal Law":
+    case "Defense Services":
+    case "Expungement":
+    case "Juvenile Defense":
+    case "DUI Defense":
+    case "White Collar Crimes":
+    case "Drug Crimes":
+    case "Assault Defense":
+      return "shield-outline"; // Represents criminal defense services
+
+    // For Injury Law services
+    case "Injury Law":
+    case "Car Accidents":
+    case "Slip and Fall":
+    case "Medical Malpractice":
+    case "Workplace Injuries":
+    case "Product Liability":
+    case "Wrongful Death":
+      return "medkit-outline"; // Represents injury-related services
+
+    // For Business Law services
+    case "Business Law":
+    case "Incorporation Services":
+    case "Contract Drafting":
+    case "Employment Law":
+    case "Intellectual Property":
+    case "Commercial Litigation":
+    case "Mergers and Acquisitions":
+      return "briefcase-outline"; // Represents business-related services
+
+    // For Real Estate services
+    case "Real Estate":
+    case "Property Sales":
+    case "Lease Agreements":
+    case "Title Search":
+    case "Zoning Issues":
+    case "Foreclosure Defense":
+    case "Landlord-Tenant Disputes":
+      return "home-outline"; // Represents real estate-related services
+
+    // For Estate services
+    case "Estate":
+    case "Wills":
+    case "Trusts":
+    case "Probate":
+    case "Estate Administration":
+    case "Power of Attorney":
+    case "Living Wills":
+      return "document-text-outline"; // Represents estate planning services
+
+    // For Financial Law services
+    case "Financial":
+    case "Bankruptcy Services":
+    case "Tax Law":
+    case "Financial Fraud Defense":
+    case "Debt Settlement":
+    case "Foreclosure Assistance":
+      return "cash-outline"; // Represents financial-related services
+
+    // For Employment Law services
+    case "Employment":
+    case "Discrimination Cases":
+    case "Workplace Harassment":
+    case "Wrongful Termination":
+    case "Wage and Hour Disputes":
+    case "Employment Contracts":
+      return "business-outline"; // Represents employment-related services
+
+    // For Mediation services
+    case "Mediation":
+    case "Conflict Resolution":
+    case "Divorce Mediation":
+    case "Business Disputes":
+    case "Labor Disputes":
+    case "Contractual Disputes":
+      return "hand-left-outline"; // Represents mediation services
+
+    // For Environmental Law services
+    case "Environmental":
+    case "Regulatory Compliance":
+    case "Land Use":
+    case "Pollution Control":
+    case "Wildlife Protection":
+    case "Environmental Impact":
+      return "leaf-outline"; // Represents environmental-related services
+
+    // For Elder Law services
+    case "Elder":
+    case "Medicaid Planning":
+    case "Long-Term Care Planning":
+    case "Elder Abuse":
+    case "Guardianship":
+    case "Retirement Benefits":
+      return "heart-outline"; // Represents elder-related services
+
+    // For IP Law services
+    case "IP":
+    case "Trademark Registration":
+    case "Patent Filing":
+    case "Copyright Protection":
+    case "IP Litigation":
+    case "Trade Secrets":
+      return "bulb-outline"; // Represents intellectual property services
+
+    // For Notary services
+    case "Notary":
+    case "Document Notarization":
+    case "Mobile Notary":
+    case "Real Estate Closings":
+    case "Loan Signing Agent":
+    case "Document Preparation":
+    case "Witness Services":
+    case "Apostille Service":
+    case "Power of Attorney Preparation":
+      return "create-outline"; // Represents notary services
+
+    case "House Cleaning":
+    case "House Cleaning Service":
+      return "home-outline"; // Represents house cleaning services
+
+    case "Deep Cleaning":
+    case "Deep Cleaning Service":
+      return "water-outline"; // Represents deep cleaning
+
+    case "Carpet Cleaning":
+    case "Carpet Cleaning Service":
+      return "layers-outline"; // Represents carpet or floor cleaning
+
+    case "Window Cleaning":
+    case "Window Cleaning Service":
+      return "eye-outline"; // Represents window cleaning (closest available option)
+
+    case "Office Cleaning":
+    case "Office Cleaning Service":
+      return "business-outline"; // Represents office cleaning
+
+    case "Post-Construction Cleaning":
+    case "Post-Construction Cleaning Service":
+      return "construct-outline"; // Represents post-construction cleanup
+
+    case "Move-In/Move-Out Cleaning":
+    case "Move-In/Move-Out Cleaning Service":
+      return "swap-horizontal-outline"; // Represents move-in/move-out cleaning
+
+    case "Upholstery Cleaning":
+    case "Upholstery Cleaning Service":
+      return "bed-outline"; // Represents upholstery cleaning (closest available option)
+
+    case "Tile and Grout Cleaning":
+    case "Tile and Grout Cleaning Service":
+      return "grid-outline"; // Represents tile and grout cleaning
+
+    case "Pressure Washing":
+    case "Pressure Washing Service":
+      return "water-outline"; // Represents pressure washing
+
+    case "Garage Cleaning":
+    case "Garage Cleaning Service":
+      return "car-outline"; // Represents garage cleaning
+
+    case "Roof Cleaning":
+    case "Roof Cleaning Service":
+      return "home-outline"; // Represents roof cleaning
+
+    case "Gutter Cleaning":
+    case "Gutter Cleaning Service":
+      return "water-outline"; // Represents gutter cleaning
+
+    case "Citywide Delivery":
+      return "paper-plane-outline"; // General icon for citywide delivery services
+
+    case "Parcel Delivery":
+    case "Within City Parcel Delivery":
+      return "cube-outline"; // Represents package/parcel delivery
+
+    case "Document Delivery":
+    case "Document Delivery Service":
+      return "document-outline"; // Represents document-related delivery
+
+    case "Food Delivery":
+    case "Within City Food Delivery":
+      return "restaurant-outline"; // Represents food-related delivery
+
+    // Chiropractor services
+    case "Chiropractor":
+    case "Chiropractic Care":
+    case "Emergency Chiropractic Care":
+    case "Acute Back Pain Relief":
+    case "Spinal Adjustment Emergency":
+    case "Emergency Neck Pain Treatment":
+      return "hand-left-outline";
+
+    case "Car Pooling":
+    case "Ride Sharing":
+    case "Car Pooling Service":
+      return "car-outline"; // Car icon for ride-sharing services
+
+    // Car Pooling - Daily Commuting
+    case "Daily Commuting":
+    case "Daily Carpooling":
+      return "people-outline"; // People icon for daily carpooling services
+
+    case "Mobile Car Detailing":
+    case "Mobile Car Detailing Service":
+    case "Mobile Interior Cleaning Service":
+    case "Mobile Exterior Waxing Service":
+    case "Mobile Headlight Restoration Service":
+    case "Mobile Engine Detailing Service":
+      return "car-sport-outline"; // Car icon for detailing services
+
+    // Automotive - Mobile Automotive Repair
+    case "Mobile Automotive Repair":
+    case "Mobile Oil Change Service":
+    case "Mobile Brake Repair Service":
+    case "Mobile Tire Replacement Service":
+    case "Mobile Battery Replacement Service":
+    case "Mobile Transmission Fluid Change":
+    case "Mobile Windshield Replacement Service":
+      return "settings-outline"; // Settings icon for repair services
+
+    // Automotive - Mobile Automotive Diagnostics
+    case "Mobile Automotive Diagnostics":
+    case "Mobile Car Diagnostics Service":
+      return "speedometer-outline"; // Speedometer icon for diagnostics
+
+    // Automotive - Roadside Assistance
+    case "Roadside Assistance":
+    case "Mobile Roadside Assistance Service":
+    case "Mobile Jump Start Service":
+    case "Mobile Lockout Service":
+    case "Mobile Fuel Delivery Service":
+      return "car-outline"; // Car icon for roadside services
+
+    case "Refrigerator":
+    case "Refrigerator Repair Service":
+      return "snow-outline"; // Refrigerator icon
+
+    case "Washing Machine":
+    case "Washing Machine Repair":
+      return "water-outline"; // Washing Machine icon
+
+    case "Dryer":
+    case "Dryer Repair Service":
+      return "sunny-outline"; // Dryer icon
+
+    case "Dishwasher":
+    case "Dishwasher Repair Service":
+      return "cafe-outline"; // Dishwasher icon
+
+    case "Oven":
+    case "Oven Repair Service":
+      return "flame-outline"; // Oven icon
+
+    case "Microwave":
+    case "Microwave Repair Service":
+      return "radio-outline"; // Microwave icon
+
+    case "Small Appliance":
+    case "Small Appliance Repair":
+      return "construct-outline"; // Small Appliance icon
+
+    case "HVAC":
+    case "HVAC System Service":
+      return "thermometer-outline"; // HVAC icon
+
+    case "Air Conditioner":
+    case "Air Conditioner Repair":
+      return "snow-outline"; // Air Conditioner icon
+
+    case "Heater":
+    case "Heater Repair Service":
+      return "flame-outline"; // Heater icon
+
+    // For OB-GYN Services
+    case "OB-GYN":
+    case "Emergency OB-GYN Care":
+    case "Emergency Pregnancy Care":
+    case "Emergency Menstrual Pain Treatment":
+    case "Emergency Gynecological Services":
+      return "medkit-outline"; // Represents OB-GYN emergency services
+
+    // Party Planning Subcategory and Services
+    case "Planning":
+    case "Birthday Party Planning":
+    case "Corporate Event Planning":
+    case "Wedding Planning":
+    case "Anniversary Party Planning":
+    case "Baby Shower Planning":
+    case "Bridal Shower Planning":
+    case "Retirement Party Planning":
+    case "Graduation Party Planning":
+    case "Holiday Party Planning":
+      return "calendar-outline"; // Represents party planning services
+
+    // Party Catering Subcategory and Services
+    case "Catering":
+    case "Full-Service Catering":
+    case "Buffet Catering":
+    case "BBQ Catering":
+    case "Cocktail Catering":
+    case "Dessert Catering":
+    case "Beverage Service":
+      return "fast-food-outline"; // Represents catering services
+
+    // Party Decorations Subcategory and Services
+    case "Decorations":
+    case "Balloon Decorations":
+    case "Floral Decorations":
+    case "Themed Decorations":
+    case "Party Lighting":
+    case "Table Settings":
+    case "Party Backdrops":
+    case "Centerpieces":
+      return "color-palette-outline"; // Represents decorations services
+
+    // Party Entertainment Subcategory and Services
+    case "Entertainment":
+    case "Live Bands for Parties":
+    case "Party DJs":
+    case "Magicians for Parties":
+    case "Party Clowns":
+    case "Face Painting for Parties":
+    case "Party Photobooths":
+    case "Fireworks for Parties":
+      return "musical-notes-outline"; // Represents entertainment services
+
+    // Party Characters Subcategory and Services
+    case "Characters":
+    case "Superhero Party Characters":
+    case "Princess Party Characters":
+    case "Cartoon Party Characters":
+    case "Movie Party Characters":
+    case "Toy Party Characters":
+    case "Classic Party Characters":
+      return "happy-outline"; // Represents party characters services
+
+    // Party Rentals Subcategory and Services
+    case "Rentals":
+    case "Party Table and Chair Rentals":
+    case "Party Tent and Canopy Rentals":
+    case "Party Bounce House Rentals":
+    case "Party Dance Floor Rentals":
+    case "Audio-Visual Equipment Rentals":
+    case "Party Linen Rentals":
+    case "China and Glassware Rentals":
+      return "pricetag-outline"; // Represents party rentals services
+
+    // Party Photography Subcategory and Services
+    case "Photography":
+    case "Event Photography Services":
+    case "Event Videography Services":
+    case "Photo Booth Rentals":
+    case "Drone Photography Services":
+      return "camera-outline"; // Represents photography services
+
+    // Party Interactive Subcategory and Services
+    case "Interactive":
+    case "Escape Room Rentals":
+    case "Virtual Reality (VR) Rentals":
+    case "Interactive Theater Rentals":
+    case "Game Bus Rentals":
+    case "Mobile Laser Tag Rentals":
+    case "Augmented Reality (AR) Rentals":
+      return "game-controller-outline"; // Represents interactive services
+
+    // Party DJs Subcategory and Services
+    case "DJs":
+    case "Bollywood DJ Services":
+    case "Punjabi DJ Services":
+    case "Hip Hop DJ Services":
+    case "EDM DJ Services":
+    case "House DJ Services":
+    case "Rock DJ Services":
+    case "Jazz DJ Services":
+    case "Classical DJ Services":
+    case "Pop DJ Services":
+    case "Reggae DJ Services":
+    case "Latin DJ Services":
+    case "R&B DJ Services":
+    case "Funk DJ Services":
+      return "headset-outline"; // Represents DJ services
+
+    // Party Favors Subcategory and Services
+    case "Favors":
+    case "Customized Party Favors":
+    case "Themed Party Favors":
+    case "Eco-friendly Party Favors":
+    case "Edible Party Favors":
+      return "gift-outline"; // Represents party favors services
+
+    // Party Invitations Subcategory and Services
+    case "Invitations":
+    case "Digital Party Invitations":
+    case "Printed Party Invitations":
+    case "Customized Party Invitations":
+    case "RSVP Management":
+      return "mail-outline"; // Represents invitations services
+
+    // Party Transport Subcategory and Services
+    case "Transport":
+    case "Limousine Rental Services":
+    case "Party Bus Rental Services":
+    case "Valet Parking Services":
+    case "Shuttle Bus Services":
+      return "car-outline"; // Represents transport services
+
+    // Party Cleanup Subcategory and Services
+    case "Cleanup":
+    case "Post-Event Cleaning Services":
+    case "Trash Removal Services":
+    case "Equipment Breakdown Services":
+      return "trash-outline"; // Represents cleanup services
+
+    // Pediatrician Subcategory and Services
+    case "Pediatrician":
+    case "Emergency Pediatric Care":
+    case "Childhood Illness Emergency":
+    case "Emergency Vaccinations":
+    case "Injury Emergency Care for Children":
+      return "medkit-outline"; // Represents pediatric emergency services
+
+    // Personal Assistance - Concierge Subcategory and Services
+    case "Concierge":
+    case "Personal Concierge":
+      return "people-outline"; // Represents personal concierge services
+
+    // Personal Assistance - Errands Subcategory and Services
+    case "Errands":
+    case "Errand Running":
+      return "bicycle-outline"; // Represents errand running services
+
+    // Personal Assistance - Shopping Subcategory and Services
+    case "Shopping Assistance":
+    case "Personal Shopping":
+      return "cart-outline"; // Represents personal shopping services
+
+    // For General Pest Control
+    case "General Pest Control":
+    case "General Pest Control Service":
+      return "bug-outline"; // Represents pest control services
+
+    // For Termite Control
+    case "Termite":
+    case "Termite Treatment Service":
+      return "shield-checkmark-outline"; // Represents termite control
+
+    // For Bed Bugs
+    case "Bed Bugs":
+    case "Bed Bug Treatment Service":
+      return "bed-outline"; // Represents bed bug treatment
+
+    // For Rodent Control
+    case "Rodents":
+    case "Rodent Control Service":
+      return "alert-circle-outline"; // Represents rodent control
+
+    // For Ant Control
+    case "Ants":
+    case "Ant Control Service":
+      return "bug-outline"; // Since there is no specific ant icon, we'll use this to represent bug control
+
+    // For Cockroach Control
+    case "Cockroaches":
+    case "Cockroach Control Service":
+      return "close-circle-outline"; // Represents cockroach control
+
+    // For Mosquito Control
+    case "Mosquitoes":
+    case "Mosquito Control Service":
+      return "cloud-outline"; // Represents mosquito control
+
+    // For Flea and Tick Control
+    case "Fleas and Ticks":
+    case "Flea and Tick Control Service":
+      return "bug-outline"; // Represents flea and tick control
+
+    // For Wasp and Hornet Removal
+    case "Wasps and Hornets":
+    case "Wasp and Hornet Removal":
+      return "flash-outline"; // Represents wasp and hornet removal
+
+    // For Wildlife Removal
+    case "Wildlife":
+    case "Wildlife Removal Service":
+      return "paw-outline"; // Represents wildlife removal
+
+    // For Bird Control
+    case "Birds":
+    case "Bird Control Service":
+      return "leaf-outline"; // As there's no bird icon, leaf-outline can represent bird control
+
+    // Boarding Services
+    case "Boarding":
+      return "home-outline"; // Unique icon for Boarding subcategory
+
+    // Services under Boarding
+    case "Dog Boarding Services":
+    case "Cat Boarding Services":
+    case "Exotic Pet Boarding Services":
+    case "Long-term Pet Boarding":
+    case "Short-term Pet Boarding":
+    case "Pet Daycare Services":
+    case "Luxury Pet Boarding Services":
+    case "Special Needs Pet Boarding":
+    case "In-Home Pet Boarding":
+    case "Pet Boarding with Grooming":
+    case "24-Hour Pet Supervision":
+      return "home-outline"; // Same icon for all services under Boarding
+
+    // Walking Services
+    case "Walking":
+      return "walk-outline"; // Unique icon for Walking subcategory
+
+    // Services under Walking
+    case "Individual Dog Walks":
+    case "Group Dog Walks":
+    case "Short Dog Walks":
+    case "Long Dog Walks":
+    case "Dog Running Services":
+    case "Dog Hiking Services":
+    case "Senior Dog Walks":
+    case "Puppy Walks":
+    case "Special Needs Dog Walks":
+    case "Evening Dog Walks":
+    case "Behavioral Training Walks":
+      return "walk-outline"; // Same icon for all services under Walking
+
+    // Sitting Services
+    case "Sitting":
+      return "person-outline"; // Unique icon for Sitting subcategory
+
+    // Services under Sitting
+    case "In-Home Pet Sitting":
+    case "Overnight Pet Sitting":
+    case "Daily Pet Visits":
+    case "Special Needs Pet Sitting":
+    case "Extended Pet Sitting":
+    case "Multiple Pets Sitting":
+    case "Pet Medication Administration":
+    case "Pet Feeding Services":
+    case "Pet Walking Services":
+      return "person-outline"; // Same icon for all services under Sitting
+
+    // Training Services
+    case "Training":
+      return "school-outline"; // Unique icon for Training subcategory
+
+    // Services under Training
+    case "Basic Dog Obedience Training":
+    case "Puppy Obedience Training":
+    case "Advanced Dog Obedience Training":
+    case "Behavioral Modification for Dogs":
+    case "Dog Agility Training":
+    case "Service Dog Training":
+    case "Therapy Dog Training":
+    case "Dog Socialization Classes":
+    case "Clicker Training for Dogs":
+    case "Dog Protection Training":
+    case "Dog Trick Training":
+      return "school-outline"; // Same icon for all services under Training
+
+    // Grooming Services
+    case "Grooming":
+      return "cut-outline"; // Unique icon for Grooming subcategory
+
+    // Services under Grooming
+    case "Luxury Pet Spa":
+    case "Eco-Friendly Pet Grooming":
+    case "Pet Bath & Haircut":
+    case "Complete Pet Grooming Service":
+    case "Pet Nail Trimming":
+    case "Pet Ear Cleaning":
+    case "Teeth Cleaning for Pets":
+    case "Pet Fur Dyeing":
+    case "De-shedding Treatment for Pets":
+    case "Aromatherapy Pet Grooming":
+      return "cut-outline"; // Same icon for all services under Grooming
+
+    // Veterinary Services
+    case "Veterinary":
+      return "medkit-outline"; // Unique icon for Veterinary subcategory
+
+    // Services under Veterinary
+    case "Routine Pet Health Checkups":
+    case "Pet Vaccinations":
+    case "Spaying and Neutering":
+    case "Emergency Pet Care":
+    case "Pet Dental Care":
+    case "Microchipping for Pets":
+    case "Pet Surgery":
+    case "Pet Health Diagnostics":
+    case "Pet Pharmacy Services":
+      return "medkit-outline"; // Same icon for all services under Veterinary
+
+    // Supplies
+    case "Supplies":
+      return "cart-outline"; // Unique icon for Supplies subcategory
+
+    // Services under Supplies
+    case "Pet Food and Treats":
+    case "Pet Toys and Accessories":
+    case "Pet Bedding and Cages":
+    case "Grooming Supplies for Pets":
+    case "Health and Wellness Products for Pets":
+    case "Training Supplies for Pets":
+      return "cart-outline"; // Same icon for all services under Supplies
+
+    // Real Estate Sales
+    case "Sales":
+      return "cash-outline"; // Unique icon for Sales subcategory
+
+    // Services under Sales
+    case "Residential Property Sales":
+    case "Commercial Property Sales":
+    case "Land Property Sales":
+    case "Luxury Property Sales":
+      return "cash-outline"; // Same icon for all services under Sales
+
+    // Real Estate Rentals
+    case "Rentals":
+      return "home-outline"; // Unique icon for Rentals subcategory
+
+    // Services under Rentals
+    case "Residential Property Rentals":
+    case "Commercial Property Rentals":
+    case "Vacation Property Rentals":
+    case "Short-term Property Rentals":
+      return "home-outline"; // Same icon for all services under Rentals
+
+    // Real Estate Commercial
+    case "Commercial":
+      return "business-outline"; // Unique icon for Commercial subcategory
+
+    // Services under Commercial
+    case "Office Space Rentals":
+    case "Retail Space Rentals":
+    case "Industrial Space Rentals":
+    case "Mixed-use Space Rentals":
+      return "business-outline"; // Same icon for all services under Commercial
+
+    // Real Estate Residential
+    case "Residential":
+      return "home-outline"; // Unique icon for Residential subcategory
+
+    // Services under Residential
+    case "Single-family Home Rentals":
+    case "Multi-family Home Rentals":
+    case "Condominium Rentals":
+    case "Townhouse Rentals":
+      return "home-outline"; // Same icon for all services under Residential
+
+    // Real Estate Appraisal
+    case "Appraisal":
+      return "analytics-outline"; // Unique icon for Appraisal subcategory
+
+    // Services under Appraisal
+    case "Residential Property Appraisal":
+    case "Commercial Property Appraisal":
+    case "Land Property Appraisal":
+    case "Luxury Property Appraisal":
+      return "analytics-outline"; // Same icon for all services under Appraisal
+
+    // Real Estate Consulting
+    case "Consulting":
+      return "bulb-outline"; // Unique icon for Consulting subcategory
+
+    // Services under Consulting
+    case "Real Estate Market Analysis":
+    case "Real Estate Investment Consulting":
+    case "Property Management Consulting":
+    case "Real Estate Development Consulting":
+      return "bulb-outline"; // Same icon for all services under Consulting
+
+    // Real Estate Management
+    case "Management":
+      return "settings-outline"; // Unique icon for Management subcategory
+
+    // Services under Management
+    case "Residential Property Management":
+    case "Commercial Property Management":
+    case "Vacation Property Management":
+    case "HOA Property Management":
+      return "settings-outline"; // Same icon for all services under Management
+
+    // Real Estate Development
+    case "Development":
+      return "construct-outline"; // Unique icon for Development subcategory
+
+    // Services under Development
+    case "Residential Property Development":
+    case "Commercial Property Development":
+    case "Land Property Development":
+    case "Mixed-use Property Development":
+      return "construct-outline"; // Same icon for all services under Development
+
+    // Real Estate Investment
+    case "Investment":
+      return "trending-up-outline"; // Unique icon for Investment subcategory
+
+    // Services under Investment
+    case "Residential Real Estate Investment":
+    case "Commercial Real Estate Investment":
+    case "Real Estate Investment Trusts (REITs)":
+    case "Real Estate Crowdfunding":
+      return "trending-up-outline"; // Same icon for all services under Investment
+
+    // Real Estate Foreclosure
+    case "Foreclosure":
+      return "alert-circle-outline"; // Unique icon for Foreclosure subcategory
+
+    // Services under Foreclosure
+    case "Foreclosure Prevention Services":
+    case "Short Sale Services":
+    case "Real Estate Owned (REO) Property Services":
+    case "Auction Property Services":
+      return "alert-circle-outline"; // Same icon for all services under Foreclosure
+
+    // Real Estate Staging
+    case "Staging":
+      return "brush-outline"; // Unique icon for Staging subcategory
+
+    // Services under Staging
+    case "Furniture Staging Services":
+    case "Decor Staging Services":
+    case "Virtual Staging Services":
+    case "Occupied Home Staging Services":
+      return "brush-outline"; // Same icon for all services under Staging
+
+    // Real Estate Relocation
+    case "Relocation":
+      return "car-outline"; // Unique icon for Relocation subcategory
+
+    // Services under Relocation
+    case "Residential Relocation Services":
+    case "Corporate Relocation Services":
+    case "International Relocation Services":
+    case "Professional Moving Services":
+      return "car-outline"; // Same icon for all services under Relocation
+
+    // Seniors & Special Needs: Home Help
+    case "Home Help":
+      return "hand-left-outline"; // Valid icon for Home Help
+
+    // Services under Home Help
+    case "Home Help Service":
+      return "hand-left-outline"; // Same icon for Home Help Service
+
+    // Seniors & Special Needs: Cleaning
+    case "Cleaning":
+      return "broom-outline"; // Valid icon for Cleaning
+
+    // Services under Cleaning
+    case "Cleaning Service":
+      return "broom-outline"; // Same icon for Cleaning Service
+
+    // Seniors & Special Needs: Meal Prep
+    case "Meal Prep":
+      return "restaurant-outline"; // Valid icon for Meal Prep
+
+    // Services under Meal Prep
+    case "Meal Service":
+      return "restaurant-outline"; // Same icon for Meal Service
+
+    // Seniors & Special Needs: Shopping
+    case "Shopping":
+      return "cart-outline"; // Valid icon for Shopping
+
+    // Services under Shopping
+    case "Shopping Service":
+      return "cart-outline"; // Same icon for Shopping Service
+
+    // Seniors & Special Needs: Transport
+    case "Transport":
+      return "car-outline"; // Valid icon for Transport
+
+    // Services under Transport
+    case "Transport Service":
+      return "car-outline"; // Same icon for Transport Service
+
+    // Seniors & Special Needs: Care
+    case "Care":
+      return "heart-outline"; // Valid icon for Care
+
+    // Services under Care
+    case "Care Service":
+      return "heart-outline"; // Same icon for Care Service
+
+    // Seniors & Special Needs: Medication
+    case "Medication":
+      return "medkit-outline"; // Valid icon for Medication
+
+    // Services under Medication
+    case "Medication Reminder":
+      return "medkit-outline"; // Same icon for Medication Reminder
+
+    // Seniors & Special Needs: Home Mods
+    case "Home Mods":
+      return "construct-outline"; // Valid icon for Home Modifications
+
+    // Services under Home Mods
+    case "Home Modifications":
+      return "construct-outline"; // Same icon for Home Modifications
+
+    // Seniors & Special Needs: Personal Care
+    case "Personal Care":
+      return "body-outline"; // Valid icon for Personal Care
+
+    // Services under Personal Care
+    case "Personal Care":
+      return "body-outline"; // Same icon for Personal Care
+
+    // Seniors & Special Needs: Errands
+    case "Errands":
+      return "walk-outline"; // Valid icon for Errands
+
+    // Services under Errands
+    case "Errands Service":
+      return "walk-outline"; // Same icon for Errands Service
+
+    // Seniors & Special Needs: Safety Checks
+    case "Safety Checks":
+      return "shield-outline"; // Valid icon for Safety Checks
+
+    // Services under Safety Checks
+    case "Safety Checks":
+      return "shield-outline"; // Same icon for Safety Checks
+
+    // Seniors & Special Needs: Pet Care
+    case "Pet Care":
+      return "paw-outline"; // Valid icon for Pet Care
+
+    // Services under Pet Care
+    case "Pet Care":
+      return "paw-outline"; // Same icon for Pet Care
+
+    // Seniors & Special Needs: Tech Help
+    case "Tech Help":
+      return "laptop-outline"; // Valid icon for Tech Help
+
+    // Services under Tech Help
+    case "Tech Help":
+      return "laptop-outline"; // Same icon for Tech Help
+
+    // Seniors & Special Needs: Medical Transport
+    case "Medical Transport":
+      return "bus-outline"; // Valid alternative icon for Medical Transport
+
+    // Services under Medical Transport
+    case "Medical Transport":
+      return "bus-outline"; // Same icon for Medical Transport
+
+    // Physician: Care
+    case "Care":
+      return "medkit-outline"; // Valid icon for general care
+
+    // Services under Care
+    case "Urgent Care Visits":
+      return "medkit-outline"; // Same icon for Urgent Care Visits
+
+    // Physician: Emergency Treatment
+    case "Emergency Treatment":
+      return "pulse-outline"; // Valid icon for emergency illness treatment
+
+    // Services under Emergency Treatment
+    case "Emergency Illness Treatment":
+      return "pulse-outline"; // Same icon for Emergency Illness Treatment
+
+    // Physician: Injury Treatment
+    case "Injury Treatment":
+      return "bandage-outline"; // Valid icon for injury treatment
+
+    // Services under Injury Treatment
+    case "Minor Injury Treatment":
+      return "bandage-outline"; // Same icon for Minor Injury Treatment
+
+    // Physician: Wound Care
+    case "Wound Care":
+      return "thermometer-outline"; // Valid icon for wound care
+
+    // Services under Wound Care
+    case "Stitches and Sutures":
+      return "thermometer-outline"; // Same icon for Stitches and Sutures
+
+    // Physical Therapist: Physical Therapy
+    case "Physical Therapy":
+      return "fitness-outline"; // Valid icon for physical therapy
+
+    // Services under Physical Therapy
+    case "Emergency Physical Therapy":
+      return "fitness-outline"; // Same icon for Emergency Physical Therapy
+
+    // Physical Therapist: Rehabilitation
+    case "Rehabilitation":
+      return "walk-outline"; // Valid icon for rehabilitation
+
+    // Services under Rehabilitation
+    case "Acute Injury Rehabilitation":
+      return "walk-outline"; // Same icon for Acute Injury Rehabilitation
+
+    // Physical Therapist: Post-Surgery Therapy
+    case "Post-Surgery Therapy":
+      return "heart-outline"; // Valid icon for post-surgery therapy
+
+    // Services under Post-Surgery Therapy
+    case "Post-Surgery Physical Therapy":
+      return "heart-outline"; // Same icon for Post-Surgery Physical Therapy
+
+    // Physical Therapist: Sports Injury Care
+    case "Sports Injury Care":
+      return "football-outline"; // Valid icon for sports injury care
+
+    // Services under Sports Injury Care
+    case "Sports Injury Emergency Care":
+      return "football-outline"; // Same icon for Sports Injury Emergency Care
+
+    // General Practitioner: General Practice
+    case "General Practice":
+      return "people-outline"; // Valid icon for general practice
+
+    // Services under General Practice
+    case "Emergency General Practice":
+      return "people-outline"; // Same icon for Emergency General Practice
+
+    // General Practitioner: Prescriptions
+    case "Prescriptions":
+      return "clipboard-outline"; // Valid icon for prescription refills
+
+    // Services under Prescriptions
+    case "Emergency Prescription Refills":
+      return "clipboard-outline"; // Same icon for Emergency Prescription Refills
+
+    // General Practitioner: Allergy Care
+    case "Allergy Care":
+      return "leaf-outline"; // Valid icon for allergy care
+
+    // Services under Allergy Care
+    case "Emergency Allergy Treatment":
+      return "leaf-outline"; // Same icon for Emergency Allergy Treatment
+
+    // General Practitioner: Acute Illness Care
+    case "Acute Illness Care":
+      return "thermometer-outline"; // Valid icon for acute illness care
+
+    // Services under Acute Illness Care
+    case "Acute Illness Emergency Care":
+      return "thermometer-outline"; // Same icon for Acute Illness Emergency Care
 
     case "Window Cleaning":
     case "Pool Cleaning":
@@ -12,8 +1722,20 @@ export const getIconName = (name) => {
     case "Auto Detailing":
     case "Automotive":
       return "car-sport-outline";
+    case "Citywide Delivery":
+      return "paper-plane-outline";
+    case "Fashion & Styling":
+      return "glasses-outline";
+    case "Personal Assistance":
+      return "person-outline";
+    case "Air Conditioner":
+      return "snow-outline";
+    case "Dishwasher":
+      return "cafe-outline";
     case "Boarding":
       return "bed-outline";
+    case "Holiday":
+      return "gift-outline";
     case "Boxing":
       return "fitness-outline";
     case "Business Legal Services":
@@ -63,6 +1785,8 @@ export const getIconName = (name) => {
       return "brush-outline";
     case "Massage":
       return "hand-left-outline";
+    case "Car Pooling":
+      return "people-outline";
     case "Music Teaching":
       return "musical-note-outline";
     case "Nutrition":
@@ -431,10 +2155,12 @@ export const getIconName = (name) => {
     case "Window":
     case "Windows":
       return "layers-outline";
-    case "PestControl":
+    case "Pest Control":
       return "bug-outline"; // Represents pest control services
-    case "Handyman":
-      return "hammer-outline"; // Represents general handyman services
+    case "Mobile Salon":
+      return "bus-outline";
+    case "Seniors & Special Needs":
+      return "accessibility-outline";
     case "Plumbing":
       return "umbrella-outline"; // Symbolizes plumbing services and water flow
     case "Contractors":
@@ -940,6 +2666,9 @@ export const getIconName = (name) => {
     case "Hair Coloring":
     case "Mobile Hair Perming":
     case "Hair Perming":
+    case "Hair Perming":
+    case "Mobile Adult Haircut":
+    case "Mobile Special Needs Haircut":
     case "Mobile Haircut":
     case "Haircut":
     case "Hair Styling":

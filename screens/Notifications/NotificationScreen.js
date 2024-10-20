@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
+import { format, fromUnixTime, parseISO } from "date-fns";
 import {
   fetchNotifications,
   deleteNotifications,
@@ -22,7 +23,6 @@ import { theme3 } from "../../assets/branding/themes";
 import Header from "../GlobalComponents/Header";
 // import Header from "../../components/Header";
 import NoDataFound from "../GlobalComponents/NoDataFound";
-import { format, parseISO } from "date-fns";
 
 const NotificationScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -84,13 +84,23 @@ const NotificationScreen = ({ route }) => {
   );
 
   function Notificationlist({ item, index }) {
-    let formattedDate;
+    let formattedDate = "Date unavailable";
+
     try {
-      const date = new Date(item.created_at * 1000);
+      let date;
+      if (typeof item.created_at === "number") {
+        // Assuming it's a Unix timestamp in seconds
+        date = fromUnixTime(item.created_at);
+      } else if (typeof item.created_at === "string") {
+        // Assuming it's an ISO string
+        date = parseISO(item.created_at);
+      } else {
+        throw new Error("Invalid date format");
+      }
+
       formattedDate = format(date, "MM/dd HH:mm");
     } catch (error) {
-      console.error("Error formatting date:", error);
-      formattedDate = "Date unavailable";
+      console.error("Error formatting date:", error, "for item:", item);
     }
 
     return (

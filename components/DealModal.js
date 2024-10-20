@@ -18,26 +18,59 @@ const DealModal = ({ isVisible, deals, onClose }) => {
     console.log("Deals data:", JSON.stringify(deals, null, 2));
   }, [deals]);
 
-  const formatDate = (dateArray) => {
-    if (!Array.isArray(dateArray) || dateArray.length !== 3) {
-      console.warn("Invalid date format:", dateArray);
+  const formatDate = (dateInput) => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    let date;
+
+    if (typeof dateInput === "string") {
+      date = new Date(dateInput);
+    } else if (Array.isArray(dateInput) && dateInput.length === 3) {
+      const [year, month, day] = dateInput;
+      date = new Date(year, month - 1, day);
+    } else {
+      console.warn("Invalid date format:", dateInput);
       return "Invalid Date";
     }
-    const [year, month, day] = dateArray;
-    return `${day.toString().padStart(2, "0")}/${month
-      .toString()
-      .padStart(2, "0")}/${year}`;
+
+    if (isNaN(date.getTime())) {
+      console.warn("Invalid date:", dateInput);
+      return "Invalid Date";
+    }
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${day} ${month}, ${year}`;
   };
 
-  const formatTime = (timeArray) => {
-    if (!Array.isArray(timeArray) || timeArray.length !== 2) {
-      console.warn("Invalid time format:", timeArray);
-      return "Invalid Time";
+  const formatTime = (timeInput) => {
+    if (typeof timeInput === "string") {
+      // Assuming the input is in "HH:mm:ss" format
+      const [hours, minutes] = timeInput.split(":");
+      return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
     }
-    const [hours, minutes] = timeArray;
-    return `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}`;
+    if (Array.isArray(timeInput) && timeInput.length === 2) {
+      const [hours, minutes] = timeInput;
+      return `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")}`;
+    }
+    console.warn("Invalid time format:", timeInput);
+    return "Invalid Time";
   };
 
   const renderDealInfo = (icon, text) => (

@@ -312,9 +312,15 @@ const HomeScreen = ({ route }) => {
     );
   };
   useEffect(() => {
-    loadCategories();
     getCurrentLocation();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Fetch the categories when the screen is focused
+      loadCategories();
+    }, [])
+  );
 
   useEffect(() => {
     if (

@@ -32,6 +32,8 @@ import DealIcons from "../screens/GlobalComponents/DealIcons";
 import DealModal from "./DealModal";
 import ChatAnim from "../screens/GlobalComponents/ChatAnim";
 import ReviewModal from "../screens/Modals/ReviewModal";
+import { parse, isValid } from "date-fns";
+
 const WindowWidth = Dimensions.get("window").width;
 const WindowHeight = Dimensions.get("screen").height;
 const defaultImageUrl = require("../assets/images/defaultImage.png");
@@ -58,6 +60,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
   const [selectedBusinessId, setSelectedBusinessId] = useState(null);
   const [selectedBusinessIsRegistered, setSelectedBusinessIsRegistered] =
     useState(null);
+
   const openDealModal = (dealData) => {
     const dealsArray = Array.isArray(dealData) ? dealData : [dealData];
     setSelectedDeal(dealsArray);
@@ -251,36 +254,35 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       setIsFav(val);
     }
 
+    function handleFav(itemId) {
+      const newFavStatus = !isFav;
+      setIsFav(newFavStatus);
+      if (newFavStatus) {
+        addFavorite(itemId, changeTepFav);
+      } else {
+        removeFavorite(itemId, changeTepFav);
+      }
+    }
     const getEarliestSlot = (earliestSlotDate, earliestSlotTime) => {
+      console.log("Received date:", JSON.stringify(earliestSlotDate));
+      console.log("Received time:", JSON.stringify(earliestSlotTime));
+
       if (!earliestSlotDate || !earliestSlotTime) {
-        // Return null if either date or time is not yet available
+        console.log("Date or time is null or undefined");
         return null;
       }
 
       try {
-        // Ensure both date and time are arrays
-        if (
-          Array.isArray(earliestSlotDate) &&
-          Array.isArray(earliestSlotTime)
-        ) {
-          // Construct the date using the year, month, and day, adjusting month index as JS Date months are 0-based
-          const year = earliestSlotDate[0];
-          const month = earliestSlotDate[1] - 1; // Month is 0-based in JS Date
-          const day = earliestSlotDate[2];
-          const hours = earliestSlotTime[0];
-          const minutes = earliestSlotTime[1];
+        const dateTimeString = `${earliestSlotDate}T${earliestSlotTime}`;
+        console.log(`Attempting to parse: ${dateTimeString}`);
 
-          // Create the date object
-          const slotDate = new Date(year, month, day, hours, minutes);
+        const parsedDate = new Date(dateTimeString);
 
-          if (!isNaN(slotDate.getTime())) {
-            return slotDate;
-          } else {
-            console.warn("Invalid date or time format");
-            return null;
-          }
+        if (!isNaN(parsedDate.getTime())) {
+          console.log("Successfully parsed date:", parsedDate);
+          return parsedDate;
         } else {
-          console.warn("Date or time is not in expected array format");
+          console.warn("Invalid date or time format after parsing");
           return null;
         }
       } catch (error) {
@@ -290,8 +292,8 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
     };
 
     const formatSlotDateTime = (date) => {
-      if (!date || isNaN(date.getTime())) {
-        return "Loading..."; // Show a loading message if the date is not available yet
+      if (!date) {
+        return translations.bookNow; // Or any default text you prefer
       }
 
       const monthNames = [
@@ -320,15 +322,17 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       return `${month} ${day} - ${time}`;
     };
 
-    const earliestSlot = getEarliestSlot(
-      item.earliestSlotDate,
-      item.earliestSlotTime
-    );
+    const earliestSlot =
+      item.earliestSlotDate && item.earliestSlotTime
+        ? getEarliestSlot(item.earliestSlotDate, item.earliestSlotTime)
+        : null;
 
-    const bookButtonText = earliestSlot
-      ? `Book | ${formatSlotDateTime(earliestSlot)}`
-      : translations.bookNow;
-
+    const bookButtonText =
+      item.earliestSlotDate && item.earliestSlotTime
+        ? earliestSlot
+          ? `Book | ${formatSlotDateTime(earliestSlot)}`
+          : translations.bookNow
+        : translations.contactForAvailability;
     const getTierLevel = (score) => {
       if (score < 100)
         return { name: "Trailblazer", color: "#B8860B", icon: "trail-sign" };
