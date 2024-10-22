@@ -565,7 +565,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 size={18}
                 color={theme3.primaryColor}
               />
-              <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
+              <Text style={[styles.mostPopularCity, { margin: 5 }]}>
                 {item.yelpBusinessLocation.city}
                 {","} {item.yelpBusinessLocation.state}
               </Text>
@@ -583,7 +583,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                     size={20}
                     color={theme3.secondaryColor}
                   />
-                  <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
+                  <Text style={[styles.mostPopularCity, { margin: 5 }]}>
                     {item.yelpBusiness.phone}
                   </Text>
                 </View>
@@ -597,7 +597,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 size={16}
                 color={theme3.primaryColor}
               />
-              <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
+              <Text style={[styles.mostPopularCity, { margin: 5 }]}>
                 {metersToMiles(item.yelpBusiness.distance)} {translations.miles}
               </Text>
             </View>
@@ -610,7 +610,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 <TouchableOpacity
                   onPress={() => handleChatButtonPress(item.yelpBusiness)}
                 >
-                  <Text style={[styles.DescText, { marginLeft: 0 }]}>
+                  <Text style={[styles.DescText, { margin: 5 }]}>
                     {translations.chatNow}
                   </Text>
                 </TouchableOpacity>
@@ -645,7 +645,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 size={18}
                 color={theme3.primaryColor}
               />
-              <Text style={[styles.mostPopularCity, { marginTop: 0 }]}>
+              <Text style={[styles.mostPopularCity, { margin: 5 }]}>
                 {translations.directions}
               </Text>
             </TouchableOpacity>
@@ -657,7 +657,7 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
                 }}
               >
                 <DealIcons />
-                <Text style={[styles.mostPopularCity, { marginLeft: 5 }]}>
+                <Text style={[styles.mostPopularCity, { margin: 5 }]}>
                   {translations.deals}
                 </Text>
               </TouchableOpacity>

@@ -57,14 +57,14 @@ const SignUpScreen = () => {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
   const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&.]{6,}$/;
 
   const passwordPolicy = [
-    "At least 8 characters long",
+    "At least 6 characters long", // Changed to 6 characters
     "One uppercase letter",
     "One lowercase letter",
     "One number",
-    "One special character (@, $, !, %, *, ?, &)",
+    "Special characters are optional",
   ];
 
   const resetErrors = () => {
@@ -172,6 +172,7 @@ const SignUpScreen = () => {
     try {
       setLoading(true);
       const response = await signupUser(userData, referralCode);
+      console.log("response", response);
 
       if (
         response.success &&

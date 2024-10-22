@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   modalContent: {
     flex: 1,
     backgroundColor: "#f6f6f6",
-    paddingTop: 10,
+    padding: 10,
     paddingHorizontal: 10, // Added padding for left and right spacing
   },
   listContainer: {

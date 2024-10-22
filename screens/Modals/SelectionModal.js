@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     borderColor: "#e0e0e0",
     borderWidth: 1,
+    padding: 5,
   },
   categoryIconContainer: {
     width: 50,
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: 12,
     textAlign: "center",
     color: theme3.fontColor,
     fontWeight: "600",

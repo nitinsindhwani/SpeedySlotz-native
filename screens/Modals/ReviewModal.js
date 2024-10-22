@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Dimensions,
 } from "react-native";
 import StarRating from "../../assets/branding/StarRating";
 import axios from "axios";
@@ -28,7 +29,7 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedReviews, setExpandedReviews] = useState({});
-
+  const windowWidth = Dimensions.get("window").width;
   useEffect(() => {
     if (isVisible && businessId) {
       fetchReviews();
@@ -157,14 +158,16 @@ const ReviewModal = ({ isVisible, onClose, businessId, isRegistered }) => {
     <>
       {/* Combined Rating and Review Count */}
       <View style={styles.combinedRatingContainer}>
-        <Text style={styles.combinedRatingNumber}>
-          {combinedRating.overallRating.toFixed(1)}
-        </Text>
-        <StarRating
-          rating={combinedRating.overallRating}
-          size={24}
-          color={theme3.secondaryColor}
-        />
+        <View style={styles.ratingTopRow}>
+          <Text style={styles.combinedRatingNumber}>
+            {combinedRating.overallRating.toFixed(1)}
+          </Text>
+          <StarRating
+            rating={combinedRating.overallRating}
+            size={24}
+            color={theme3.secondaryColor}
+          />
+        </View>
         <Text style={styles.combinedReviewCount}>
           ({combinedRating.totalReviewCount} total reviews)
         </Text>
@@ -249,83 +252,88 @@ const styles = StyleSheet.create({
     backgroundColor: "#f6f6f6",
   },
   combinedRatingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme3.primaryColor,
+    padding: 25,
+    borderRadius: 20,
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  ratingTopRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
-    backgroundColor: theme3.primaryColor,
-    padding: 20,
-    borderRadius: 15,
-    marginTop: 20,
+    marginBottom: 8,
   },
   combinedRatingNumber: {
-    fontSize: 48,
-    fontWeight: "bold",
+    fontSize: 64,
+    fontWeight: "600",
     color: "white",
-    marginRight: 15,
+    marginRight: 20,
   },
   combinedReviewCount: {
-    fontSize: 16,
+    fontSize: 18,
     color: "white",
-    marginLeft: 10,
-  },
-  averageRatingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-    backgroundColor: theme3.secondaryColor,
-    padding: 20,
-    borderRadius: 15,
-    marginHorizontal: 20,
-  },
-  averageRatingNumber: {
-    fontSize: 48,
-    fontWeight: "bold",
-    color: "white",
-    marginRight: 15,
-  },
-  reviewCount: {
-    fontSize: 16,
-    color: "white",
-    marginLeft: 10,
+    opacity: 0.9,
+    marginTop: 5,
   },
   tabContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginHorizontal: 20,
     marginBottom: 20,
+    backgroundColor: theme3.primaryColor,
+    borderRadius: 20,
+    padding: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   tab: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
-    borderRadius: 20,
+    padding: 12,
+    borderRadius: 15,
     flex: 1,
     justifyContent: "center",
-    marginHorizontal: 5,
-    borderWidth: 1,
-    borderColor: theme3.primaryColor,
+    marginHorizontal: 4,
+    backgroundColor: "transparent",
   },
   activeTab: {
-    backgroundColor: theme3.primaryColor,
+    backgroundColor: "white",
+  },
+  tabText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 15,
+  },
+  activeTabText: {
+    color: theme3.primaryColor,
   },
   tabLogo: {
     width: 20,
     height: 20,
-    marginRight: 5,
+    marginRight: 8,
   },
   myLogo: {
-    width: 30,
-    height: 30,
-    marginRight: 5,
-  },
-  tabText: {
-    color: theme3.primaryColor,
-    fontWeight: "bold",
-    fontSize: 14,
-  },
-  activeTabText: {
-    color: "#FFFFFF",
+    width: 24,
+    height: 24,
+    marginRight: 8,
   },
   reviewList: {
     paddingHorizontal: 20,

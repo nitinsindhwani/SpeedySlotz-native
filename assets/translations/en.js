@@ -26,11 +26,11 @@ export default {
   loginError: "An error occurred. Please try again.",
 
   // Password Policy
-  passwordPolicyLength: "At least 8 characters long",
+  passwordPolicyLength: "At least 6 characters long",
   passwordPolicyUppercase: "One uppercase letter",
   passwordPolicyLowercase: "One lowercase letter",
   passwordPolicyNumber: "One number",
-  passwordPolicySpecial: "One special character (@, $, !, %, *, ?, &)",
+  passwordPolicySpecial: "Special characters are optional",
 
   // Sign Up
   createAccount: "Create Account",

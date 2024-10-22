@@ -299,7 +299,7 @@ const ProfileScreen = ({ route }) => {
               >
                 {renderProfileImage()}
                 <View style={styles.cameraIconContainer}>
-                  <Ionicons name="camera-outline" size={24} color="#f9ab55" />
+                  <Ionicons name="camera-outline" size={24} color="white" />
                 </View>
               </TouchableOpacity>
 
@@ -680,11 +680,14 @@ const styles = StyleSheet.create({
   },
   cameraIconContainer: {
     position: "absolute",
-    bottom: 0,
+    top: 0,
+    left: 0,
     right: 0,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    borderRadius: 10,
-    padding: 3,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent dark overlay
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 30, // Match parent container
   },
   nameText: {
     fontSize: 18,
