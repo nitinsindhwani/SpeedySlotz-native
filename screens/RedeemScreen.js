@@ -25,60 +25,60 @@ import { redeemUserPoints, getStoredUser } from "../api/ApiCall";
 import ErrorAlert from "../screens/GlobalComponents/ErrorAlert";
 
 const { width, height } = Dimensions.get("window");
-const AnimatedStar = () => {
-  const scaleValue = useRef(new Animated.Value(1)).current;
-  const rotateValue = useRef(new Animated.Value(0)).current;
+// const AnimatedStar = () => {
+//   const scaleValue = useRef(new Animated.Value(1)).current;
+//   const rotateValue = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    const scaleAnimation = Animated.sequence([
-      Animated.timing(scaleValue, {
-        toValue: 1.2,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleValue, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true,
-      }),
-    ]);
+//   useEffect(() => {
+//     const scaleAnimation = Animated.sequence([
+//       Animated.timing(scaleValue, {
+//         toValue: 1.2,
+//         duration: 1000,
+//         easing: Easing.inOut(Easing.ease),
+//         useNativeDriver: true,
+//       }),
+//       Animated.timing(scaleValue, {
+//         toValue: 1,
+//         duration: 1000,
+//         easing: Easing.inOut(Easing.ease),
+//         useNativeDriver: true,
+//       }),
+//     ]);
 
-    const rotateAnimation = Animated.loop(
-      Animated.timing(rotateValue, {
-        toValue: 1,
-        duration: 6000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    );
+//     const rotateAnimation = Animated.loop(
+//       Animated.timing(rotateValue, {
+//         toValue: 1,
+//         duration: 6000,
+//         easing: Easing.linear,
+//         useNativeDriver: true,
+//       })
+//     );
 
-    Animated.loop(scaleAnimation).start();
-    rotateAnimation.start();
+//     Animated.loop(scaleAnimation).start();
+//     rotateAnimation.start();
 
-    return () => {
-      scaleAnimation.stop();
-      rotateAnimation.stop();
-    };
-  }, []);
+//     return () => {
+//       scaleAnimation.stop();
+//       rotateAnimation.stop();
+//     };
+//   }, []);
 
-  const spin = rotateValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
+//   const spin = rotateValue.interpolate({
+//     inputRange: [0, 1],
+//     outputRange: ["0deg", "360deg"],
+//   });
 
-  return (
-    <Animated.View
-      style={[
-        styles.starContainer,
-        { transform: [{ scale: scaleValue }, { rotate: spin }] },
-      ]}
-    >
-      <FontAwesome5 name="star" size={60} color="white" />
-    </Animated.View>
-  );
-};
+//   return (
+//     <Animated.View
+//       style={[
+//         styles.starContainer,
+//         { transform: [{ scale: scaleValue }, { rotate: spin }] },
+//       ]}
+//     >
+//       <FontAwesome5 name="star" size={60} color="white" />
+//     </Animated.View>
+//   );
+// };
 const RedeemScreen = ({ navigation, route }) => {
   const { userPoints = 0 } = route.params || {};
   const { translations } = useContext(LanguageContext);
@@ -217,7 +217,7 @@ const RedeemScreen = ({ navigation, route }) => {
           end={{ x: 1, y: 1 }}
           style={styles.pointsCard}
         >
-          <AnimatedStar />
+          {/* <AnimatedStar /> */}
           <Text style={styles.pointsLabel}>{translations.availablePoints}</Text>
           <Text style={styles.pointsValue}>{userPoints}</Text>
         </LinearGradient>

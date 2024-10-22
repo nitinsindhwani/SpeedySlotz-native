@@ -33,60 +33,60 @@ import Header from "./GlobalComponents/Header";
 import { theme3 } from "../assets/branding/themes";
 import { LinearGradient } from "expo-linear-gradient";
 
-const AnimatedStar = () => {
-  const scaleValue = useRef(new Animated.Value(1)).current;
-  const rotateValue = useRef(new Animated.Value(0)).current;
+// const AnimatedStar = () => {
+//   const scaleValue = useRef(new Animated.Value(1)).current;
+//   const rotateValue = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    const scaleAnimation = Animated.sequence([
-      Animated.timing(scaleValue, {
-        toValue: 1.2,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleValue, {
-        toValue: 1,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true,
-      }),
-    ]);
+//   useEffect(() => {
+//     const scaleAnimation = Animated.sequence([
+//       Animated.timing(scaleValue, {
+//         toValue: 1.2,
+//         duration: 1000,
+//         easing: Easing.inOut(Easing.ease),
+//         useNativeDriver: true,
+//       }),
+//       Animated.timing(scaleValue, {
+//         toValue: 1,
+//         duration: 1000,
+//         easing: Easing.inOut(Easing.ease),
+//         useNativeDriver: true,
+//       }),
+//     ]);
 
-    const rotateAnimation = Animated.loop(
-      Animated.timing(rotateValue, {
-        toValue: 1,
-        duration: 6000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    );
+//     const rotateAnimation = Animated.loop(
+//       Animated.timing(rotateValue, {
+//         toValue: 1,
+//         duration: 6000,
+//         easing: Easing.linear,
+//         useNativeDriver: true,
+//       })
+//     );
 
-    Animated.loop(scaleAnimation).start();
-    rotateAnimation.start();
+//     Animated.loop(scaleAnimation).start();
+//     rotateAnimation.start();
 
-    return () => {
-      scaleAnimation.stop();
-      rotateAnimation.stop();
-    };
-  }, []);
+//     return () => {
+//       scaleAnimation.stop();
+//       rotateAnimation.stop();
+//     };
+//   }, []);
 
-  const spin = rotateValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
+//   const spin = rotateValue.interpolate({
+//     inputRange: [0, 1],
+//     outputRange: ["0deg", "360deg"],
+//   });
 
-  return (
-    <Animated.View
-      style={[
-        styles.starContainer,
-        { transform: [{ scale: scaleValue }, { rotate: spin }] },
-      ]}
-    >
-      <FontAwesome5 name="star" size={60} color="white" />
-    </Animated.View>
-  );
-};
+//   return (
+//     <Animated.View
+//       style={[
+//         styles.starContainer,
+//         { transform: [{ scale: scaleValue }, { rotate: spin }] },
+//       ]}
+//     >
+//       <FontAwesome5 name="star" size={60} color="white" />
+//     </Animated.View>
+//   );
+// };
 
 const RewardProgramScreen = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -222,7 +222,7 @@ const RewardProgramScreen = ({ navigation }) => {
           end={{ x: 1, y: 1 }}
           style={styles.pointsCard}
         >
-          <AnimatedStar />
+          {/* <AnimatedStar /> */}
           <Text style={styles.pointsLabel}>{translations.totalPoints}</Text>
           <Text style={styles.pointsValue}>{userPoints}</Text>
           <Text style={styles.pointsToNextReward}>

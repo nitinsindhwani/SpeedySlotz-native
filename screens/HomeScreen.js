@@ -73,14 +73,16 @@ const DealItem = ({ deal, yelpBusinesses }) => {
 
   return (
     <View style={styles.dealCard}>
-      <Image
+
+
+      {/* <Image
         source={
           deal.images && deal.images.length > 0
             ? { uri: deal.images[0] }
             : require("../assets/images/deal1.png")
         }
         style={styles.dealImage}
-      />
+      /> */}
       <View style={styles.imageOverlay} />
       <View style={styles.dealBadge}>
         <Text style={styles.dealBadgeText}>{deal.percentageOff}% OFF</Text>
@@ -206,9 +208,9 @@ const NewContentItem = ({ item, yelpBusinesses, navigation }) => {
   const getImageSource = () => {
     if (item.type === "feature") {
       if (item.id === "newFeature001") {
-        return require("../assets/images/whatsNew1.png");
+        return require("../assets/images/calender.png");
       } else if (item.id === "feature002") {
-        return require("../assets/images/whatsNew4.png");
+        return require("../assets/images/calender.png");
       }
     }
 
@@ -217,11 +219,32 @@ const NewContentItem = ({ item, yelpBusinesses, navigation }) => {
       const imageUrl = getFirstAvailableImage(business.yelpBusiness.image_url);
       return imageUrl
         ? { uri: imageUrl }
-        : require("../assets/images/whatsNew2.png");
+        : require("../assets/images/calender.png");
     }
 
     // Default image for other cases
-    return require("../assets/images/whatsNew2.png");
+    return require("../assets/images/calender.png");
+
+
+
+    // if (item.type === "feature") {
+    //   if (item.id === "newFeature001") {
+    //     return require("../assets/images/whatsNew1.png");
+    //   } else if (item.id === "feature002") {
+    //     return require("../assets/images/whatsNew4.png");
+    //   }
+    // }
+
+    // // For business or local_business types
+    // if (business && business.yelpBusiness && business.yelpBusiness.image_url) {
+    //   const imageUrl = getFirstAvailableImage(business.yelpBusiness.image_url);
+    //   return imageUrl
+    //     ? { uri: imageUrl }
+    //     : require("../assets/images/whatsNew2.png");
+    // }
+
+    // // Default image for other cases
+    // return require("../assets/images/whatsNew2.png");
   };
 
   // Function to extract the first available image URL (unchanged)

@@ -1,4 +1,6 @@
-// src/assets/translations/en.js
+
+
+// // src/assets/translations/en.js
 
 export default {
   // General
@@ -27,14 +29,15 @@ export default {
   passwordCriteria: "Password does not meet the required criteria.",
   loginError: "An error occurred. Please try again.",
 
-  // Password Policy
-  passwordPolicyLength: "At least 8 characters long",
-  passwordPolicyUppercase: "One uppercase letter",
-  passwordPolicyLowercase: "One lowercase letter",
-  passwordPolicyNumber: "One number",
-  passwordPolicySpecial: "One special character (@, $, !, %, *, ?, &)",
+  // // // Password Policy
+  // // passwordPolicyLength: "At least 8 characters long",
+  // // passwordPolicyUppercase: "One uppercase letter",
+  // // passwordPolicyLowercase: "One lowercase letter",
+  // // passwordPolicyNumber: "One number",
+  // // passwordPolicySpecial: "One special character (@, $, !, %, *, ?, &)",
 
-  // Sign Up
+  // // Sign Up
+
   createAccount: "Create Account",
   emailAddress: "Email Address",
   confirmPassword: "Confirm Password",
@@ -64,8 +67,8 @@ export default {
   logOut: "Log Out",
 
   // Other common terms
-  error: "Error",
-  success: "Success",
+  // error: "Error",
+  // success: "Success",
   retry: "Retry",
   noData: "No data available",
 
@@ -123,7 +126,8 @@ export default {
   pregnancyHistory: "Women: Pregnancy and Childbirth History",
   otherMedicalInfo: "Any other relevant medical information?",
 
-  // Dental History
+  // // Dental History //LAST CHECKING BELOW
+
   dentalHistory: "Dental History",
   lastDentalVisit: "Last Dental Visit",
   lastDentalXray: "Last Dental X-ray",
@@ -203,8 +207,7 @@ export default {
   changes_to_privacy_policy_content:
     "We may update our Privacy Policy from time to time. We recommend users regularly review our privacy policy to stay informed. Continued use of our services after changes have been made implies acceptance of those changes.",
   contact_us: "Contact Us",
-  contact_us_content:
-    "If you have any questions or concerns about these Terms, please contact us at info@speedyslotz.com. We are always available to address your concerns and provide clarity where needed.",
+  contact_us_content: "If you have any questions or concerns about these Terms, please contact us at info@speedyslotz.com. We are always available to address your concerns and provide clarity where needed.",
 
   language_selection: "Language Selection",
   select_preferred_language: "Select your preferred language",
@@ -224,7 +227,9 @@ export default {
   password: "Password",
   forgotPassword: "Forgot Password?",
 
-  // WelcomeScreen2
+  // // WelcomeScreen2 --->>> Below here now
+
+
   effortlessDecisions: "Effortless Decisions",
   effortlessDecisionsMessage:
     "Dive deeper into our features. Experience real-time availability updates, transparent pricing, and the ability to chat directly with professionals. Making an informed decision has never been easier.",
@@ -295,6 +300,17 @@ export default {
   changesToTermsText:
     "We may update our Terms and Conditions from time to time to reflect changes in our services, legal and regulatory requirements, or for other reasons. We encourage users to regularly review our terms to stay informed. Continued use of our services after changes have been made implies acceptance of those changes.",
   contactUsTitle: "Contact Us",
+
+
+//////////////////BELOW HERE THE LATEST CHANIGNS ///////////////////
+
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+
   yourRewards: "Your Rewards",
   totalPoints: "Total Points",
   howToEarnPoints: "How to Earn Points",
@@ -310,6 +326,8 @@ export default {
   referralCodeTitle: "Your Referral Code",
   inviteFriendsText:
     "Invite your friends and earn bonus points when they sign up!",
+
+
   referEarnTitle: "Refer & Earn",
   referYourFriends: "Refer Your Friends",
   inviteFriendsText:
@@ -318,9 +336,12 @@ export default {
   shareMessage:
     "Hey! Join me on SpeedySlotz, the easiest way to book your slots quickly. Use my referral code '{referralCode}' when you sign up, and we both get rewarded with SpeedyPoints! Let's enjoy the convenience together. Download the app now: [App Link]",
   shareError: "Unable to share at the moment. Please try again later.",
+
+
+  ///////latest chekcing in below this //////////////
   howToRedeemPoints: "How to Redeem Points",
   redeemDescription:
-    "Transform your SpeedyPoints into Amazon gift cards! For every 1,000 points you accumulate, you can redeem a $10 Amazon gift card. There's no limit to how often you can redeem – as soon as you reach the 1,000 point threshold, you're eligible for redemption.",
+    "Transform your SpeedyPoints into Amazon gift cards! For every 1,000 points you accumulate, you can redeem a $10 Amazon gift card. There's no limit to how often you can redeem  as soon as you reach the 1,000 point threshold, you're eligible for redemption.",
   redeemWarning:
     "Please note: Points can only be redeemed in increments of 1,000. Redeemed points cannot be refunded or transferred. Ensure you have sufficient points and review your selection before confirming any redemption.",
   downloadAppIOS: "Download for iOS",
@@ -338,10 +359,10 @@ export default {
   completedBookingDesc: "Every time you complete a booking",
   leaveReviewDesc: "When you leave a review after a completed booking",
   codeCopied: "Code Copied!",
+
   codeCopiedMessage: "Referral code has been copied to clipboard.",
   tapToCopy: "Tap the code to copy",
-  excitingShareMessage:
-    "🎉 Exciting news! Join me on SpeedySlotz and let's both win!",
+  excitingShareMessage:"Exciting news! Join me on SpeedySlotz and let's both win!",
   referralCodeIntro: "Use my referral code",
   referralCodeValidity: "Referral code is valid for 48 hours.",
   generateCode: "Generate Referral Code",
@@ -354,14 +375,15 @@ export default {
   firstBookingBonus: "100 points bonus on your first booking",
   exclusiveOffers: "Access to exclusive offers and discounts",
   downloadAppPrompt: "Download SpeedySlotz now and start earning rewards:",
-  joinNowMessage:
-    "Don't miss out on these amazing benefits. Join now and let's earn together! 🚀",
+  joinNowMessage: "Don't miss out on these amazing benefits. Join now and let's earn together! ",
+
+
+    ///////latest chekcing in below here //////////////
 
   redeemPoints: "Redeem Points",
   availablePoints: "Available Points",
   minRedeemablePoints: "Minimum Redeemable Points",
   selectAmount: "Select Amount to Redeem",
-  points: "points",
   amazonGiftCard: "Amazon Gift Card",
   redeemNow: "Redeem Now",
   error: "Error",
@@ -369,8 +391,10 @@ export default {
   ok: "OK",
   minimumRedeemError: "The minimum redeemable amount is 1000 points.",
   insufficientPointsMessage: "You need at least 1000 points to redeem.",
-  redeemSuccessMessage:
-    "Congratulations! You've successfully redeemed ${amount} in Amazon Gift Cards.",
+  // redeemSuccessMessage:"Congratulations! You've successfully redeemed {amount} in Amazon Gift Cards.",
+    ///////latest chekcing in above here //////////////
+
+
   redeemInfo:
     "Redemption process may take up to 24-48 hours. You will receive an email with your gift card code once the redemption is complete.",
 
@@ -379,7 +403,7 @@ export default {
     "Turn your points into rewards! For every 1,000 points, get a $10 Amazon Gift Card. Start redeeming today!",
   redeemInfo:
     "Gift cards will be sent to your registered email within 24-48 hours of redemption.",
-  referralCodeIntro: "👉 Use my referral code",
+  referralCodeIntro: " Use my referral code",
 
   howItWorksTitle: "How it works",
   browseServicesTitle: "Browse Services",
@@ -451,6 +475,14 @@ export default {
   deals: "Deals",
   cannotPlaceCall:
     "Cannot place the call, please try it from your phone keypad.",
+
+
+
+
+
+
+//////////////above the chanigns
+
 
   all: "All",
   reviewed: "Reviewed",
