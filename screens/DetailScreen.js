@@ -236,8 +236,42 @@ function DetailScreen({ route }) {
       </TouchableOpacity>
     );
   }
+  const requestMediaPermissions = async (mediaType) => {
+    try {
+      const permissionResult =
+        await ImagePicker.getMediaLibraryPermissionsAsync();
 
+      if (!permissionResult.granted) {
+        // Request permission if not already granted
+        const permissionRequest =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionRequest.granted) {
+          setErrorMessage(
+            mediaType === "image"
+              ? translations.cameraRollPermissionDenied
+              : translations.videoPermissionDenied
+          );
+          setShowError(true);
+          return false;
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error requesting media library permissions:", error);
+      setErrorMessage(translations.permissionError);
+      setShowError(true);
+      return false;
+    }
+  };
   const pickMedia = async (mediaType) => {
+    const permissionGranted = await requestMediaPermissions(mediaType);
+
+    if (!permissionGranted) {
+      return;
+    }
+
     if (
       mediaType === "video" &&
       selectedVideos.length >= MAX_NUMBER_OF_VIDEOS

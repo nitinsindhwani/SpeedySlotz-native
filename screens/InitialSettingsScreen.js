@@ -107,17 +107,6 @@ const InitialSettingsScreen = ({ navigation }) => {
   return (
     <ImageBackground source={AuthBg} style={Styles.Container}>
       <SafeAreaView style={styles.safeArea}>
-        <View style={Styles.TopView}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons
-              name="arrow-back-outline"
-              style={{ marginLeft: 5 }}
-              size={25}
-              color="#4C4C4C"
-            />
-          </TouchableOpacity>
-        </View>
-
         <Image source={Logo} style={styles.logo} />
 
         <View style={styles.content}>

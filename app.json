@@ -19,7 +19,13 @@
       "bundleIdentifier": "com.speedyzslotznitinapp.app",
       "buildNumber": "49",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": ["remote-notification"],
+        "NSPhotoLibraryUsageDescription": "SpeedySlotz needs access to your photo library to allow you to select and upload a profile picture. This picture will be used to personalize your account and will be visible to other users and service providers within the app.",
+        "NSCameraUsageDescription": "SpeedySlotz requires camera access to capture photos for your profile or service-related images. These images will be used within the app and may be visible to other users and service providers.",
+        "NSLocationWhenInUseUsageDescription": "SpeedySlotz uses your location to find nearby service providers, show directions to appointment locations, and provide accurate estimates for travel times. This helps us connect you with the most convenient services in your area.",
+        "NSCalendarsUsageDescription": "SpeedySlotz needs access to your calendar to schedule and manage your appointments with service providers. This helps you keep track of your bookings within your personal calendar.",
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you. This data helps improve your experience with relevant services and offers within SpeedySlotz.",
+        "NSNotificationUsageDescription": "SpeedySlotz uses notifications to keep you updated about your appointments, service provider responses, and important updates. This ensures you never miss crucial information about your bookings."
       }
     },
     "android": {
@@ -63,12 +69,14 @@
             "googleServicesVersion": "4.3.15"
           }
         }
-      ]
+      ],
+      "expo-tracking-transparency"
     ],
     "extra": {
       "eas": {
         "projectId": "8cdc32df-1dfe-4ba1-b002-d69366d596e4"
       }
-    }
+    },
+    "owner": "nitinsindhwani"
   }
 }

@@ -9,10 +9,12 @@ import * as Linking from "expo-linking";
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import * as SecureStore from "expo-secure-store";
+import * as TrackingTransparency from "expo-tracking-transparency";
 import { LanguageProvider } from "./api/LanguageContext";
 import { ThemeProvider } from "./components/ThemeContext";
 import { WebSocketProvider } from "./api/WebSocketContext";
 import Swiper from "react-native-swiper";
+import { PushNotification } from "./api/PushNotification";
 
 // Import all your screens
 import WelcomeScreen1 from "./screens/OnBoardScreens/WelcomeScreen1";
@@ -49,8 +51,6 @@ import LanguageSelectionScreen from "./screens/LanguageSelectionScreen";
 import InitialSettingsScreen from "./screens/InitialSettingsScreen";
 import HomeScreen from "./screens/HomeScreen";
 import { app, auth, firestore, logAnalyticsEvent } from "./firebaseConfig";
-
-// Use auth, firestore, and logAnalyticsEvent as needed
 import { TextEncoder, TextDecoder } from "text-encoding";
 
 global.TextEncoder = TextEncoder;
@@ -68,53 +68,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: true,
   }),
 });
-
-const PushNotification = async () => {
-  if (!Device.isDevice) {
-    console.log("Must use physical device for Push Notifications");
-    return { status: "failed", token: null };
-  }
-
-  let { status: existingStatus } = await Notifications.getPermissionsAsync();
-
-  let finalStatus = existingStatus;
-  if (existingStatus !== "granted") {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
-
-  if (finalStatus !== "granted") {
-    Alert.alert(
-      "Notification Permission Required",
-      "SpeedySlotz needs permission to send you notifications about important updates, such as service confirmations, appointment reminders, and booking changes. For example, we will notify you when a service provider accepts your request or if there are any changes to your booking.",
-
-      [{ text: "OK" }]
-    );
-    return { status: "denied", token: null };
-  }
-
-  try {
-    let tokenObject = await Notifications.getExpoPushTokenAsync({
-      projectId: "8cdc32df-1dfe-4ba1-b002-d69366d596e4", // Your project ID
-    });
-
-    if (Platform.OS === "android") {
-      await Notifications.setNotificationChannelAsync("default", {
-        name: "default",
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
-      });
-    }
-
-    await SecureStore.setItemAsync("push_notification", tokenObject.data);
-
-    return { status: "granted", token: tokenObject.data };
-  } catch (error) {
-    console.error("Error getting push token:", error);
-    return { status: "error", token: null };
-  }
-};
 
 function WelcomeStack({ onComplete }) {
   const swiperRef = useRef(null);
@@ -165,29 +118,89 @@ function AppNavigator() {
 export default function App() {
   const notificationListener = useRef();
   const responseListener = useRef();
-  const [notificationStatus, setNotificationStatus] = useState("unknown");
   const [isFirstLaunch, setIsFirstLaunch] = useState(null);
   const [hasSeenWelcome, setHasSeenWelcome] = useState(null);
 
-  useEffect(() => {
-    logAnalyticsEvent("app_open");
-    const setupNotifications = async () => {
-      const result = await PushNotification();
-      setNotificationStatus(result.status);
+  const requestNotificationPermission = async () => {
+    try {
+      // Check existing notification permission status
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
 
-      if (result.status === "granted" && result.token) {
-        // Here you can send the token to your server if needed
-      } else {
-        // You might want to show an alert to the user here
+      if (existingStatus !== "granted") {
+        // Request permission only if it hasn't been granted yet
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      // If permission is still not granted, alert the user
+      if (finalStatus !== "granted") {
         Alert.alert(
-          "Allow Notifications to Stay Updated",
-          "SpeedySlotz needs permission to send you notifications about important updates, such as service confirmations, appointment reminders, and booking changes. For example, we will notify you when a service provider accepts your request or if there are any changes to your booking.",
+          "Notification Permission",
+          "SpeedySlotz uses notifications to keep you updated about your appointments and important updates. You can change this in your device settings.",
           [{ text: "OK" }]
         );
+        return null;
+      }
+
+      // Fetch the push notification token
+      const token = await PushNotification();
+      return token;
+    } catch (error) {
+      console.error("Error requesting notification permission:", error);
+    }
+  };
+
+  const requestTrackingPermission = async () => {
+    if (Platform.OS !== "ios") return true; // Tracking permission is only relevant for iOS
+
+    try {
+      // Check the current tracking permission status
+      const { status: existingStatus } =
+        await TrackingTransparency.getTrackingPermissionsAsync();
+
+      // If the permission has already been granted or denied, don't ask again
+      if (existingStatus === "granted" || existingStatus === "denied") {
+        return existingStatus === "granted";
+      }
+
+      // If permission hasn't been requested yet, request it now
+      const { status: newStatus } =
+        await TrackingTransparency.requestTrackingPermissionsAsync();
+      return newStatus === "granted";
+    } catch (error) {
+      console.error("Error requesting tracking permission:", error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    logAnalyticsEvent("app_open");
+
+    const setupApp = async () => {
+      try {
+        const hasLaunched = await SecureStore.getItemAsync("hasLaunched");
+        const welcomeSeen = await SecureStore.getItemAsync("welcomeSeen");
+
+        if (hasLaunched === null) {
+          setIsFirstLaunch(true);
+          setHasSeenWelcome(false);
+          await SecureStore.setItemAsync("hasLaunched", "true");
+        } else {
+          setIsFirstLaunch(false);
+          setHasSeenWelcome(welcomeSeen === "true");
+        }
+
+        // Request permissions only once, if not granted already
+        await requestTrackingPermission();
+        await requestNotificationPermission();
+      } catch (error) {
+        console.error("Error setting up app:", error);
       }
     };
 
-    setupNotifications();
+    setupApp();
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -237,7 +250,6 @@ export default function App() {
           userId: data.queryParams.userId,
         });
       }
-      // Handle other deep links as needed
     };
 
     const linkingSubscription = Linking.addEventListener("url", handleDeepLink);
@@ -251,31 +263,6 @@ export default function App() {
       linkingSubscription.remove();
     };
   }, []);
-
-  useEffect(() => {
-    checkFirstLaunch();
-  }, []);
-
-  const checkFirstLaunch = async () => {
-    try {
-      const hasLaunched = await SecureStore.getItemAsync("hasLaunched");
-      const welcomeSeen = await SecureStore.getItemAsync("welcomeSeen");
-
-      if (hasLaunched === null) {
-        console.log("First launch detected");
-        setIsFirstLaunch(true);
-        setHasSeenWelcome(false);
-      } else {
-        console.log("Not first launch");
-        setIsFirstLaunch(false);
-        setHasSeenWelcome(welcomeSeen === "true");
-      }
-    } catch (error) {
-      console.error("Error checking first launch:", error);
-      setIsFirstLaunch(false);
-      setHasSeenWelcome(true);
-    }
-  };
 
   const markWelcomeAsSeen = async () => {
     try {
@@ -299,7 +286,7 @@ export default function App() {
     } else if (!hasSeenWelcome) {
       return "Welcome";
     } else {
-      return "LoginScreen"; // or whatever your main screen is
+      return "LoginScreen";
     }
   };
 
@@ -325,7 +312,6 @@ export default function App() {
                       userId: (userId) => `${userId}`,
                     },
                   },
-                  // Add other screens and their paths here
                 },
               },
             }}

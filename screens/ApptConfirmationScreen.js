@@ -21,7 +21,7 @@ import { getStoredUser } from "../api/ApiCall";
 import getImageSource from "./CallFuncGlobal/getImageSource";
 import Header from "./GlobalComponents/Header";
 import ErrorAlert from "./GlobalComponents/ErrorAlert";
-
+import AppRatingModal from "./Modals/AppRatingModal";
 const ApptConfirmationScreen = ({ route }) => {
   const navigation = useNavigation();
   const { userData, businessDetails, slot, service_type } = route.params;
@@ -33,6 +33,8 @@ const ApptConfirmationScreen = ({ route }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
+  const [showAppRating, setShowAppRating] = useState(false);
+  const [hasRated, setHasRated] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -52,6 +54,23 @@ const ApptConfirmationScreen = ({ route }) => {
   );
 
   useEffect(() => {
+    const checkIfRated = async () => {
+      const hasRatedStored = await SecureStore.getItemAsync("hasRated");
+      setHasRated(!!hasRatedStored);
+
+      if (!hasRatedStored && confirmationShown) {
+        setTimeout(() => {
+          setShowAppRating(true); // Show rating modal after a delay
+        }, 2000);
+      }
+    };
+
+    if (confirmationShown) {
+      checkIfRated();
+    }
+  }, [confirmationShown]);
+
+  useEffect(() => {
     const fetchUserData = async () => {
       const storedUserData = await getStoredUser();
       setCurrentUser(storedUserData);
@@ -60,7 +79,9 @@ const ApptConfirmationScreen = ({ route }) => {
     fetchUserData();
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+      setConfirmationShown(true); // Set confirmationShown after data is loaded
+    }, 3000); // Simulate loading with 3-second delay
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -138,7 +159,7 @@ const ApptConfirmationScreen = ({ route }) => {
       if (status !== "granted") {
         showErrorAlert(
           "Calendar Access Required",
-          "SpeedySlotz needs access to your calendar to add the appointment details. Please grant calendar access in your device settings."
+          "SpeedySlotz needs access to your calendar to add appointment details. This allows you to easily keep track of your scheduled services. You can manage this permission in your device settings."
         );
         return;
       }
@@ -218,6 +239,11 @@ const ApptConfirmationScreen = ({ route }) => {
       index: 0,
       routes: [{ name: "BottomNavigation", params: { user: userData } }],
     });
+  };
+
+  const handleCloseAppRating = async () => {
+    setShowAppRating(false);
+    await SecureStore.setItemAsync("hasRated", "true"); // Store that the user has rated
   };
 
   const handleChatButtonPress = () => {
@@ -449,6 +475,12 @@ const ApptConfirmationScreen = ({ route }) => {
         title={alertTitle}
         body={alertMessage}
       />
+      {!hasRated && (
+        <AppRatingModal
+          isVisible={showAppRating}
+          onClose={handleCloseAppRating}
+        />
+      )}
     </View>
   );
 };

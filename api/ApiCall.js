@@ -29,7 +29,9 @@ export const getLocationAndCityState = async (query) => {
     // Get the device's current location
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      throw new Error("Permission to access location was denied.");
+      throw new Error(
+        "Location permission is required to find services near you. You can enable this in your device settings."
+      );
     }
     location = await Location.getCurrentPositionAsync({});
   }
@@ -296,9 +298,10 @@ export const signupUser = async (userData, referralCode) => {
   if (referralCode) {
     signUpApiUrl += `?referralCode=${encodeURIComponent(referralCode)}`;
   }
-
+  console.log("signUpApiUrl", signUpApiUrl);
   try {
     const response = await axios.post(signUpApiUrl, userData);
+    console.log("response", response);
     return response.data;
   } catch (error) {
     console.error("Signup failed:", error.message);

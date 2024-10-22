@@ -55,7 +55,7 @@ const WelcomeScreen3 = ({ onComplete }) => {
           onPress={() => handleNavigation("SignUpScreen")}
           style={[styles.loginBtn, styles.skipBtn]}
         >
-          <Text style={styles.loginTxt}>{translations.signup}</Text>
+          <Text style={styles.loginTxt}>{translations.signUp}</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>

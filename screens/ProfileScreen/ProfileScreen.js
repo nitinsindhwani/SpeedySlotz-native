@@ -9,6 +9,7 @@ import {
   Pressable,
   Linking,
   StyleSheet,
+  Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Styles from "./Styles";
@@ -20,6 +21,7 @@ import {
   MaterialIcons,
   AntDesign,
 } from "@expo/vector-icons";
+
 import * as SecureStore from "expo-secure-store";
 import { theme3 } from "../../assets/branding/themes";
 import { useNavigation } from "@react-navigation/native";
@@ -40,7 +42,9 @@ const ProfileScreen = ({ route }) => {
   const [localImageUri, setLocalImageUri] = useState(null);
   const { translations } = useContext(LanguageContext);
   const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false); // Success state
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState(""); // Success message state
   const [loading, setLoading] = useState(false);
   const iconColor = theme3.fontColor;
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false); // State for delete confirmation
@@ -50,17 +54,6 @@ const ProfileScreen = ({ route }) => {
     setProfileImage(user.profile_picture_url);
   }, [user]);
 
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
-        }
-      }
-    })();
-  }, []);
   const updateUserData = async (updatedUser) => {
     try {
       const userData = JSON.stringify(updatedUser);
@@ -128,11 +121,18 @@ const ProfileScreen = ({ route }) => {
     setShowError(false);
   };
 
+  const handleCloseSuccess = () => {
+    setShowSuccess(false); // Close success alert
+  };
+
   const uploadImage = async (uri) => {
     const apiUrl = `${baseApiUrl}/api/v1/users/update`;
     const userToken = await SecureStore.getItemAsync("userToken");
+
     if (!userToken) {
-      throw new Error("Token not found in SecureStore!");
+      setErrorMessage("Token not found in SecureStore!");
+      setShowError(true);
+      return;
     }
 
     const formData = new FormData();
@@ -151,6 +151,7 @@ const ProfileScreen = ({ route }) => {
     formData.append("user", JSON.stringify(userData));
 
     try {
+      setLoading(true); // Show loading indicator
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
@@ -160,46 +161,98 @@ const ProfileScreen = ({ route }) => {
         body: formData,
       });
 
-      if (response.ok) {
-        const responseData = await response.json();
+      const responseData = await response.json();
+      console.log("responseData", responseData);
 
-        if (responseData.success && responseData.payload) {
-          const updatedUser = responseData.payload;
-          await updateUserData(updatedUser);
-          setLocalImageUri(null);
-          setErrorMessage("Profile picture updated successfully");
-        } else {
-          throw new Error("Invalid response format");
-        }
+      if (response.ok && responseData.payload) {
+        const updatedUser = responseData.payload;
+        await updateUserData(updatedUser);
+        setLocalImageUri(null);
+        setSuccessMessage("Profile picture updated successfully");
+        setShowSuccess(true); // Show success alert
       } else {
-        throw new Error("Upload failed");
+        throw new Error(responseData.message || "Upload failed");
       }
     } catch (error) {
       console.error("Error uploading image:", error);
       setErrorMessage("Failed to update profile picture. Please try again.");
-      setLocalImageUri(null);
+      setShowError(true); // Show error alert
     } finally {
-      setShowError(true);
+      setLoading(false); // Hide loading indicator
     }
   };
 
   const pickImage = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 0.5,
-      });
+      // Check if permission has already been granted
+      const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const imageUri = result.assets[0].uri;
-        setLocalImageUri(imageUri);
-        await uploadImage(imageUri);
+      if (status !== "granted") {
+        // Show an informative alert if permission has not been granted
+        Alert.alert(
+          "Photo Library Access",
+          "SpeedySlotz needs access to your photo library to allow you to select a profile picture. This picture will be used to personalize your account and will be visible to other users and service providers.",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "OK",
+              onPress: async () => {
+                const { status: newStatus } =
+                  await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (newStatus !== "granted") {
+                  setErrorMessage(
+                    translations.cameraRollPermissionDenied ||
+                      "Permission to access photo library was denied"
+                  );
+                  setShowError(true);
+                  return;
+                }
+
+                // Proceed to select the image if permission is granted
+                let result = await ImagePicker.launchImageLibraryAsync({
+                  mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                  allowsEditing: true,
+                  aspect: [4, 3],
+                  quality: 0.5,
+                });
+
+                if (
+                  !result.canceled &&
+                  result.assets &&
+                  result.assets.length > 0
+                ) {
+                  const imageUri = result.assets[0].uri;
+                  setLocalImageUri(imageUri);
+                  await uploadImage(imageUri);
+                }
+              },
+            },
+          ]
+        );
+      } else {
+        // If permission is already granted, proceed with image selection
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 0.5,
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+          const imageUri = result.assets[0].uri;
+          setLocalImageUri(imageUri);
+          await uploadImage(imageUri);
+        }
       }
     } catch (error) {
       console.error("Error picking image:", error);
-      setErrorMessage("Failed to select image. Please try again.");
+      setErrorMessage(
+        translations.imageSelectionFailed ||
+          "Failed to select image. Please try again."
+      );
       setShowError(true);
       setLocalImageUri(null);
     }
@@ -587,8 +640,15 @@ const ProfileScreen = ({ route }) => {
       <ErrorAlert
         show={showError}
         onAction={handleCloseError}
-        title={translations.errorTitle || "Error"}
+        title="Error"
         body={errorMessage}
+      />
+
+      <ErrorAlert
+        show={showSuccess}
+        onAction={handleCloseSuccess}
+        title="Success"
+        body={successMessage}
       />
       <LoadingModal show={loading} />
     </View>

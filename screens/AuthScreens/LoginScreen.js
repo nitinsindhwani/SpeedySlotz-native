@@ -238,97 +238,117 @@ const LoginScreen = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
+      style={styles.container}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 25}
     >
-      <ImageBackground source={AuthBg} style={Styles.Container}>
+      <ImageBackground source={AuthBg} style={styles.backgroundImage}>
         <ScrollView
           contentContainerStyle={styles.scrollViewContent}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
         >
-          <Image source={Logo} style={styles.logo} />
+          <View style={styles.innerContainer}>
+            <Image source={Logo} style={styles.logo} resizeMode="contain" />
 
-          <View style={styles.formContainer}>
-            <Text style={styles.inputLabel}>{translations.username}</Text>
-            <View style={Styles.InputView}>
-              <TextInput
-                style={styles.input}
-                placeholder={translations.username}
-                value={username}
-                onChangeText={(e) => setUsername(e)}
-                autoCapitalize="none"
-                autoCompleteType="username"
-              />
-            </View>
-            {usernameError ? (
-              <Text style={styles.errorText}>{usernameError}</Text>
-            ) : null}
+            <View style={styles.formContainer}>
+              {/* Username Section */}
+              <View style={styles.inputSection}>
+                <Text style={styles.inputLabel}>{translations.username}</Text>
+                <View style={[Styles.InputView, styles.inputContainer]}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder={translations.username}
+                    value={username}
+                    onChangeText={(e) => setUsername(e)}
+                    autoCapitalize="none"
+                    autoCompleteType="username"
+                  />
+                </View>
+                {usernameError ? (
+                  <Text style={styles.errorText}>{usernameError}</Text>
+                ) : null}
+              </View>
 
-            <View style={styles.passwordContainer}>
-              <Text style={styles.inputLabel}>{translations.password}</Text>
-              <TouchableOpacity onPress={handleForgotPassword}>
-                <Text style={styles.forgotPasswordText}>
-                  {translations.forgotPassword}
-                </Text>
-              </TouchableOpacity>
-            </View>
+              {/* Password Section */}
+              <View style={styles.inputSection}>
+                <View style={styles.passwordContainer}>
+                  <Text style={styles.inputLabel}>{translations.password}</Text>
+                  <TouchableOpacity onPress={handleForgotPassword}>
+                    <Text style={styles.forgotPasswordText}>
+                      {translations.forgotPassword}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
 
-            <View style={Styles.InputView}>
-              <TextInput
-                style={styles.input}
-                placeholder={translations.password}
-                value={password}
-                onChangeText={(e) => setPassword(e)}
-                secureTextEntry={securetext}
-                autoCapitalize="none"
-                autoCompleteType="password"
-              />
-              <TouchableOpacity onPress={() => setSecureText((prev) => !prev)}>
-                <Image source={eye} style={styles.eyeIcon} />
-              </TouchableOpacity>
-            </View>
-            {passwordError ? (
-              <>
-                <Text style={styles.errorText}>{passwordError}</Text>
-                {passwordPolicy.map((item, index) => (
-                  <Text key={index} style={styles.policyText}>
-                    • {item}
+                <View style={[Styles.InputView, styles.inputContainer]}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder={translations.password}
+                    value={password}
+                    onChangeText={(e) => setPassword(e)}
+                    secureTextEntry={securetext}
+                    autoCapitalize="none"
+                    autoCompleteType="password"
+                  />
+                  <TouchableOpacity
+                    onPress={() => setSecureText((prev) => !prev)}
+                  >
+                    <Image source={eye} style={styles.eyeIcon} />
+                  </TouchableOpacity>
+                </View>
+                {passwordError ? (
+                  <View style={styles.passwordErrorContainer}>
+                    <Text style={styles.errorText}>{passwordError}</Text>
+                    {passwordPolicy.map((item, index) => (
+                      <Text key={index} style={styles.policyText}>
+                        • {item}
+                      </Text>
+                    ))}
+                  </View>
+                ) : null}
+              </View>
+
+              {/* Login Button */}
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  onPress={handleLogin}
+                  style={styles.loginButton}
+                >
+                  <Text style={styles.loginButtonText}>
+                    {translations.loginButton}
                   </Text>
-                ))}
-              </>
-            ) : null}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                onPress={handleLogin}
-                style={styles.loginButton}
-              >
-                <Text style={styles.loginButtonText}>
-                  {translations.loginButton}
+                </TouchableOpacity>
+              </View>
+
+              {/* Or Divider */}
+              <View style={styles.orContainer}>
+                <Image source={Line} style={styles.line} />
+                <Text style={styles.orText}>{translations.or}</Text>
+                <Image source={Line} style={styles.line} />
+              </View>
+
+              {/* Social Login */}
+              <View style={styles.socialButtonContainer}>
+                <SocialButton
+                  platform="Google"
+                  onPress={() => handleGoogleLogin()}
+                />
+              </View>
+
+              {/* Sign Up Link */}
+              <View style={styles.signupContainer}>
+                <Text style={styles.signupPromptText}>
+                  {translations.dontHaveAccount}{" "}
+                  <Text
+                    onPress={() => navigation.navigate("SignUpDecider")}
+                    style={styles.signupLink}
+                  >
+                    {translations.signUp}
+                  </Text>
                 </Text>
-              </TouchableOpacity>
+              </View>
             </View>
-
-            <View style={styles.orContainer}>
-              <Image source={Line} style={styles.line} />
-              <Text style={styles.orText}>{translations.or}</Text>
-              <Image source={Line} style={styles.line} />
-            </View>
-
-            <View style={styles.buttonContainer}>
-              <SocialButton
-                platform="Google"
-                onPress={() => handleGoogleLogin()}
-              />
-            </View>
-
-            <Text style={styles.signupPromptText}>
-              {translations.dontHaveAccount}{" "}
-              <Text
-                onPress={() => navigation.navigate("SignUpDecider")}
-                style={styles.signupLink}
-              >
-                {translations.signUp}
-              </Text>
-            </Text>
           </View>
         </ScrollView>
       </ImageBackground>
@@ -344,25 +364,44 @@ const LoginScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+    width: "100%",
+  },
+  innerContainer: {
+    flex: 1,
+    alignItems: "center",
+    width: "100%",
+  },
   scrollViewContent: {
     flexGrow: 1,
-    alignItems: "center",
-    paddingTop: 40,
-    paddingBottom: 20,
+    width: "100%",
+    paddingTop: Platform.OS === "ios" ? 40 : 20, // Reduced top padding for Android
   },
   logo: {
-    width: 160,
-    height: 160,
-    marginBottom: 30,
+    width: 140, // Slightly reduced logo size
+    height: 140,
+    marginBottom: Platform.OS === "ios" ? 30 : 20, // Reduced margin for Android
   },
   formContainer: {
+    width: "90%",
+    alignSelf: "center",
+  },
+  inputSection: {
+    marginBottom: 10, // Reduced spacing between sections
+  },
+  inputContainer: {
     width: "100%",
-    paddingHorizontal: 20,
+    height: 45, // Optimized height for input containers
   },
   inputLabel: {
     color: "#4C4C4C",
-    marginBottom: 5,
+    marginBottom: 3, // Reduced margin
     fontWeight: "bold",
+    fontSize: 13, // Slightly smaller font
   },
   input: {
     flex: 1,
@@ -372,11 +411,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 15,
+    marginTop: 8, // Reduced margin
   },
   forgotPasswordText: {
     color: theme3.primaryColor,
     fontWeight: "bold",
+    fontSize: 13, // Slightly smaller font
   },
   eyeIcon: {
     width: 20,
@@ -384,60 +424,66 @@ const styles = StyleSheet.create({
     marginRight: 13,
     tintColor: theme3.secondaryColor,
   },
+  passwordErrorContainer: {
+    marginTop: 3,
+  },
   errorText: {
     color: theme3.ErrorColor,
-    marginTop: 5,
-    marginBottom: 5,
+    fontSize: 11, // Smaller error text
+    marginTop: 2,
   },
   policyText: {
     color: "#8A8A8A",
-    marginTop: 2,
+    marginTop: 1,
     marginLeft: 15,
-    fontSize: 12,
+    fontSize: 11, // Smaller policy text
   },
   buttonContainer: {
-    marginTop: 20,
+    marginTop: 15,
     width: "100%",
     alignItems: "center",
-    marginBottom: 20,
   },
   loginButton: {
     backgroundColor: theme3.primaryColor,
-    paddingVertical: 16,
+    paddingVertical: 14, // Slightly reduced padding
     borderRadius: 10,
-    width: "90%",
+    width: "100%",
     alignItems: "center",
   },
   loginButtonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "bold",
   },
   orContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 10,
-    width: "90%",
-    alignSelf: "center",
+    width: "100%",
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: "#4C4C4C",
   },
   orText: {
     color: "#4C4C4C",
     marginHorizontal: 10,
+    fontSize: 13,
   },
-  socialButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
+  socialButtonContainer: {
+    width: "100%",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
+  },
+  signupContainer: {
+    width: "100%",
+    paddingVertical: 10,
+    marginBottom: Platform.OS === "ios" ? 20 : 10,
   },
   signupPromptText: {
     color: theme3.LightTxtClr,
     textAlign: "center",
+    fontSize: 13,
   },
   signupLink: {
     color: theme3.primaryColor,
