@@ -162,7 +162,6 @@ const ProfileScreen = ({ route }) => {
       });
 
       const responseData = await response.json();
-      console.log("responseData", responseData);
 
       if (response.ok && responseData.payload) {
         const updatedUser = responseData.payload;

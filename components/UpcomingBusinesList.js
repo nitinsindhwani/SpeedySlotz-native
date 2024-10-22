@@ -218,7 +218,7 @@ const UpcomingBusinessList = ({ fetchedBusinesses, setBusinesses }) => {
       </View>
       <ScrollView style={styles.mostPopular}>
         {filteredBusinesses.length === 0 ? (
-          <NoDataFound />
+          <NoDataFound scenario="bookings" />
         ) : (
           filteredBusinesses.map((item) =>
             item?.slots?.map((singleSlot, index) => (

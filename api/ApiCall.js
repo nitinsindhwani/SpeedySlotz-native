@@ -298,10 +298,10 @@ export const signupUser = async (userData, referralCode) => {
   if (referralCode) {
     signUpApiUrl += `?referralCode=${encodeURIComponent(referralCode)}`;
   }
-  console.log("signUpApiUrl", signUpApiUrl);
+
   try {
     const response = await axios.post(signUpApiUrl, userData);
-    console.log("response", response);
+
     return response.data;
   } catch (error) {
     console.error("Signup failed:", error.message);
@@ -409,8 +409,6 @@ export const fetchNotifications = async () => {
     // Parse the response as JSON
     const notifications = await response.json();
 
-    console.log("Fetched notifications:", notifications); // Log the fetched data
-
     // Check if notifications is available and is an array
     if (!Array.isArray(notifications)) {
       console.error("Notifications is not an array:", notifications);
@@ -483,21 +481,20 @@ export const fetchBookings = async (bookingType) => {
 };
 
 export const saveProfiles = async (profileData) => {
-  console.log("profileData", profileData);
   const saveProfileInfoUrl = baseApiUrl + "/api/user-profile/save";
   try {
     const secureToken = await getStoredToken();
-    console.log("secureToken", secureToken);
+
     const headers = {
       Authorization: `Bearer ${secureToken}`,
       "Content-Type": "application/json",
     };
     const formattedRequest = JSON.stringify(profileData);
-    console.log("formattedRequest", formattedRequest);
+
     const response = await axios.post(saveProfileInfoUrl, formattedRequest, {
       headers: headers,
     });
-    console.log("response", response);
+
     return response;
   } catch (error) {
     console.error("Error in saveProfiles:", error);
@@ -842,7 +839,7 @@ export const updatePushToken = async (username, pushToken) => {
     };
 
     const response = await axios(config);
-    console.log("Push token update response:", response.data);
+
     return response;
   } catch (error) {
     console.error(
@@ -909,9 +906,6 @@ export const deleteUser = async () => {
   try {
     // Step 1: Get the current access token
     const token = await SecureStore.getItemAsync("userToken");
-
-    // Log the token to confirm retrieval
-    console.log("Retrieved token:", token);
 
     if (!token) {
       throw new Error("No access token found in SecureStore");

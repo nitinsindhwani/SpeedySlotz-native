@@ -116,7 +116,6 @@ const UserProfileForm = ({ profilesData, onFormValidation }) => {
       );
 
       const response = await saveProfiles({ userProfile: formattedProfile });
-      console.log("Response:", response);
 
       if (response.data && response.data.success) {
         setAlertTitle(translations.success);

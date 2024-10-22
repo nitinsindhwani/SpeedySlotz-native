@@ -194,7 +194,6 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
         [itemId]: false,
       }));
       changeTepFav(false);
-      console.log("function remove");
     } catch (error) {
       changeTepFav(true);
       console.error("Failed to remove favorite:", error);
@@ -264,9 +263,6 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
       }
     }
     const getEarliestSlot = (earliestSlotDate, earliestSlotTime) => {
-      console.log("Received date:", JSON.stringify(earliestSlotDate));
-      console.log("Received time:", JSON.stringify(earliestSlotTime));
-
       if (!earliestSlotDate || !earliestSlotTime) {
         console.log("Date or time is null or undefined");
         return null;
@@ -274,12 +270,10 @@ const PopularBusinessList = ({ fetchedBusinesses, navigation }) => {
 
       try {
         const dateTimeString = `${earliestSlotDate}T${earliestSlotTime}`;
-        console.log(`Attempting to parse: ${dateTimeString}`);
 
         const parsedDate = new Date(dateTimeString);
 
         if (!isNaN(parsedDate.getTime())) {
-          console.log("Successfully parsed date:", parsedDate);
           return parsedDate;
         } else {
           console.warn("Invalid date or time format after parsing");

@@ -123,7 +123,7 @@ const NotificationScreen = ({ route }) => {
       {/* <Header user={user ? user : "--"} /> */}
 
       {notifications.length < 1 ? (
-        <NoDataFound />
+        <NoDataFound scenario="notifications" />
       ) : (
         <FlatList
           data={notifications}

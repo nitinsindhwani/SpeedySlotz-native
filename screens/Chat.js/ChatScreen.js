@@ -63,7 +63,6 @@ const ChatScreen = ({ route }) => {
   const loadChats = async (user, token) => {
     const chatInfo = { user_id: user.user_id, username: user.username };
     const fetchedChats = await fetchChatHistory(chatInfo, token);
-  
 
     // Check if the payload is empty
     if (fetchedChats.data.payload.length === 0) {
@@ -145,7 +144,6 @@ const ChatScreen = ({ route }) => {
         navigateToChatWithChatData(newChat);
       }
     } else if (source === "incomingMessage") {
-  
       const incomingMessages = Object.values(data.chatMessages || {});
 
       chatIndex = chats.findIndex(
@@ -290,7 +288,7 @@ const ChatScreen = ({ route }) => {
           }
         />
       ) : (
-        <NoDataFound />
+        <NoDataFound type="chat" />
       )}
     </Pressable>
   );

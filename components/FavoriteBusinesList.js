@@ -98,7 +98,7 @@ const FavoriteBusinesList = ({ fetchedBusinesses, navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {fetchedBusinesses && fetchedBusinesses.length === 0 ? (
           loader === false ? (
-            <NoDataFound message={translations.noDataFound} />
+            <NoDataFound scenario="favorites" />
           ) : (
             <InLineLoader message={translations.loading} />
           )

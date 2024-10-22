@@ -587,7 +587,6 @@ function DetailScreen({ route }) {
   }, [navigation, translations]);
 
   const onDayPress = (day) => {
-    console.log("Selected day:", day);
     setCurrentDate(moment(day).toDate());
     fetchSlots(day);
   };
@@ -664,7 +663,7 @@ function DetailScreen({ route }) {
 
   useEffect(() => {
     const initialDate = moment().format("YYYY-MM-DD");
-    console.log("Fetching initial slots for date:", initialDate);
+
     fetchSlots(initialDate);
   }, []);
 

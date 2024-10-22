@@ -154,7 +154,7 @@ const LandingScreen = ({ route }) => {
           console.error("Error getting location:", locationDetails.errorMsg);
           return;
         }
-        console.log("Location details:", locationDetails);
+
         const newLocationData = {
           coordinates: {
             latitude: locationDetails?.location?.coords.latitude,
@@ -190,11 +190,8 @@ const LandingScreen = ({ route }) => {
   };
   const fetchData = React.useCallback(
     async (serviceName) => {
-      console.log("fetchData called with serviceName:", serviceName);
-
       // Check if this is still the latest service type
       if (serviceName !== latestServiceTypeRef.current) {
-        console.log("Skipping fetch for outdated service type");
         return;
       }
 
@@ -390,7 +387,7 @@ const LandingScreen = ({ route }) => {
         />
       );
     } else if (selectedCategory) {
-      return <NoDataFound />;
+      return <NoDataFound scenario="search" />;
     } else if (!expandCat) {
       return <UserGuide />;
     } else {

@@ -14,10 +14,6 @@ import { theme3 } from "../assets/branding/themes";
 const DealModal = ({ isVisible, deals, onClose }) => {
   const dummyDealImage = require("../assets/images/hot-deals.png");
 
-  useEffect(() => {
-    console.log("Deals data:", JSON.stringify(deals, null, 2));
-  }, [deals]);
-
   const formatDate = (dateInput) => {
     const months = [
       "Jan",
