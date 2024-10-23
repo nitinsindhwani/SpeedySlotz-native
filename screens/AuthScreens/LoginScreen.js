@@ -322,19 +322,19 @@ const LoginScreen = () => {
               </View>
 
               {/* Or Divider */}
-              <View style={styles.orContainer}>
+              {/* <View style={styles.orContainer}>
                 <Image source={Line} style={styles.line} />
                 <Text style={styles.orText}>{translations.or}</Text>
                 <Image source={Line} style={styles.line} />
-              </View>
+              </View> */}
 
               {/* Social Login */}
-              <View style={styles.socialButtonContainer}>
+              {/* <View style={styles.socialButtonContainer}>
                 <SocialButton
                   platform="Google"
                   onPress={() => handleGoogleLogin()}
                 />
-              </View>
+              </View> */}
 
               {/* Sign Up Link */}
               <View style={styles.signupContainer}>
