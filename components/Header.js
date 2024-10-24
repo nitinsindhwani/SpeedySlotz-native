@@ -76,14 +76,13 @@ const getStyles = (currentTheme) =>
     header: {
       // width: "100%",
       width: WindowWidth,
-
-      height: 100,
+      // height: 100,
       flexDirection: "row",
       // marginTop: Platform.OS === "ios" ? 0 : 30,
 
       alignItems: "center",
       backgroundColor: currentTheme.primaryColor,
-      paddingTop: 30,
+      paddingVertical: 10,
     },
     helloContainer: {
       flex: 1,
@@ -103,6 +102,8 @@ const getStyles = (currentTheme) =>
       height: 40,
       width: 40,
       borderRadius: 25,
+      marginLeft: 10,
+
     },
     iconContainer: {
       flex: 1,

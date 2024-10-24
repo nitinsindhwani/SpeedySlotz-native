@@ -225,9 +225,13 @@ const ChatMessage = ({ route }) => {
   };
 
   return (
+    <View style={{flex:1}}>
+
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
+      // keyboardVerticalOffset={Platform.OS === "android" ? 100 : 60} // Customize this
+
     >
       <View style={[Styles.Header, styles.header]}>
         <View style={Styles.HeaderI}>
@@ -294,6 +298,8 @@ const ChatMessage = ({ route }) => {
         body={errorMessage}
       />
     </KeyboardAvoidingView>
+    </View>
+
   );
 };
 
@@ -301,10 +307,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F0F4FE",
+    height:WindowHeight
   },
   header: {
     justifyContent: "space-between",
-    paddingTop: 30,
+    paddingVertical: 15,
     paddingHorizontal: 20,
   },
   backIcon: {

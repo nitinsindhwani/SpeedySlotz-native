@@ -7,13 +7,13 @@ import { useNavigation } from "@react-navigation/native";
 function Header({title,typeModal,onPress}){
     const naviation = useNavigation()
 return(
-    <View  style={Styles.Header}>
+    <View  style={[Styles.Header]}>
 
 <TouchableOpacity
 onPress={()=> typeModal? onPress(): naviation.goBack()}
 >
 
-<Ionicons name="chevron-back" size={24} color={theme3.light} style={{marginTop:15,marginLeft:10}}/>
+<Ionicons name="chevron-back" size={24} color={theme3.light} style={{marginTop:0,marginLeft:10}}/>
 </TouchableOpacity>
 
 

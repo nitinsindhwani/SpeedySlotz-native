@@ -599,12 +599,14 @@ const styles = StyleSheet.create({
     shadowColor: "rgba(0,0,0,0.2)",
     shadowOpacity: 1,
     elevation: 1,
+    paddingBottom:10
   },
   BtnWrapper: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
     marginTop: 16,
+    paddingVertical:20
   },
   BTn_2: {
     width: "47%",
@@ -618,7 +620,7 @@ const styles = StyleSheet.create({
   Btn_TTx: {
     color: "white",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
   },
   loaderContainer: {
     flex: 1,

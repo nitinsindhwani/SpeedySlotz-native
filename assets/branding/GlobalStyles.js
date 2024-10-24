@@ -15,7 +15,7 @@ const Styles = StyleSheet.create({
   Header: {
     width: WindowWidth,
     // height:WindowHeight/10,
-    height: 100,
+    // height: 100,
 
     backgroundColor: theme3.primaryColor,
     // marginTop:Platform.OS === "ios"?0: 30,
@@ -25,11 +25,11 @@ const Styles = StyleSheet.create({
 
     // marginTop: Platform.OS === "ios" ? 0 : 30,
 
-    paddingTop: 30,
+    paddingVertical: 10,
   },
   HeaderI: {
     width: WindowWidth / 1.18,
-    height: WindowHeight / 10,
+    // height: WindowHeight / 10,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -37,7 +37,7 @@ const Styles = StyleSheet.create({
     color: theme3.light,
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: 15,
+    marginTop: 0,
   },
   TopView: {
     width: WindowWidth / 1.08,

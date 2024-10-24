@@ -24,10 +24,13 @@ const BottomNavigation = ({ route }) => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        tabBarHideOnKeyboard:true,
+        
         tabBarStyle: {
           backgroundColor: theme3.light,
           borderTopWidth: 0,
           borderTopColor: theme3.secondaryColor,
+          height:80
         },
         tabBarShowLabel: false,
         tabBarActiveTintColor: theme3.primaryColor,
